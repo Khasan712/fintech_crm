@@ -2,7 +2,7 @@ from django.db import models
 
 from apps.commons.models import CustomBaseAbstract, CustomWeekAbstract
 from apps.v1.edu.models.courses import Course
-from apps.v1.user.models import User, Teacher
+from apps.v1.user.models import Student, User, Teacher
 
 
 class Group(CustomBaseAbstract, CustomWeekAbstract):
@@ -21,3 +21,16 @@ class Group(CustomBaseAbstract, CustomWeekAbstract):
 
     def __str__(self):
         return f'{self.id} - {self.name}'
+
+
+class GroupStudent(CustomBaseAbstract):
+    student = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True, related_name='student_in_group')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='group_of_student')
+
+    class Meta:
+        verbose_name = 'Guruhdagi o\'quvchi'
+        verbose_name_plural = 'Guruhdagi o\'quvchilar'
+
+    def __str__(self) -> str:
+        return f'{self.student.first_name}: {self.group.name}'
+

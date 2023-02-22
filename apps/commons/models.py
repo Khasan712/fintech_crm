@@ -2,13 +2,13 @@ from django.db import models
 
 
 class CustomBaseAbstract(models.Model):
-    creator = models.BigIntegerField(default=0)
-    updater = models.BigIntegerField(default=0)
-    deleter = models.BigIntegerField(default=0)
 
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(blank=True, null=True, editable=False)
     deleted_at = models.DateTimeField(blank=True, null=True,  editable=False)
+
+    is_deleted = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         abstract = True
