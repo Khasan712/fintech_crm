@@ -21,10 +21,14 @@
     <!-- endinject -->
     <!-- Layout styles -->
     <link rel="stylesheet" href="{% static 'app/assets/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'app/modal/learn.css' %}">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="{% static 'app/assets/images/favicon.png' %}" />
+
   </head>
   <body>
+
+
     <div class="container-scroller">
       <!-- partial:partials/_sidebar.html -->
       
@@ -44,7 +48,7 @@
                   <span class="count bg-success"></span>
                 </div>
                 <div class="profile-name">
-                  <h5 class="mb-0 font-weight-normal">{{ user.first_name }} {{ user.last_name | slice:"10" }}</h5>
+                  <h5 class="mb-0 font-weight-normal">{{ user.first_name }}</h5>
                   <span>{{ user.role }}</span>
                 </div>
               </div>
@@ -91,10 +95,55 @@
 
 
 
-          {% comment %}  Student tabs  {% endcomment %}
-          {% if request.user.role == 'student' %}
+          {% comment %}  Dashboard tabs  {% endcomment %}
             <li class="nav-item menu-items">
+              {% if request.user.role == 'teacher' %}
+                <a class="nav-link" href="{% url 'teacher_dashboard' %}">
+                  <span class="menu-icon">
+                      <i class="mdi mdi-speedometer"></i>
+                  </span>
+                  <span class="menu-title">Dashboard</span>
+                </a>
+              {% elif request.user.role == 'student' %}
                 <a class="nav-link" href="{% url 'student_dashboard' %}">
+                  <span class="menu-icon">
+                      <i class="mdi mdi-speedometer"></i>
+                  </span>
+                  <span class="menu-title">Dashboard</span>
+                </a>
+              {% endif %}
+            </li>
+
+            <li class="nav-item menu-items">
+                <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <span class="menu-icon">
+                    <i class="mdi mdi-laptop"></i>
+                </span>
+                <span class="menu-title">Guruhlar</span>
+                <i class="menu-arrow"></i>
+                </a>
+                <div class="collapse" id="ui-basic">
+                <ul class="nav flex-column sub-menu">
+                
+                  {% for group in groups %}
+                    {% if request.user.role == 'student' %}
+                    <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'student_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
+                    {% elif request.user.role == 'teacher' %}
+                    <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'teacher_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
+                    {% endif %}
+                  {% endfor %}
+                
+                </ul>
+                </div>
+            </li>
+
+
+
+
+           {% comment %} Teacher tabs 
+          {% if request.user.role == 'teacher' %}
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{% url 'teacher_dashboard' %}">
                 <span class="menu-icon">
                     <i class="mdi mdi-speedometer"></i>
                 </span>
@@ -114,13 +163,13 @@
                 <ul class="nav flex-column sub-menu">
                 
                   {% for group in groups %}
-                      <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'student_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
+                      <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'teacher_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
                   {% endfor %}
                 
                 </ul>
                 </div>
             </li>
-          {% endif %}
+          {% endif %} {% endcomment %}
 
 
 
@@ -394,6 +443,32 @@
         
         {% endblock content %}
 
+        <div class="col-md-12 stretch-card container" id="card" class="container">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title">Dars qo'shish</h4>
+              <form class="forms-sample" method="POST">{% csrf_token %}
+                <div class="form-group">
+                  <label for="exampleInputUsername1">Mavzu</label>
+                  <input name="theme" type="text" style="color: white;" class="form-control" required placeholder="Mavzuni kiriting">
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputEmail1">Dars haqida</label>
+                  <textarea name="description" style="background-color: #2A3038; color: white;" id="" cols="58" rows="7" class="custom-textarea" ></textarea>
+                </div>
+                <input type="hidden" name="method" value="create_lesson">
+                <input type="hidden" name="page" value="group">
+                <input type="hidden" name="group_id" value="{{ group.id }}">
+                <button type="submit" class="btn btn-primary btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> Yaratish 
+                </button>
+                <button type="button" id="ok" onclick="closeBtn()" class="btn btn-warning me-2">Cancel</button>
+                <!-- <button class="oke" type="button" id="ok" onclick="closeBtn()">OK</button> -->
+              </form>
+            </div>
+          </div>
+        </div>
+
     <!-- container-scroller -->
     <!-- plugins:js -->
     <script src="{% static 'app/assets/vendors/js/vendor.bundle.base.js' %}"></script>
@@ -415,6 +490,7 @@
     <!-- endinject -->
     <!-- Custom js for this page -->
     <script src="{% static 'app/assets/js/dashboard.js' %}"></script>
+    <script src="{% static 'app/modal/learn.js' %}"></script>
     <!-- End custom js for this page -->
   </body>
 </html>

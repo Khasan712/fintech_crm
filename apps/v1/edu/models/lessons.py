@@ -10,7 +10,8 @@ from apps.v1.user.models import Student
 class Lesson(CustomBaseAbstract):
     group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True)
     theme = models.CharField(max_length=255)
-    start_time = models.TimeField()
+    description = models.TextField(blank=True, null=True)
+    start_time = models.TimeField(auto_now_add=True)
     end_time = models.TimeField(blank=True, null=True)
     lesson_number = models.IntegerField(default=0)
     status = models.CharField(max_length=8, choices=LessonStatus.choices(), default='started')
