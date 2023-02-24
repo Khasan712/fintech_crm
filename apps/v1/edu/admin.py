@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from apps.v1.edu.models.courses import Course
 from apps.v1.edu.models.groups import Group, GroupStudent
-from apps.v1.edu.models.lessons import Lesson, Attendance
+from apps.v1.edu.models.lessons import HomeTaskItem, Lesson, Attendance
 
 
 @admin.register(Course)
@@ -28,4 +28,10 @@ class AttendanceAdmin(admin.ModelAdmin):
 @admin.register(GroupStudent)
 class GroupStudentAdmin(admin.ModelAdmin):
     list_display = ('id', 'student', 'group', 'created_at')
+
+
+
+class HomeTaskItemInline(admin.StackedInline):
+    model = HomeTaskItem
+
 

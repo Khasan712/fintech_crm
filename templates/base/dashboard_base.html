@@ -468,10 +468,48 @@
             </div>
           </div>
         </div>
+        
+    <script
+      src="https://code.jquery.com/jquery-3.6.3.min.js"
+      integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+      crossorigin="anonymous">
+    </script>
 
+    <script>
+      $(document).ready(function () {
+          // catch the form's submit event
+          $('#createAttendance').submit(function () {
+            // create an AJAX call
+            console.log('Salom')
+            $.ajax({
+                // data: $(this).serialize(), // get the form data
+                data: $(this).serialize(), // get the form data
+                type: $(this).attr('method'), // GET or POST
+                url: "{% url 'teacher_dashboard' %}?page=lesson&lesson_id=35",
+                // on success
+                success: function (response) {
+                    alert("Thankyou for reaching us out " + response.name);
+                    console.log(response)
+                },
+                // on error
+                error: function (response) {
+                    // alert the error if any error occured
+                    // alert(response.responseJSON.errors);
+                    console.log(response.responseJSON.errors)
+                    
+                } 
+            });
+            return false;
+          });
+      })
+    </script>
+    
+        
     <!-- container-scroller -->
     <!-- plugins:js -->
     <script src="{% static 'app/assets/vendors/js/vendor.bundle.base.js' %}"></script>
+  
+		
     <!-- endinject -->
     <!-- Plugin js for this page -->
     <script src="{% static 'app/assets/vendors/chart.js/Chart.min.js' %}"></script>

@@ -3,10 +3,10 @@ from apps.v1.edu.forms import teachers
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from apps.v1.edu.models.groups import Group, GroupStudent
-from apps.v1.edu.models.lessons import Lesson
+from apps.v1.edu.models.lessons import Attendance, Lesson
 from django.views.generic.base import View
 from django.http.response import Http404, HttpResponse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 
 
 class TeacherDashboardView(View):
@@ -21,6 +21,9 @@ class TeacherDashboardView(View):
         return GroupStudent.objects.select_related(
             'student', 'group', 'creator', 'updater', 'deleter'
         )
+    
+    def get_attendance_queryset(self):
+        return Attendance.objects.select_related('student', 'lesson')
 
     def get(self, request, *args, **kwargs):
         teacher = request.user
@@ -57,8 +60,8 @@ class TeacherDashboardView(View):
                 return Http404
             context['lesson'] = lesson
             context['page'] = 'lesson'
-            context['students'] = self.get_group_students().filter(group_id=lesson.group.id).values(
-                'id', 'student__first_name', 'student__last_name', 'student__student_type'
+            context['students'] = self.get_attendance_queryset().filter(lesson_id=lesson.id).values(
+                'student__id', 'student__first_name', 'student__last_name', 'student__student_type', 'is_come', 'h_m_percentage'
             )
 
         # Students page
@@ -77,11 +80,12 @@ class TeacherDashboardView(View):
 
     def post(self, request, *args, **kwargs):
         creator = self.request.user
-        method = self.request.POST.get('method')
-        page = self.request.POST.get('page')
-        group_id = self.request.POST.get('group_id')
-        lesson_id = self.request.POST.get('lesson_id')
-        lesson_status = self.request.POST.get('status')
+        data = self.request.POST
+        method = data.get('method')
+        page = data.get('page')
+        group_id = data.get('group_id')
+        lesson_id = data.get('lesson_id')
+        lesson_status = data.get('status')
 
         if method == 'create_lesson' and page and group_id:
             group = self.get_group_queryset().filter(id=group_id, teacher_id=creator.id).first()
@@ -93,10 +97,14 @@ class TeacherDashboardView(View):
                 lesson_commit.creator_id = creator.id
                 lesson_commit.group_id = group_id
                 lesson_commit.save()
+                group_students = self.get_group_students().filter(group_id=group.id)
+                for g_student in group_students:
+                    created, _ = Attendance.objects.get_or_create(student_id=g_student.student.id, lesson_id=lesson_commit.id)
                 context = {
                     'page':'group',
                     'group_id':group_id
                 }
+
                 return self.get(self.request, **context)
         if page == 'update_lesson' and lesson_id:
             lesson = self.get_lesson_queryset().filter(id=lesson_id, creator_id=creator.id).first()
@@ -119,4 +127,29 @@ class TeacherDashboardView(View):
                     'lesson_id':lesson_id
                 }
                 return self.get(self.request, **context)
-        # return render(request, 'edu/teacher/dashboard.html')
+        
+        if method == 'create_attendency':
+            print(data)
+            students_attendance = [
+
+            ]
+            students_id = data.get('students_id')
+            iscome = bool(data.get('iscome') == 'true')
+            h_w_percentage = data.get('h_w_percentage')
+            for student_atten in range(len(students_id)):
+                print(student_atten)
+            for student_id in students_id:
+                pass
+            lesson = self.get_lesson_queryset().filter(id=lesson_id, creator_id=creator.id).first()
+            lesson_students = self.get_attendance_queryset().filter(lesson_id=lesson.id)
+            for a_student in students_attendance:
+                student_attend = lesson_students.filter(student_id=int(a_student)).first()
+                if student_attend:
+                    student_attend.is_come = True
+                    student_attend.save()
+            context = {
+                    'page':'lesson',
+                    'lesson_id':lesson_id
+                }
+            return HttpResponse('Created')
+            # return self.get(self.request, **context)

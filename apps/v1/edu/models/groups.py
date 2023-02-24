@@ -28,7 +28,7 @@ class Group(CustomBaseAbstract, CustomWeekAbstract):
 
 
 class GroupStudent(CustomBaseAbstract):
-    student = models.OneToOneField(Student, on_delete=models.SET_NULL, null=True, related_name='student_in_group')
+    student = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True, related_name='student_in_group')
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='group_of_student')
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_creator_student')
     updater = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_updater_student', blank=True)

@@ -272,7 +272,7 @@
                 </div>
             {% elif page == 'lesson' %}
               <div class="row">
-                <div class="col-8 grid-margin  stretch-card">
+                <div class="col-7 grid-margin  stretch-card">
                   <div class="card">
                     <div class="card-body">
                       <h4 class="card-title">Mavzu: {{ lesson.theme }}</h4>
@@ -376,22 +376,21 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-4 grid-margin  stretch-card">
+                <div class="col-5 grid-margin  stretch-card">
                   <div class="card">
                     <div class="col-12 grid-margin">
                       <div class="card">
                         <div class="card-body">
                           <h4 class="card-title">Davomat</h4>
                           <div class="table-responsive">
-                            <form action="">
-                              <table class="table">
+                            <form action="" method="POST" id="createAttendance">{% csrf_token %}
+                              <table class="table"  >
                                 <thead>
                                   <tr>
-                                    <th>
-                                      #
-                                    </th>
                                     <th> Ismi </th>
                                     <th> Familiyasi </th>
+                                    <th>Davomat</th>
+                                    <th> Baho </th>
                                     <th> O'qish turi </th>
                                   </tr>
                                 </thead>
@@ -399,32 +398,63 @@
                                   {% for student in students %}
                                     <tr>
                                       <td>
-                                        <div class="form-check form-check-muted m-0">
-                                          <label class="form-check-label">
-                                            <input type="checkbox" name="student_id" value="{{ student.id }}" class="form-check-input">
-                                          </label>
-                                        </div>
-                                      </td>
-                                      <td>
                                         <img src="" alt="?" />
                                         <span class="ps-2">{{ student.student__first_name }}</span>
                                       </td>
                                       <td> {{ student.student__last_name }} </td>
+                                      <input type="hidden" name="students_id" id="student_id" value="{{student.student__id}}"/>
+                                      <td>
+                                        <div class="form-group">
+                                          <select name="iscome" class="form-control form-control-sm" style="color: #fff;" id="exampleFormControlSelect3">
+                                            {% if student.is_come %}
+                                              <option value="true" selected style="background-color: green;">Keldi</option>
+                                              <option value="false">Kelmadi</option>
+                                            {% else %}
+                                              <option value="false" selected >Kelmadi</option>
+                                              <option value="true" >Keldi</option>
+                                            {% endif %}
+                                          </select>
+                                        </div>
+                                      </td>
+                                      <td> 
+                                        <div class="form-group">
+                                          <select name="h_w_percentage" class="form-control form-control-sm" style="color: #fff;" id="exampleFormControlSelect3">
+                                            <option value="{{ student.h_m_percentage }}" selected >{{ student.h_m_percentage }}</option>
+                                            <option value="1" >1</option>
+                                            <option value="2" >2</option>
+                                            <option value="3" >3</option>
+                                            <option value="4" >4</option>
+                                            <option value="5" >5</option>
+                                            <option value="6" >6</option>
+                                            <option value="7" >7</option>
+                                            <option value="8" >8</option>
+                                            <option value="9" >9</option>
+                                            <option value="10" >10</option>
+                                          </select>
+                                        </div>
+                                      </td> 
                                       {% if student.student__student_type == 'online' %}
                                         <td> <label class="badge badge-danger">Online</label></td>
                                       {% elif student.student__student_type == 'offline' %}
                                         <td> <label class="badge badge-info">Offline</label></td>
                                       {% endif %}
-                                      
                                     </tr>
                                   {% endfor %}
                                 </tbody>
                               </table>
                               <br>
-                              <input type="hidden" name="page" value="lesson">
-                              <input type="hidden" name="lesson_id" value="lesson_id">
-                              <input type="hidden" name="method" value="create_attendency">
-                              <button type="submit" class="btn btn-warning btn-fw">Saqlash</button>
+                              {% if lesson.status == 'started' %}
+                                <input type="hidden" name="page" value="lesson">
+                                <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                                <input type="hidden" name="method" value="create_attendency">
+                                <button type="submit" class="btn btn-warning btn-fw">Saqlash</button>
+                              {% else %}
+                                <input type="hidden" disabled name="page" value="lesson">
+                                <input type="hidden" disabled name="lesson_id" value="{{ lesson.id }}">
+                                <input type="hidden" disabled name="method" value="create_attendency">
+                                <button type="submit" disabled class="btn btn-warning btn-fw">Saqlash</button>
+                              {% endif %}
+                              
                             </form>
                           </div>
                         </div>
