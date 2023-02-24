@@ -63,9 +63,6 @@ class Attendance(CustomBaseAbstract):
 
 
 
-# class Home
-
-
 
 class HomeTask(CustomBaseAbstract):
     lesson = models.ForeignKey(Lesson, on_delete=models.SET_NULL, null=True)
