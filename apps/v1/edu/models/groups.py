@@ -10,6 +10,10 @@ class Group(CustomBaseAbstract, CustomWeekAbstract):
     title = models.CharField(max_length=255, blank=True, null=True)
     course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True)
     teacher = models.ForeignKey(Teacher, on_delete=models.SET_NULL, null=True)
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_creator')
+    updater = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_updater')
+    deleter = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_deleter')
+
     start_time = models.TimeField()
     end_time = models.TimeField()
     from_term = models.DateField()
@@ -26,7 +30,9 @@ class Group(CustomBaseAbstract, CustomWeekAbstract):
 class GroupStudent(CustomBaseAbstract):
     student = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True, related_name='student_in_group')
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='group_of_student')
-
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_creator_student')
+    updater = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_updater_student', blank=True)
+    deleter = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_deleter_student', blank=True)
     class Meta:
         verbose_name = 'Guruhdagi o\'quvchi'
         verbose_name_plural = 'Guruhdagi o\'quvchilar'

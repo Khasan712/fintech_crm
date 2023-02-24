@@ -1,12 +1,7 @@
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from apps.commons.decorators import isAuthenticated
-from apps.commons.the_same_fields import get_the_same_fields
 from apps.v1.edu.models.groups import Group
 from apps.v1.edu.models.lessons import Lesson
-from django.views.generic.base import TemplateView
 from django.views.generic.base import View
-from django.db.models import Count
 from django.http.response import Http404
 
 
@@ -36,6 +31,7 @@ class StudentDashboardView(View):
                 group_lessons = student_lessons.filter(
                     group_id=group_id).order_by('-id').values('id', 'creator__first_name', 'lesson_number', 'created_at', 'start_time', 'end_time', 'status')
                 context['lessons'] = group_lessons
+                context['group'] = group.name
                 context['page'] = 'group'
         if page == 'lesson' and lesson_id:
             lesson = student_lessons.filter(id=lesson_id).first()

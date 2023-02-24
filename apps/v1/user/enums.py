@@ -10,3 +10,12 @@ class UserRole(Enum):
     @classmethod
     def choices(cls):
         return [(key.value, key.name) for key in cls]
+
+
+class StudentType(Enum):
+    online = 'online'
+    offline = 'offline'
+
+    @classmethod
+    def choices(cls):
+        return [(key.value, key.name) for key in cls]
