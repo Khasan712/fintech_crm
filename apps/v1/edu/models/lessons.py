@@ -53,3 +53,26 @@ class Attendance(CustomBaseAbstract):
 
 
 # class Home
+
+
+class HometaskCart(models.Model):
+    teacher = models.CharField(max_length=128)
+    deadline = models.DateField()
+    lesson = models.CharField(max_length=128)
+    text = models.TextField()
+
+class HometaskItem(models.Model):
+    text = models.TextField()
+    file = models.FileField(upload_to="Hometask")
+    hometaskcart = models.ForeignKey(HometaskCart,on_delete=models.CASCADE)
+
+
+class Homework(models.Model):
+    student = models.CharField(max_length=128)
+    ball = models.IntegerField()
+    lesson = models.CharField()
+    hometask = models.ForeignKey(HometaskItem,on_delete=models.CASCADE)
+class File(models.Model):
+    file = models.FileField(upload_to="Homework")
+    hometaskitem = models.ForeignKey(HometaskItem,on_delete=models.CASCADE)
+    homework = models.ForeignKey(Homework,on_delete=models.CASCADE)
