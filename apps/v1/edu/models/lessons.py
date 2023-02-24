@@ -62,7 +62,7 @@ class Attendance(CustomBaseAbstract):
         return f'{self.id} - {self.student.first_name}'
 
 
-<<<<<<< HEAD
+
 # class Home
 
 
