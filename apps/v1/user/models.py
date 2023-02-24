@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
 from apps.commons.models import CustomBaseAbstract
-from apps.v1.user.enums import UserRole
+from apps.v1.user.enums import StudentType, UserRole
 from apps.v1.user.managers import (
     UserManager,
     SuperAdminManager,
@@ -17,6 +17,7 @@ class User(AbstractBaseUser, PermissionsMixin, CustomBaseAbstract):
     last_name = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=50, unique=True)
     role = models.CharField(max_length=11, choices=UserRole.choices())
+    student_type = models.CharField(max_length=7, choices=StudentType.choices(), blank=True, null=True)
 
     mother_full_name = models.CharField(max_length=50, blank=True, null=True)
     mother_phone = models.CharField(max_length=50, blank=True, null=True)

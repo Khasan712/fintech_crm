@@ -20834,4 +20834,11 @@ div.tagsinput {
   -webkit-flex-grow: 1;
   flex-grow: 1; }
 
+ 
+
+.h1Title{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
 /*# sourceMappingURL=maps/style.css.map */
