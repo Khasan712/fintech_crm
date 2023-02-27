@@ -26,7 +26,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = (os.getenv('DEBUG') == 'True')
-ALLOWED_HOSTS = ['*'] if DEBUG else os.getenv('ALLOWED_HOSTS')
+ALLOWED_HOSTS = ['*'] if DEBUG else os.getenv('ALLOWED_HOSTS').split(',')
 
 
 # Application definition
@@ -100,10 +100,24 @@ if DEBUG:
         }
     }
 else:
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.'+os.getenv('DB_ENGINE'),
+    #         'NAME': os.getenv('DB_NAME'),
+    #         'USER': os.getenv('DB_USER'),
+    #         'PASSWORD': os.getenv('DB_PASSWORD'),
+    #         'HOST': os.getenv('DB_HOST'),
+    #         'PORT': os.getenv('DB_PORT'),
+    #     }
+    # }
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'fintech_crm',
+            'USER': 'fintech_crm_user',
+            'PASSWORD': 'fintech_crm_password',
+            'HOST': 'fintech_crm_mysql',
+            'PORT': 3311,
         }
     }
 

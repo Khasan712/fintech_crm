@@ -1,0 +1,11 @@
+asgiref==3.6.0
+cffi==1.15.1
+cryptography==39.0.1
+Django==4.1.6
+django-cors-headers==3.13.0
+mysqlclient==2.1.1
+Pillow==9.4.0
+pycparser==2.21
+PyMySQL==1.0.2
+python-dotenv==0.21.1
+sqlparse==0.4.3

@@ -1,11 +1,20 @@
 from django.shortcuts import render
 from apps.v1.edu.models.groups import Group
-from apps.v1.edu.models.lessons import Lesson
+from apps.v1.edu.models.lessons import Attendance, HomeTask, HomeTaskItem, Lesson
 from django.views.generic.base import View
 from django.http.response import Http404
 
 
 class StudentDashboardView(View):
+    def get_attendance_queryset(self):
+        return Attendance.objects.select_related('student', 'lesson')
+    
+    def get_hometask_queryset(self):
+        return HomeTask.objects.select_related('lesson', 'teacher')
+    
+    def get_hometask_items_queryset(self):
+        return HomeTaskItem.objects.select_related('home_task')
+
     def get(self, request, *args, **kwargs):
         page = self.request.GET.get('page')
         group_id = self.request.GET.get('group_id')
@@ -39,41 +48,21 @@ class StudentDashboardView(View):
                 return Http404
             context['lesson'] = lesson
             context['page'] = 'lesson'
+            subject_guide = self.get_hometask_queryset().filter(
+                lesson_id=lesson_id, is_subject_guides=True
+            ).first()
+            subject_hometask = self.get_hometask_queryset().filter(
+                lesson_id=lesson_id, is_subject_guides=False
+            ).first()
+            if subject_guide:
+                subject_guide_items = self.get_hometask_items_queryset().filter(home_task_id=subject_guide.id).order_by('-id')
+                context['subject_guides'] = subject_guide_items
+            if subject_hometask:
+                subject_hometask_items = self.get_hometask_items_queryset().filter(home_task_id=subject_hometask.id).order_by('-id')
+                context['subject_hometasks'] = subject_hometask_items
+            
         return render(request, 'edu/student/dashboard.html', context)
     
 
-
-
-
-# @isAuthenticated
-# def student_dashboard(request):
-#     student = request.user
-#     student_groups = Group.objects.select_related('course', 'teacher').filter(
-#         group_of_student__student_id=student.id
-#     ).values('id', 'name')
-
-#     context = {
-#         'user': student,
-#         'groups': student_groups
-#     }
-
-#     return render(request, 'edu/student/dashboard.html', context)
-
-
-# @isAuthenticated
-def student_group(request, pk):
-    student = request.user
-    student_group = Group.objects.select_related('course', 'teacher').filter(
-        group_of_student__student_id=student.id, id=pk
-    ).first()
-    if student_group:
-        student_group = Lesson.objects.select_related('group').filter(group_id=pk).order_by('-id')
-
-    context = {
-        'user': student,
-        'lessons': student_group
-    }
-
-    return render(request, 'edu/student/group.html', context)
 
 

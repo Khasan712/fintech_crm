@@ -288,6 +288,18 @@
                               </div>
                           </div>
                         </div>
+
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Dars haqida</label>
+                                <div class="col-sm-9">
+                                  <input type="text" name="description" class="form-control" value="{{ lesson.description }}" style="color: white;" />
+                                </div>
+                              </div>
+                          </div>
+                        </div>
+
                         <div class="row">
                           <div class="col-md-12">
                             <div class="form-group row">
@@ -361,14 +373,6 @@
                             </div>
                           </div>
                         {% endif %}
-                        <h4 class="card-title">Dars matni </h4>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group row">
-                                    <textarea name="description"  style="background-color: #2A3038; color: white;" cols="30" rows="10">{{ lesson.description }}</textarea>
-                                </div>
-                            </div>
-                        </div>
                         <button type="submit" class="btn btn-primary">Saqlash</button>
                         <input type="hidden" name="page" value="update_lesson">
                         <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
@@ -462,6 +466,224 @@
                     </div>
                   </div>
                 </div>
+
+
+
+                <div class="col-5 grid-margin  stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card">Mavzuga oid qo'llanmalarni yuklash.</h4>
+                      <form class="form-sample" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                        <br>
+                        <div class="row">
+                          <div class="col-md-12">
+                              <div class="form-group row">
+                                  <textarea name="text"  style="background-color: #2A3038; color: white;" cols="30" rows="6"></textarea>
+                              </div>
+                          </div>
+                        </div>
+                        <input type="file" name="uploaded_file" multiple class="file-upload-default">
+                        <br>
+                        <br>
+                        <div class="form-group row">
+                          <label class="col-sm-2 col-form-label">Uyga vazifa</label>
+                          <div id="bloodhound" class="col-sm-9">
+                            <div class="form-check form-check-success">
+                              <label class="form-check-label">
+                              <input type="checkbox" name="home_task" value="true" class="form-check-input"></label>
+                            </div>
+                          </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Yuklash</button>
+                        <input type="hidden" name="method" value="subject_guides">
+                        <input type="hidden" name="page" value="lesson">
+                        <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                      </form>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col-7 grid-margin  stretch-card">
+                  <div class="card">
+                    <div class="col-12 grid-margin">
+                      <div class="card">
+                        <div class="card-body">
+                          <h4 class="card-title">Mavzuga oid qo'llanmalar.</h4>
+
+                          <div>
+                            {% for subject_guide in subject_guides %}
+                              {% if subject_guide.text %}
+                                <form action="" method="POST" id='edit_or_delete_guide_text'>{% csrf_token %}
+                                  <blockquote class="blockquote blockquote-primary">
+                                    <p>{{ subject_guide.text }}</p>
+                                    <button type="submit" class="btn btn-warning btn-icon">
+                                      <div class="col-sm-6 col-md-4 col-lg-3">
+                                        <i class="mdi mdi-pencil"></i>
+                                      </div>
+                                    </button>
+                                    <button type="submit" class="btn btn-danger btn-icon">
+                                      <div class="col-sm-6 col-md-4 col-lg-3">
+                                        <i class="mdi mdi-delete"></i>
+                                      </div>
+                                    </button>
+                                  </blockquote>
+                                </form>
+                              {% endif %}
+                            {% endfor %}
+                          </div>
+                          
+                          <div class="table-responsive">
+                            <div style="display: flex;">
+                              
+                              {% for subject_guide in subject_guides %}
+                                {% if subject_guide.uploaded_file %}                              
+                                  {% if subject_guide.video %}
+                                    <div style="margin-right: 10px;">
+                                      <form action="" method="POST" id="createAttendance">{% csrf_token %}
+                                        <div class="item">
+                                          {% if subject_guide.uploaded_file %}
+                                            <video style="width: 300px; height: 200px; background-size: cover;" controls src="{{ subject_guide.uploaded_file.url }}"></video>
+                                          {% endif %}
+                                        </div>
+                                        <button class="btn btn-warning btn-icon">
+                                          <div class="col-sm-6 col-md-4 col-lg-3">
+                                            <i class="mdi mdi-pencil"></i>
+                                          </div>
+                                        </button>
+                                        <button class="btn btn-danger btn-icon">
+                                          <div class="col-sm-6 col-md-4 col-lg-3">
+                                            <i class="mdi mdi-delete"></i>
+                                          </div>
+                                        </button>
+                                      </form>
+                                    </div>
+                                  {% else %}
+                                    <div style="margin-right: 10px;">
+                                      <form action="" method="POST" id="createAttendance">{% csrf_token %}
+                                        <div class="item">
+                                          {% if subject_guide.uploaded_file %}
+                                            <img style="width: 300px; height: 200px; background-size: cover;" src="{{ subject_guide.uploaded_file.url }}" alt="">
+                                          {% endif %}
+                                        </div>
+                                        <button class="btn btn-warning btn-icon">
+                                          <div class="col-sm-6 col-md-4 col-lg-3">
+                                            <i class="mdi mdi-pencil"></i>
+                                          </div>
+                                        </button>
+                                        <button class="btn btn-danger btn-icon">
+                                          <div class="col-sm-6 col-md-4 col-lg-3">
+                                            <i class="mdi mdi-delete"></i>
+                                          </div>
+                                        </button>
+                                      </form>
+                                    </div>
+                                  {% endif %}
+                                {% endif %}
+                              {% endfor %}
+
+
+                            </div>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                
+                <div class="col-12 grid-margin  stretch-card">
+                  <div class="card">
+                    <div class="col-12 grid-margin">
+                      <div class="card">
+                        <div class="card-body">
+                          <h4 class="card-title">Uyga vazifalar.</h4>
+
+                          <div>
+                            {% for subject_hometask_item in subject_hometasks %}
+                              {% if subject_hometask_item.text %}
+                                <form action="" method="POST" id='edit_or_delete_guide_text'>{% csrf_token %}
+                                  <blockquote class="blockquote blockquote-primary">
+                                    <p>{{ subject_hometask_item.text }}</p>
+                                    <button type="submit" class="btn btn-warning btn-icon">
+                                      <div class="col-sm-6 col-md-4 col-lg-3">
+                                        <i class="mdi mdi-pencil"></i>
+                                      </div>
+                                    </button>
+                                    <button type="submit" class="btn btn-danger btn-icon">
+                                      <div class="col-sm-6 col-md-4 col-lg-3">
+                                        <i class="mdi mdi-delete"></i>
+                                      </div>
+                                    </button>
+                                  </blockquote>
+                                </form>
+                              {% endif %}
+                            {% endfor %}
+                          </div>
+                          
+                          <div class="table-responsive">
+                            <div style="display: flex;">
+                              
+                              {% for subject_hometask_item in subject_hometasks %}
+                                {% if subject_hometask_item.uploaded_file %}                              
+                                  {% if subject_hometask_item.video %}
+                                    <div style="margin-right: 10px;">
+                                      <form action="" method="POST" id="createAttendance">{% csrf_token %}
+                                        <div class="item">
+                                          {% if subject_hometask_item.uploaded_file %}
+                                            <video style="width: 300px; height: 200px; background-size: cover;" controls src="{{ subject_hometask_item.uploaded_file.url }}"></video>
+                                          {% endif %}
+                                        </div>
+                                        <button class="btn btn-warning btn-icon">
+                                          <div class="col-sm-6 col-md-4 col-lg-3">
+                                            <i class="mdi mdi-pencil"></i>
+                                          </div>
+                                        </button>
+                                        <button class="btn btn-danger btn-icon">
+                                          <div class="col-sm-6 col-md-4 col-lg-3">
+                                            <i class="mdi mdi-delete"></i>
+                                          </div>
+                                        </button>
+                                      </form>
+                                    </div>
+                                  {% else %}
+                                    <div style="margin-right: 10px;">
+                                      <form action="" method="POST" id="createAttendance">{% csrf_token %}
+                                        <div class="item">
+                                          {% if subject_hometask_item.uploaded_file %}
+                                            <img style="width: 300px; height: 200px; background-size: cover;" src="{{ subject_hometask_item.uploaded_file.url }}" alt="">
+                                          {% endif %}
+                                        </div>
+                                        <button class="btn btn-warning btn-icon">
+                                          <div class="col-sm-6 col-md-4 col-lg-3">
+                                            <i class="mdi mdi-pencil"></i>
+                                          </div>
+                                        </button>
+                                        <button class="btn btn-danger btn-icon">
+                                          <div class="col-sm-6 col-md-4 col-lg-3">
+                                            <i class="mdi mdi-delete"></i>
+                                          </div>
+                                        </button>
+                                      </form>
+                                    </div>
+                                  {% endif %}
+                                {% endif %}
+                              {% endfor %}
+
+
+                            </div>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
               </div>
             {% endif %}
             

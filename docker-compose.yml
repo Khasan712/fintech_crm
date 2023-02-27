@@ -1,0 +1,104 @@
+version: '3.9'
+
+services:
+  fintech_web:
+    build:
+      context: .
+    container_name: fintech_web
+    restart: always
+    volumes:
+      - .:/app
+      - static_files:/app/staticfiles
+      - static:/app/static
+      - media:/app/media
+      - /tmp/app/mysqld:/run/mysqld
+    command: python manage.py runserver
+    env_file:
+      - .env
+    depends_on:
+      - fintech_crm_mysql
+
+
+  # nginx:
+  #   build: ./nginx
+  #   container_name: nginx
+  #   restart: always
+  #   volumes:
+  #     - ./nginx/conf/:/etc/nginx/conf.d/:rw
+  #     - static_files:/home/app/staticfiles/
+  #     - static:/home/app/static/
+  #     - media:/home/app/media/
+  #     - .:/app
+  #   depends_on:
+  #     - fintech_web
+  #   ports:
+  #     - 1080:80
+  #     - 1443:443
+  #   env_file:
+  #     - .env
+
+
+  fintech_crm_mysql:
+    image: mysql:latest
+    container_name: fintech_crm_mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'fintech_crm'
+      MYSQL_USER: 'fintech_crm_user'
+      MYSQL_PASSWORD: 'fintech_crm_password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    volumes:
+      - /tmp/app/mysqld:/var/run/mysqld
+      - ./fintech_crm_mysql:/var/lib/mysql
+    ports:
+      - 3311:3306
+
+
+  # redis:
+  #   container_name: erp_redis
+  #   image: redis:alpine
+  #   ports:
+  #     - 6379:6379
+  #   volumes:
+  #     - redis_data:/data
+  #   depends_on:
+  #     - fintech_crm_mysql
+  #     - fintech_web
+
+
+  # celery-worker:
+  #   container_name: erp_celery_worker
+  #   restart: always
+  #   build:
+  #     context: .
+  #   command: celery -A config worker -l info
+  #   volumes:
+  #     - .:/app
+  #     - /tmp/app/mysqld:/run/mysqld
+  #   depends_on:
+  #     - fintech_web
+  #     - redis
+  #     - fintech_crm_mysql
+
+
+  # celery-beat:
+  #   container_name: erp_celery_beat
+  #   restart: always
+  #   build:
+  #     context: .
+  #   command: celery -A config beat -l info
+  #   volumes:
+  #     - .:/app
+  #     - /tmp/app/mysqld:/run/mysqld
+  #   depends_on:
+  #     - fintech_web
+  #     - redis
+  #     - celery-worker
+  #     - fintech_crm_mysql
+
+
+volumes:
+  static_files:
+  static:
+  media:
+  redis_data:
