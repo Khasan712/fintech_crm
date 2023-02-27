@@ -1,11 +1,12 @@
 from datetime import datetime
+import pprint
 from apps.v1.edu.forms import teachers
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from apps.v1.edu.models.groups import Group, GroupStudent
-from apps.v1.edu.models.lessons import Attendance, Lesson
+from apps.v1.edu.models.lessons import Attendance, HomeTask, HomeTaskItem, Lesson
 from django.views.generic.base import View
-from django.http.response import Http404, HttpResponse
+from django.http.response import Http404, HttpResponse, HttpResponseRedirect
 from django.http import HttpResponseRedirect, JsonResponse
 
 
@@ -24,6 +25,12 @@ class TeacherDashboardView(View):
     
     def get_attendance_queryset(self):
         return Attendance.objects.select_related('student', 'lesson')
+    
+    def get_hometask_queryset(self):
+        return HomeTask.objects.select_related('lesson', 'teacher')
+    
+    def get_hometask_items_queryset(self):
+        return HomeTaskItem.objects.select_related('home_task')
 
     def get(self, request, *args, **kwargs):
         teacher = request.user
@@ -58,6 +65,18 @@ class TeacherDashboardView(View):
             lesson = teacher_lessons.filter(id=lesson_id).first()
             if not lesson:
                 return Http404
+            subject_guide = self.get_hometask_queryset().filter(
+                lesson_id=lesson_id, teacher_id=teacher.id, is_subject_guides=True
+            ).first()
+            subject_hometask = self.get_hometask_queryset().filter(
+                lesson_id=lesson_id, teacher_id=teacher.id, is_subject_guides=False
+            ).first()
+            if subject_guide:
+                subject_guide_items = self.get_hometask_items_queryset().filter(home_task_id=subject_guide.id).order_by('-id')
+                context['subject_guides'] = subject_guide_items
+            if subject_hometask:
+                subject_hometask_items = self.get_hometask_items_queryset().filter(home_task_id=subject_hometask.id).order_by('-id')
+                context['subject_hometasks'] = subject_hometask_items
             context['lesson'] = lesson
             context['page'] = 'lesson'
             context['students'] = self.get_attendance_queryset().filter(lesson_id=lesson.id).values(
@@ -100,12 +119,8 @@ class TeacherDashboardView(View):
                 group_students = self.get_group_students().filter(group_id=group.id)
                 for g_student in group_students:
                     created, _ = Attendance.objects.get_or_create(student_id=g_student.student.id, lesson_id=lesson_commit.id)
-                context = {
-                    'page':'group',
-                    'group_id':group_id
-                }
 
-                return self.get(self.request, **context)
+                return HttpResponseRedirect(f'?page=group&group_id={group_id}')
         if page == 'update_lesson' and lesson_id:
             lesson = self.get_lesson_queryset().filter(id=lesson_id, creator_id=creator.id).first()
             if lesson:
@@ -113,7 +128,6 @@ class TeacherDashboardView(View):
                     update_lesson_form = teachers.UpdateLessonForm(self.request.POST or None, instance=lesson)
                     if not update_lesson_form.is_valid():
                         return HttpResponse(update_lesson_form.errors)
-                        # pass
                     update_lesson_commit = update_lesson_form.save(commit=True)
                     update_lesson_commit.end_time = datetime.now().time().strftime('%H:%M:%S')
                     update_lesson_commit.save()
@@ -122,14 +136,9 @@ class TeacherDashboardView(View):
                     if not update_lesson_form.is_valid():
                         return HttpResponse(update_lesson_form.errors)
                     update_lesson_form.save()
-                context = {
-                    'page':'lesson',
-                    'lesson_id':lesson_id
-                }
-                return self.get(self.request, **context)
+                return HttpResponseRedirect(f'?page=lesson&lesson_id={lesson_id}')
         
         if method == 'create_attendency':
-            print(data)
             students_attendance = [
 
             ]
@@ -148,8 +157,41 @@ class TeacherDashboardView(View):
                     student_attend.is_come = True
                     student_attend.save()
             context = {
-                    'page':'lesson',
-                    'lesson_id':lesson_id
-                }
+                'page':'lesson',
+                'lesson_id':lesson_id
+            }
             return HttpResponse('Created')
-            # return self.get(self.request, **context)
+        
+        if method == 'subject_guides' and page == 'lesson' and lesson_id:
+            subject_guide_text = self.request.POST.get('text')
+            uploaded_files = self.request.FILES.getlist('uploaded_file')
+            hometask = self.request.POST.get('home_task')
+            if not hometask == 'true':
+                subject_guide, _ = HomeTask.objects.get_or_create(
+                    lesson_id=lesson_id, teacher_id=creator.id, is_subject_guides=True
+                )
+                if subject_guide:
+                    if subject_guide_text:
+                        HomeTaskItem.objects.create(home_task_id=subject_guide.id, text=subject_guide_text)
+                    if uploaded_files:
+                        for uploaded_file in uploaded_files:
+                            type_file = uploaded_file.name.split('.')[-1]
+                            if type_file in ['mp4', 'mkv']:
+                                HomeTaskItem.objects.create(home_task_id=subject_guide.id, uploaded_file=uploaded_file, video=True)
+                            else:
+                                HomeTaskItem.objects.create(home_task_id=subject_guide.id, uploaded_file=uploaded_file)
+            else:
+                subject_hometask, _ = HomeTask.objects.get_or_create(
+                    lesson_id=lesson_id, teacher_id=creator.id,  is_subject_guides=False
+                )
+                if subject_hometask:
+                    if subject_guide_text:
+                        HomeTaskItem.objects.create(home_task_id=subject_hometask.id, text=subject_guide_text)
+                    if uploaded_files:
+                        for uploaded_file in uploaded_files:
+                            type_file = uploaded_file.name.split('.')[-1]
+                            if type_file == 'mp4':
+                                HomeTaskItem.objects.create(home_task_id=subject_hometask.id, uploaded_file=uploaded_file, video=True)
+                            else:
+                                HomeTaskItem.objects.create(home_task_id=subject_hometask.id, uploaded_file=uploaded_file)
+            return HttpResponseRedirect(f'?page=lesson&lesson_id={lesson_id}')

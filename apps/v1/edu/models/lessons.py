@@ -4,6 +4,7 @@ from django.forms import ValidationError
 from apps.commons.enums import LessonStatus
 
 from apps.commons.models import CustomBaseAbstract, CustomWeekAbstract
+from apps.v1.edu.managers import HomeTaskManager, SubjectManager
 from apps.v1.edu.models.groups import Group
 from apps.v1.user.models import Student
 
@@ -71,6 +72,7 @@ class HomeTask(CustomBaseAbstract):
     )
     deadline = models.DateTimeField(blank=True, null=True)
     text = models.TextField(blank=True, null=True)
+    is_subject_guides = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Uy ishi'
@@ -78,12 +80,31 @@ class HomeTask(CustomBaseAbstract):
 
     def __str__(self):
         return f'{self.lesson} - {self.teacher.first_name}'
+
+
+class SubjectGuide(HomeTask):
+    objects = SubjectManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = 'Darsga oid manba'
+        verbose_name_plural = 'Darsga oid manbalar'
+
+
+class OnlyHomeTask(HomeTask):
+    objects = HomeTaskManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = 'Uyga vazifa'
+        verbose_name_plural = 'Uyga vazifalar'
     
 
 class HomeTaskItem(CustomBaseAbstract):
     home_task = models.ForeignKey(HomeTask, on_delete=models.CASCADE)
     text = models.CharField(max_length=255, blank=True, null=True)
     uploaded_file = models.FileField(upload_to='home_tasks/', blank=True, null=True)
+    video = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Topshiriq'
