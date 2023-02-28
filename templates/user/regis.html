@@ -1,0 +1,165 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    {% load static %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Corona Admin</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{% static '/app/assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static '/app/assets/vendors/css/vendor.bundle.base.css' %}">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{% static '/app/assets/css/style.css' %}">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="{% static '/app/assets/images/favicon.png' %}" />
+  </head>
+  <body>
+    <div class="container-scroller">
+      <div class="container-fluid page-body-wrapper full-page-wrapper">
+        <div class="row w-100 m-0">
+          <div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg">
+            <div class="card col-lg-4 mx-auto">
+
+              {% if request.session.method == None  %}
+                <div class="card-body px-5 py-5">
+                  <h3 class="card-title text-center mb-3">Ro'yhatdan o'tish</h3>
+                  <form method='POST'>{% csrf_token %}
+                    <div class="form-group">
+                      {% if message %}
+                      <div class="alert alert-{{class}}">
+                        <h5 class="text-center">{{message}}</h5>
+                      </div>
+                      {%endif%}
+                      <label>Raqamingizni kiriting</label>
+                      <input placeholder="+998 ** *** ** **" type="tel" class="form-control p_input"
+                      name='phone_number' style='color: white;' required minlength="13" maxlength="13"
+                      title="Telefon raqamni to'lliq va tog'ri(probellarsz) kiriting!">
+
+                    </div>
+                    <input type='hidden' name='method' value='send_phone'>
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-primary btn-block btn-lg">Jo'natish</button>
+                    </div>
+                  </form>
+                  <p class="sign-up">Profilingiz bo'lsa marhamat <a href="{% url 'user_login' %}">kiring.</a></p>
+                </div>
+              {% elif request.session.method == "enter_code" %}
+                <div class="card-body px-5 py-5">
+                  <h3 class="card-title text-left mb-3">Ro'yhatdan o'tish</h3>
+                  <form method='POST'>
+                    {% csrf_token %}
+                    <div class="form-group">
+                      {% if message %}
+                      <div class="alert alert-{{class}}">
+                        <h5 class="text-center">{{message}}</h5>
+                      </div>
+                      {%endif%}
+                      <label>Kodni kiriting ({{ request.session.code }})</label>
+                      <input placeholder="Kodni kiriting" type="tel" class="form-control p_input"
+                      name='code' style='color: white;' required>
+                    </div>
+                    <input type="hidden" name="method" value="check_code">
+                    <div class="text-center">
+                      <a href="{% url 'register_reset' %}">
+                        <button type="button" class="btn btn-dark btn-block btn-lg">Cancel</button>
+                      </a>
+                      <button type="submit" class="btn btn-primary btn-block btn-lg">Jo'natish</button>
+                    </div>
+                    <p class="sign-up">Profilingiz bo'lsa marhamat <a href="#">kiring.</a></p>
+                  </form>
+                </div>
+              {% elif request.session.method == "register" %}
+                <div class="card-body px-5 py-5">
+                  <h3 class="card-title text-left mb-3">Ro'yhatdan o'tish</h3>
+                  <form method='POST'>{% csrf_token %}
+
+                    <div class="form-group">
+                      {% if message %}
+                      <div class="alert alert-{{class}}">
+                        <h5 class="text-center">{{message}}</h5>
+                      </div>
+                      {%endif%}
+                      <input placeholder="Ismingizni kiriting" type="text" class="form-control p_input"
+                      name='first_name' style='color: white;' required>
+                    </div>
+
+                    <div class="form-group">
+                      <input placeholder="Familiyangizni kiriting" type="text" class="form-control p_input"
+                      name='last_name' style='color: white;' required>
+                    </div>
+
+                    <div class="form-group">
+                      <input placeholder="Otangizni ismini kiriting" type="text" class="form-control p_input"
+                      name='father_name' style='color: white;' required>
+                    </div>
+
+                    <div class="form-group">
+                      <input placeholder="Otanggizni telfon raqamini kiriting: +998 ** *** ** **" type="tel" class="form-control p_input"
+                      name='father_phone' style='color: white;' required minlength="13" maxlength="13"
+                      title="Telefon raqamni to'lliq va tog'ri(probellarsz) kiriting!">
+                    </div>
+
+                    <div class="form-group">
+                      <input placeholder="Onanggizni ismini kiriting" type="text" class="form-control p_input"
+                      name='mother_name' style='color: white;' required>
+                    </div>
+
+                    <div class="form-group">
+                      <input placeholder="Onanggizni telfon raqamini kiriting: +998 ** *** ** **" type="tel" class="form-control p_input"
+                      name='mother_phone' style='color: white;' required minlength="13" maxlength="13"
+                      title="Telefon raqamni to'lliq va tog'ri(probellarsz) kiriting!">
+                    </div>
+
+                    <input type="hidden" name='role' value='student'>
+
+                    <div class="form-group">
+                      <input type="text" class="form-control p_input" name="password1" placeholder='Parol' style='color: white;' required>
+                    </div>
+
+                    <div class="form-group">
+                      <input type="text" class="form-control p_input" name="password2" placeholder='Parolni qayta kiriting' style='color: white;' required>
+                    </div>
+
+                    <input type="hidden" name="method" value="check_code">
+                    <div class="text-center">
+                      <a href="{% url 'register_reset' %}">
+                        <button type="button" class="btn btn-dark btn-block btn-lg">Cancel</button>
+                      </a>
+                      <button type="submit" class="btn btn-primary btn-block btn-lg">Submit</button>
+                    </div>
+                    <p class="sign-up">Profilingiz bo'lsa marhamat <a href="{% url 'user_login' %}">kiring.</a></p>
+                  </form>
+                </div>
+              {% endif %}
+
+            </div>
+          </div>
+          <!-- content-wrapper ends -->
+        </div>
+        <!-- row ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="{% static '/app/assets/vendors/js/vendor.bundle.base.js' %}"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="{% static '/app/assets/js/off-canvas.js' %}"></script>
+    <script src="{% static '/app/assets/js/hoverable-collapse.js' %}"></script>
+    <script src="{% static '/app/assets/js/misc.js' %}"></script>
+    <script src="{% static '/app/assets/js/settings.js' %}"></script>
+    <script src="{% static '/app/assets/js/todolist.js' %}"></script>
+    <!-- endinject -->
+  </body>
+</html>

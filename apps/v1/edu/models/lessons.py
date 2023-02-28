@@ -63,6 +63,8 @@ class Attendance(CustomBaseAbstract):
         return f'{self.id} - {self.student.first_name}'
 
 
+
+
 class HomeTask(CustomBaseAbstract):
     lesson = models.ForeignKey(Lesson, on_delete=models.SET_NULL, null=True)
     teacher = models.ForeignKey(
@@ -127,3 +129,4 @@ class HomeWorkItem(CustomBaseAbstract):
     class Meta:
         verbose_name = 'Topshiriq javobi'
         verbose_name_plural = 'Topshiriqlar javoblari'
+

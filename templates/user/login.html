@@ -1,10 +1,10 @@
 
-{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <!-- Required meta tags -->
+    {% load static %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Corona Admin</title>
@@ -27,76 +27,34 @@
         <div class="row w-100 m-0">
           <div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg">
             <div class="card col-lg-4 mx-auto">
-              
-              {% if request.session.method == None  %}
                 <div class="card-body px-5 py-5">
-                  <h3 class="card-title text-left mb-3">Ro'yhatdan o'tish</h3>
+                  <h3 class="card-title text-center mb-3">Shaxsiy kabinetga kirish</h3>
                   <form method='POST'>{% csrf_token %}
                     <div class="form-group">
-                      <label>Telefon raqamingiz</label>
-                      <input placeholder="Raqamingizni kiriting" type="tel" class="form-control p_input"
-                      name='phone_number' style='color: white;' required>
+                      {% if message %}
+                      <div class="alert alert-{{class}}">
+                        <h5 class="text-center">{{message}}</h5>
+                      </div>
+                      {%endif%}
+                      <label>Raqamingizni kiriting</label>
+
+                      <div class="form-group">
+                      <input placeholder="+998 ** *** ** **" type="tel" class="form-control p_input"
+                      name='phone_number' style='color: white;' required minlength="13" maxlength="13"
+                      title="Telefon raqamni to'lliq va tog'ri(probellarsz) kiriting!">
+                      </div>
+
+                      <div class="form-group">
+                      <input type="password" class="form-control p_input" name="password"
+                             placeholder='Password' style='color: white;' required>
+                      </div>
+
+                      <div class="text-center">
+                      <button type="submit" class="btn btn-primary btn-block btn-lg">Submit</button>
                     </div>
-                    <input type='hidden', name='method' value='send_phone'>
-                    <div class="text-center">
-                      <button type="submit" class="btn btn-primary btn-block btn-lg">Jo'natish</button>
-                    </div>
-                  </form>
-                  <p class="sign-up">Profilingiz bo'lsa marhamat <a href="#">kiring.</a></p>
-                </div>
-              {% elif request.session.method == "enter_code" %}
-                <div class="card-body px-5 py-5">
-                  <h3 class="card-title text-left mb-3">Ro'yhatdan o'tish</h3>
-                  <form method='POST'>{% csrf_token %}
-                    <div class="form-group">
-                      <label>Kodni kiriting</label>
-                      <input placeholder="Kodni kiriting" type="tel" class="form-control p_input"
-                      name='phone_number' style='color: white;' required>
-                    </div>
-                    <input type="hidden" name="method" value="check_code">
-                    <div class="text-center">
-                      <button type="submit" class="btn btn-primary btn-block btn-lg">Jo'natish</button>
-                    </div>
-                    <p class="sign-up">Profilingiz bo'lsa marhamat <a href="#">kiring.</a></p>
+                      <p class="sign-up">Profilingiz bo'lmasa marhamat ro'yhatdan <a href="{% url 'user_register' %}">O'ting.</a></p>
                   </form>
                 </div>
-              {% elif request.session.method == "register" %}
-                <div class="card-body px-5 py-5">
-                  <h3 class="card-title text-left mb-3">Ro'yhatdan o'tish</h3>
-                  <form method='POST'>{% csrf_token %}
-
-                    <div class="form-group">
-                      <input placeholder="Ismingizni kiriting" type="text" class="form-control p_input"
-                      name='first_name' style='color: white;' required>
-                    </div>
-
-                    <div class="form-group">
-                      <input placeholder="Familiyangizni kiriting" type="text" class="form-control p_input"
-                      name='last_name' style='color: white;' required>
-                    </div>
-
-                    <input type="hidden" name='role' value='student'>
-
-
-
-
-                    <div class="form-group">
-                      <input type="text" class="form-control p_input" name="password1" placeholder='Parol' style='color: white;' required>
-                    </div>
-
-                    <div class="form-group">
-                      <input type="text" class="form-control p_input" name="password2" placeholder='Parolni qayta kiriting' style='color: white;' required>
-                    </div>
-
-                    <input type="hidden" name="method" value="check_code">
-                    <div class="text-center">
-                      <button type="submit" class="btn btn-primary btn-block btn-lg">Jo'natish</button>
-                    </div>
-                    <p class="sign-up">Profilingiz bo'lsa marhamat <a href="#">kiring.</a></p>
-                  </form>
-                </div>
-              {% endif %}
-
             </div>
           </div>
           <!-- content-wrapper ends -->

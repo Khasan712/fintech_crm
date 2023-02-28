@@ -79,10 +79,13 @@ class Student(User):
 
 class RegisterCode(models.Model):
     phone_number = models.CharField(max_length=15)
-    code = models.IntegerField()
+    code = models.CharField(max_length=256)
+    tries = models.IntegerField(default=0)
+    state = models.CharField(max_length=128, default="step_one")
+    is_expired = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, auto_now=False, editable=False)
 
     class Meta:
         verbose_name = "Registratsiya kod"
         verbose_name_plural = "Registratsiya kodlari"
-
 
