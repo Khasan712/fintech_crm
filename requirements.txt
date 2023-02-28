@@ -3,6 +3,7 @@ cffi==1.15.1
 cryptography==39.0.1
 Django==4.1.6
 django-cors-headers==3.13.0
+django-crontab==0.7.1
 mysqlclient==2.1.1
 Pillow==9.4.0
 pycparser==2.21

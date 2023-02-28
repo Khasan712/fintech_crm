@@ -406,6 +406,30 @@
             </div>
           </div>
         </div>
+
+
+
+        <div class="col-md-12 stretch-card container" id="editCard" class="container" style="width: 500px; height: 400px;">
+          <div class="card">
+            <div class="card-body" style="margin-bottom: 70px;">
+              <h4 class="card-title">Taxrirlash</h4>
+              <form class="forms-sample" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <div class="form-group">
+                  <br>
+                  <br>
+                  <input type="file">
+                </div>
+                <input type="hidden" name="method" value="homework">
+                <input type="hidden" name="page" value="lesosn">
+                <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                <button type="submit" class="btn btn-primary btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> Saqlash 
+                </button>
+                <button type="button" id="ok" onclick="closeBtn()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
         
     <script
       src="https://code.jquery.com/jquery-3.6.3.min.js"
@@ -419,10 +443,8 @@
           
           $('#createAttendance').submit(function () {
             // create an AJAX call
-            console.log('Salom')
             $.ajax({
-              
-                // data: $(this).serialize(), // get the form data
+                              // data: $(this).serialize(), // get the form data
                 data: $(this).serialize(), // get the form data
                 type: $(this).attr('method'), // GET or POST
                 url: "{% url 'teacher_dashboard' %}?page=lesson&lesson_id=35",
@@ -436,12 +458,37 @@
                     // alert the error if any error occured
                     // alert(response.responseJSON.errors);
                     console.log(response.responseJSON.errors)
-                    
                 } 
             });
             return false;
           });
       })
+
+
+      let labels=document.getElementById("editHomeWorkMedia")
+      $('#editHomeWorkMedia').click(function() {
+        var item_id = labels.value
+        console.log(item_id)
+        console.log("Salom")
+          
+          // event.preventDefault();
+          // var formData = new FormData();
+          // $img = $('#img')[0].files[0];
+          // formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+          // formData.append('image', $img);
+          // $.ajax({
+          //     url: '/upload/', 
+          //     type: 'POST',
+          //     data: formData,
+          //     processData: false,
+          //     contentType: false,
+          //     success: function(data) {
+          //         $('#img_div').append('<img src="'+data['image_url']+'" />')
+          //     }
+          // });
+          // return false;
+      });
+
     </script>
     
         

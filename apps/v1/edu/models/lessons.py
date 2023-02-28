@@ -120,7 +120,7 @@ class HomeWork(CustomBaseAbstract):
 
 class HomeWorkItem(CustomBaseAbstract):
     home_work = models.ForeignKey(HomeWork, models.SET_NULL, null=True)
-    task = models.ForeignKey(HomeTaskItem, models.SET_NULL, null=True)
+    task = models.ForeignKey(HomeTaskItem, models.SET_NULL, null=True, blank=True)
     text = models.CharField(max_length=255, blank=True, null=True)
     uploaded_file = models.FileField(upload_to='home_tasks/', blank=True, null=True)
 

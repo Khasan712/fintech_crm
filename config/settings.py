@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 # Third parties
 INSTALLED_APPS += [
     'corsheaders',
+    'django_crontab',
 ]
 
 # Project apps

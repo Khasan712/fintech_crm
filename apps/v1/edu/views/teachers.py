@@ -79,7 +79,7 @@ class TeacherDashboardView(View):
                 context['subject_hometasks'] = subject_hometask_items
             context['lesson'] = lesson
             context['page'] = 'lesson'
-            context['students'] = self.get_attendance_queryset().filter(lesson_id=lesson.id).values(
+            context['students'] = self.get_attendance_queryset().filter(lesson_id=lesson.id, lesson__creator_id=teacher.id).values(
                 'student__id', 'student__first_name', 'student__last_name', 'student__student_type', 'is_come', 'h_m_percentage'
             )
 

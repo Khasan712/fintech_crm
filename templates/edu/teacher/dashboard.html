@@ -385,7 +385,7 @@
                     <div class="col-12 grid-margin">
                       <div class="card">
                         <div class="card-body">
-                          <h4 class="card-title">Davomat</h4>
+                          <h4 class="card-title">O'quvchilar</h4>
                           <div class="table-responsive">
                             <form action="" method="POST" id="createAttendance">{% csrf_token %}
                               <table class="table"  >
@@ -403,24 +403,35 @@
                                     <tr>
                                       <td>
                                         <img src="" alt="?" />
-                                        <span class="ps-2">{{ student.student__first_name }}</span>
+                                        <span class="ps-2"><a href="#">{{ student.student__first_name }}</a></span>
                                       </td>
                                       <td> {{ student.student__last_name }} </td>
                                       <input type="hidden" name="students_id" id="student_id" value="{{student.student__id}}"/>
                                       <td>
                                         <div class="form-group">
-                                          <select name="iscome" class="form-control form-control-sm" style="color: #fff;" id="exampleFormControlSelect3">
-                                            {% if student.is_come %}
-                                              <option value="true" selected style="background-color: green;">Keldi</option>
-                                              <option value="false">Kelmadi</option>
-                                            {% else %}
-                                              <option value="false" selected >Kelmadi</option>
-                                              <option value="true" >Keldi</option>
-                                            {% endif %}
-                                          </select>
+                                          {% if lesson.status == 'started' %}
+                                            <select name="iscome" class="form-control form-control-sm" style="color: #fff;" id="exampleFormControlSelect3">
+                                              {% if student.is_come %}
+                                                <option value="true" selected style="background-color: green;">Keldi</option>
+                                                <option value="false">Kelmadi</option>
+                                              {% else %}
+                                                <option value="false" selected >Kelmadi</option>
+                                                <option value="true" >Keldi</option>
+                                              {% endif %}
+                                            </select>
+                                          {% else %}
+                                            <select name="iscome" class="form-control form-control-sm" style="color: #fff;" id="exampleFormControlSelect3">
+                                              {% if student.is_come %}
+                                                <option value="true" selected style="background-color: green;">Keldi</option>
+                                              {% else %}
+                                                <option value="false" selected >Kelmadi</option>
+                                              {% endif %}
+                                            </select>
+                                          {% endif %}
                                         </div>
                                       </td>
                                       <td> 
+
                                         <div class="form-group">
                                           <select name="h_w_percentage" class="form-control form-control-sm" style="color: #fff;" id="exampleFormControlSelect3">
                                             <option value="{{ student.h_m_percentage }}" selected >{{ student.h_m_percentage }}</option>
