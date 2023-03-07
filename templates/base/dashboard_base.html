@@ -401,7 +401,7 @@
                 <button type="submit" class="btn btn-primary btn-icon-text">
                   <i class="mdi mdi-file-check btn-icon-prepend"></i> Yaratish 
                 </button>
-                <button type="button" id="ok" onclick="closeBtn()" class="btn btn-warning me-2">Cancel</button>
+                <button type="button" id="ok" onclick="closeLesson()" class="btn btn-warning me-2">Cancel</button>
                 <!-- <button class="oke" type="button" id="ok" onclick="closeBtn()">OK</button> -->
               </form>
             </div>
@@ -414,19 +414,42 @@
           <div class="card">
             <div class="card-body" style="margin-bottom: 70px;">
               <h4 class="card-title">Taxrirlash</h4>
-              <form class="forms-sample" method="POST" enctype="multipart/form-data">{% csrf_token %}
+              <form class="forms-sample modals" method="POST" enctype="multipart/form-data">{% csrf_token %}
                 <div class="form-group">
                   <br>
                   <br>
-                  <input type="file">
+                  <input name="uploaded_file" type="file">
                 </div>
-                <input type="hidden" name="method" value="homework">
-                <input type="hidden" name="page" value="lesosn">
-                <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                <input type="hidden" name="method" value="edit_homework">
+                <input type="hidden" class="file_id" name="file_id" value="">
+                <input class="lesson_id" type="hidden" name="lesson_id" value="{{ lesson.id }}">
                 <button type="submit" class="btn btn-primary btn-icon-text">
                   <i class="mdi mdi-file-check btn-icon-prepend"></i> Saqlash 
                 </button>
-                <button type="button" id="ok" onclick="closeBtn()" class="btn btn-warning me-2">Bekor qilish</button>
+                <button type="button" id="ok" onclick="closeEdit()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="col-md-12 stretch-card container" id="deleteHomeWorkCard" class="container" style="width: 500px; height: 400px;">
+          <div class="card">
+            <div class="card-body" style="margin-bottom: 70px;">
+              <h4 class="card-title">O'chirish</h4>
+              <form class="forms-sample delteModals" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <div class="form-group">
+                  <br>
+                  <br>
+                  <input name="uploaded_file" type="file" value="">
+                </div>
+                <input type="hidden" name="method" value="delete_homework">
+                <input type="hidden" class="item_id" name="file_id" value="">
+                <input class="lesson_id" type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                <button type="submit" class="btn btn-primary btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> O'chirish 
+                </button>
+                <button type="button" id="ok" onclick="closeDelete()" class="btn btn-warning me-2">Bekor qilish</button>
               </form>
             </div>
           </div>
@@ -434,64 +457,10 @@
         
     <script
       src="https://code.jquery.com/jquery-3.6.3.min.js"
-      integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
-      crossorigin="anonymous">
+>
     </script>
 
-    <script>
-      $(document).ready(function () {
-          // catch the form's submit event
-          
-          $('#createAttendance').submit(function () {
-            // create an AJAX call
-            $.ajax({
-                              // data: $(this).serialize(), // get the form data
-                data: $(this).serialize(), // get the form data
-                type: $(this).attr('method'), // GET or POST
-                url: "{% url 'teacher_dashboard' %}?page=lesson&lesson_id=35",
-                // on success
-                success: function (response) {
-                    alert("Thankyou for reaching us out " + response.name);
-                    console.log(response)
-                },
-                // on error
-                error: function (response) {
-                    // alert the error if any error occured
-                    // alert(response.responseJSON.errors);
-                    console.log(response.responseJSON.errors)
-                } 
-            });
-            return false;
-          });
-      })
-
-
-      let labels=document.getElementById("editHomeWorkMedia")
-      $('#editHomeWorkMedia').click(function() {
-        var item_id = labels.value
-        console.log(item_id)
-        console.log("Salom")
-          
-          // event.preventDefault();
-          // var formData = new FormData();
-          // $img = $('#img')[0].files[0];
-          // formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
-          // formData.append('image', $img);
-          // $.ajax({
-          //     url: '/upload/', 
-          //     type: 'POST',
-          //     data: formData,
-          //     processData: false,
-          //     contentType: false,
-          //     success: function(data) {
-          //         $('#img_div').append('<img src="'+data['image_url']+'" />')
-          //     }
-          // });
-          // return false;
-      });
-
-    </script>
-    
+ 
         
     <!-- container-scroller -->
     <!-- plugins:js -->
@@ -517,6 +486,34 @@
     <!-- Custom js for this page -->
     <script src="{% static 'app/assets/js/dashboard.js' %}"></script>
     <script src="{% static 'app/modal/learn.js' %}"></script>
+
+    <script>
+
+      $(".editFile").click(function() {
+          var id = $(this).attr('data-id')
+          var lesson_id = $(this).attr('data-lesson-id')
+          var lessonId = $('.modals .lesson_id').attr('value' , lesson_id)
+          var fileId = $('.modals .file_id').attr('value' , id)
+          console.log(fileId)
+      })
+
+      $(".deleteItem").click(function() {
+          var delete_id = $(this).attr('delete-data-id')
+          var delete_lesson_id = $(this).attr('delete-data-lesson-id')
+          var delete_lessonId = $('.delteModals .lesson_id').attr('value' , delete_lesson_id)
+          var delete_fileId = $('.delteModals .item_id').attr('value' , delete_id)
+      })
+
+      $(".editGuideOrTask").click(function() {
+        var delete_id = $(this).attr('delete-data-id')
+        var delete_lesson_id = $(this).attr('delete-data-lesson-id')
+        var delete_lessonId = $('.delteModals .lesson_id').attr('value' , delete_lesson_id)
+        var delete_fileId = $('.delteModals .item_id').attr('value' , delete_id)
+    })
+
+
+    </script>
+
     <!-- End custom js for this page -->
   </body>
 </html>

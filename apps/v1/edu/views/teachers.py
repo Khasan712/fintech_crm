@@ -4,13 +4,17 @@ from apps.v1.edu.forms import teachers
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from apps.v1.edu.models.groups import Group, GroupStudent
-from apps.v1.edu.models.lessons import Attendance, HomeTask, HomeTaskItem, Lesson
+from apps.v1.edu.models.lessons import Attendance, HomeTask, HomeTaskItem, HomeWork, HomeWorkItem, Lesson
 from django.views.generic.base import View
 from django.http.response import Http404, HttpResponse, HttpResponseRedirect
 from django.http import HttpResponseRedirect, JsonResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
+from apps.v1.user.models import Student
+
+from apps.v1.user.permissions import UserAuthenticateRequiredMixin
 
 
-class TeacherDashboardView(View):
+class TeacherDashboardView(UserAuthenticateRequiredMixin, View):
 
     def get_group_queryset(self):
         return Group.objects.select_related('course', 'teacher', 'creator', 'updater', 'deleter')
@@ -23,6 +27,9 @@ class TeacherDashboardView(View):
             'student', 'group', 'creator', 'updater', 'deleter'
         )
     
+    def get_students_queryset(self):
+        return Student.objects.all()
+    
     def get_attendance_queryset(self):
         return Attendance.objects.select_related('student', 'lesson')
     
@@ -31,12 +38,19 @@ class TeacherDashboardView(View):
     
     def get_hometask_items_queryset(self):
         return HomeTaskItem.objects.select_related('home_task')
-
+    
+    def get_homework_queryset(self):
+        return HomeWork.objects.select_related('student', 'lesson')
+    
+    def get_homework_items_queryset(self):
+        return HomeWorkItem.objects.select_related('home_work', 'task')
+    
     def get(self, request, *args, **kwargs):
         teacher = request.user
         page = self.request.GET.get('page')
         group_id = self.request.GET.get('group_id')
         lesson_id = self.request.GET.get('lesson_id')
+        student_id = self.request.GET.get('student_id')
 
         teacher_groups = self.get_group_queryset().filter(teacher_id=teacher.id)
         teacher_lessons = self.get_lesson_queryset()
@@ -94,6 +108,14 @@ class TeacherDashboardView(View):
                 },
                 context['students'] = group_students
                 context['page'] = 'group_students'
+        
+        # Student in lesson
+        if page == 'student_in_lesson' and student_id:
+            student = self.get_students_queryset().filter(student_attendance__student_id=student_id).first()
+            if student:
+                context['page'] = 'student_in_lesson'
+                context['student'] = student
+                context['homework_items'] = self.get_homework_items_queryset().filter(home_work__student_id=student_id, home_work__lesson_id=lesson_id)
         return render(request, 'edu/teacher/dashboard.html', context)
     
 
@@ -105,6 +127,7 @@ class TeacherDashboardView(View):
         group_id = data.get('group_id')
         lesson_id = data.get('lesson_id')
         lesson_status = data.get('status')
+        item_id = data.get('item_id')
 
         if method == 'create_lesson' and page and group_id:
             group = self.get_group_queryset().filter(id=group_id, teacher_id=creator.id).first()
@@ -121,6 +144,7 @@ class TeacherDashboardView(View):
                     created, _ = Attendance.objects.get_or_create(student_id=g_student.student.id, lesson_id=lesson_commit.id)
 
                 return HttpResponseRedirect(f'?page=group&group_id={group_id}')
+            
         if page == 'update_lesson' and lesson_id:
             lesson = self.get_lesson_queryset().filter(id=lesson_id, creator_id=creator.id).first()
             if lesson:
@@ -194,4 +218,8 @@ class TeacherDashboardView(View):
                                 HomeTaskItem.objects.create(home_task_id=subject_hometask.id, uploaded_file=uploaded_file, video=True)
                             else:
                                 HomeTaskItem.objects.create(home_task_id=subject_hometask.id, uploaded_file=uploaded_file)
-            return HttpResponseRedirect(f'?page=lesson&lesson_id={lesson_id}')
+            
+        
+        if method == "edit_guides_and_tasks" and item_id:
+            pass
+        return HttpResponseRedirect(f'?page=lesson&lesson_id={lesson_id}')

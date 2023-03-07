@@ -1,10 +1,10 @@
 version: '3.9'
 
 services:
-  fintech_web:
+  f_crm:
     build:
       context: .
-    container_name: fintech_web
+    container_name: f_crm
     restart: always
     volumes:
       - .:/app
@@ -12,11 +12,66 @@ services:
       - static:/app/static
       - media:/app/media
       - /tmp/app/mysqld:/run/mysqld
-    command: python manage.py runserver
+    ports:
+      - "8000:8000"
+    command: python manage.py runserver 0.0.0.0:8000
     env_file:
       - .env
-    depends_on:
-      - fintech_crm_mysql
+    # depends_on:
+    #   - f_db
+
+
+  # f_db:
+  #   image: postgres
+  #   environment:
+  #     POSTGRES_USER: f_db_user
+  #     POSTGRES_DB: f_db
+  #     POSTGRES_PASSWORD: f_db_1234
+  #   ports:
+  #     - "5433:5432"
+  #   volumes:
+  #     - pgdata:/var/lib/posgresql/data
+
+
+
+volumes:
+  static_files:
+  static:
+  media:
+  redis_data:
+  # pgdata:
+
+
+
+
+
+
+
+
+
+  # f_db:
+  #   image: postgres
+  #   environment:
+  #     POSTGRES_USER: f_db_user
+  #     POSTGRES_DB: f_db
+  #     POSTGRES_PASSWORD: f_db_1234
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - pgdata:/var/lib/posgresql/data
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   # nginx:
@@ -36,22 +91,6 @@ services:
   #     - 1443:443
   #   env_file:
   #     - .env
-
-
-  fintech_crm_mysql:
-    image: mysql:latest
-    container_name: fintech_crm_mysql
-    restart: always
-    environment:
-      MYSQL_DATABASE: 'fintech_crm'
-      MYSQL_USER: 'fintech_crm_user'
-      MYSQL_PASSWORD: 'fintech_crm_password'
-      MYSQL_ROOT_PASSWORD: 'password'
-    volumes:
-      - /tmp/app/mysqld:/var/run/mysqld
-      - ./fintech_crm_mysql:/var/lib/mysql
-    ports:
-      - 3311:3306
 
 
   # redis:
@@ -97,8 +136,4 @@ services:
   #     - fintech_crm_mysql
 
 
-volumes:
-  static_files:
-  static:
-  media:
-  redis_data:
+

@@ -113,16 +113,12 @@ def register(request, *args, **kwargs):
 
 
 def user_login(request):
-    if not request.user.is_anonymous:
-        return redirect("student_dashboard")
-
     ctx = {}
     if request.POST:
         phone = request.POST.get('phone_number')
         password = request.POST.get('password')
 
         user = User.objects.filter(phone_number=phone).first()
-        print(user)
         if not user:
             ctx = {'message': 'User not found', 'class': 'danger'}
             return render(request, 'user/login.html', ctx)
@@ -132,7 +128,7 @@ def user_login(request):
 
         authenticate(request, user=user)
         login(request, user)
-        return redirect('student_dashboard')
+        return redirect('home')
 
     return render(request, 'user/login.html', ctx)
 

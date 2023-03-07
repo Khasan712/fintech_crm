@@ -391,8 +391,7 @@
                               <table class="table"  >
                                 <thead>
                                   <tr>
-                                    <th> Ismi </th>
-                                    <th> Familiyasi </th>
+                                    <th> Ismi Familiyasi </th>
                                     <th>Davomat</th>
                                     <th> Baho </th>
                                     <th> O'qish turi </th>
@@ -403,9 +402,8 @@
                                     <tr>
                                       <td>
                                         <img src="" alt="?" />
-                                        <span class="ps-2"><a href="#">{{ student.student__first_name }}</a></span>
+                                        <span class="ps-2"><a href="{% url 'teacher_dashboard' %}?page=student_in_lesson&lesson_id={{ lesson.id }}&student_id={{ student.student__id }}">{{ student.student__first_name }} {{ student.student__last_name }}</a></span>
                                       </td>
-                                      <td> {{ student.student__last_name }} </td>
                                       <input type="hidden" name="students_id" id="student_id" value="{{student.student__id}}"/>
                                       <td>
                                         <div class="form-group">
@@ -489,7 +487,7 @@
                         <div class="row">
                           <div class="col-md-12">
                               <div class="form-group row">
-                                  <textarea name="text"  style="background-color: #2A3038; color: white;" cols="30" rows="6"></textarea>
+                                  <textarea name="text" style="background-color: #2A3038; color: white;" cols="30" rows="6"></textarea>
                               </div>
                           </div>
                         </div>
@@ -526,10 +524,12 @@
                           <div>
                             {% for subject_guide in subject_guides %}
                               {% if subject_guide.text %}
-                                <form action="" method="POST" id='edit_or_delete_guide_text'>{% csrf_token %}
+                                <form action="" method="POST" id='edit_guides_and_tasks'>{% csrf_token %}
                                   <blockquote class="blockquote blockquote-primary">
-                                    <p>{{ subject_guide.text }}</p>
-                                    <button type="submit" class="btn btn-warning btn-icon">
+                                    <textarea name="" id="" cols="64" rows="5" style="background-color: #2A3038; color: white;">{{ subject_guide.text }}</textarea>
+                                    <br>
+                                    <br>
+                                    <button type="button" class="btn btn-warning btn-icon">
                                       <div class="col-sm-6 col-md-4 col-lg-3">
                                         <i class="mdi mdi-pencil"></i>
                                       </div>
@@ -548,9 +548,8 @@
                           <div class="table-responsive">
                             <div style="display: flex;">
                               
-                              {% for subject_guide in subject_guides %}
-                                {% if subject_guide.uploaded_file %}                              
-                                  {% if subject_guide.video %}
+                                                           
+                                  <!-- {% if subject_guide.video %}
                                     <div style="margin-right: 10px;">
                                       <form action="" method="POST" id="createAttendance">{% csrf_token %}
                                         <div class="item">
@@ -590,9 +589,51 @@
                                         </button>
                                       </form>
                                     </div>
-                                  {% endif %}
-                                {% endif %}
-                              {% endfor %}
+                                  {% endif %} -->
+
+                                  <div class="table-responsive">
+                                    <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                                      <table class="table"  >
+                                        <thead>
+                                          <tr>
+                                            <th> nomi </th>
+                                            <th> Taxrirlash </th>
+                                            <th>O'chirish</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {% for subject_guide in subject_guides %}
+                                            {% if subject_guide.uploaded_file %} 
+                                            <tr >
+                                              <td> {{ subject_guide.uploaded_file }} </td>
+                                                <td> 
+                                                  <label id="editHomeWork" data-lesson-id="{{ lesson.id }}" 
+                                                    class="badge badge-info editFile" onclick="editFile()" 
+                                                    data-id="{{ homework_item.id }}"  name="item_id" >
+                                                    <i class="mdi mdi-lead-pencil"></i>
+                                                  </label>
+                                                </td>
+                                                <td>
+                                                  <label delete-data-lesson-id="{{ lesson.id }}" 
+                                                    class="badge badge-danger deleteItem" onclick="deleteFile()" 
+                                                    delete-data-id="{{ homework_item.id }}"  name="item_id" 
+                                                    delete-id="deleteHomeWorkMedia"><i class="mdi mdi-delete"></i>
+                                                  </label>
+                                                </td>
+                                              </tr>
+                                            {% endif %}
+                                          {% endfor %}
+                                        </tbody>
+                                      </table>
+                                      <br>
+                                        <input type="file" multiple name="uploaded_files">
+                                        <br>
+                                        <br>
+                                        <button type="submit" class="btn btn-primary">Saqlash</button>
+                                        <input type="hidden" name="method" value="homework">
+                                        <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                                    </form>
+                                  </div>
 
 
                             </div>
@@ -695,6 +736,33 @@
                 </div>
 
 
+              </div>
+
+            {% elif page == 'student_in_lesson' %}
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">O'quvchi: <span style="font-weight: 0; color: #72b1ff;">{{ student.first_name }} {{ student.last_name }}</span></h4>
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>Uy ishi</th>
+                            <th>Yuklab olish</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for homework_item in homework_items %}
+                          <tr>
+                            <td class="text-info"> {{ homework_item.uploaded_file.name }} </td>
+                            <td><label class="badge badge-danger">Yuklab olish</label></td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
               </div>
             {% endif %}
             

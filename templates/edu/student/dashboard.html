@@ -297,6 +297,7 @@
                     <div class="card-body">
                       <div style="display: flex; justify-content: space-between;">
                         <h4 class="card-title">Uy ishi topshirish</h4>
+                        <h5>Muddat: {{ deadline }}</h5>
                       </div>
                       <div class="table-responsive">
                         <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
@@ -310,21 +311,48 @@
                             </thead>
                             <tbody>
                               {% for homework_item in homework_items %}
-                                <tr>
+                                <tr >
                                   <td> {{ homework_item.uploaded_file }} </td>
-                                  <td> <label class="badge badge-info" value="{{ homework_item.id }}" name="item_id" id="editHomeWorkMedia" onclick="openBtn()"><i class="mdi mdi-lead-pencil"></i></label></td>
-                                  <td> <label class="badge badge-danger"><i class="mdi mdi-delete"></i></label></td>
+                                  {% if can_upload %}
+                                    <td> 
+                                      <label id="editHomeWork" data-lesson-id="{{ lesson.id }}" 
+                                        class="badge badge-info editFile" onclick="editFile()" 
+                                        data-id="{{ homework_item.id }}"  name="item_id" >
+                                        <i class="mdi mdi-lead-pencil"></i>
+                                      </label>
+                                    </td>
+                                    <td>
+                                      <label delete-data-lesson-id="{{ lesson.id }}" 
+                                        class="badge badge-danger deleteItem" onclick="deleteFile()" 
+                                        delete-data-id="{{ homework_item.id }}"  name="item_id" 
+                                        delete-id="deleteHomeWorkMedia"><i class="mdi mdi-delete"></i>
+                                      </label>
+                                    </td>
+                                  {% else %}
+                                    <td> 
+                                      <label class="badge badge-info"><i class="mdi mdi-lead-pencil"></i></label></td>
+                                    <td> <label class="badge badge-danger"><i class="mdi mdi-delete"></i></label></td>
+                                  {% endif %}
                                 </tr>
                               {% endfor %}
                             </tbody>
                           </table>
                           <br>
-                          <input type="file" multiple name="uploaded_files">
-                          <br>
-                          <br>
-                          <button type="submit" class="btn btn-primary">Salash</button>
-                          <input type="hidden" name="method" value="homework">
-                          <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                          {% if can_upload %}
+                            <input type="file" multiple name="uploaded_files">
+                            <br>
+                            <br>
+                            <button type="submit" class="btn btn-primary">Saqlash</button>
+                            <input type="hidden" name="method" value="homework">
+                            <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                          {% else %}
+                            <input type="file" disabled>
+                            <br>
+                            <br>
+                            <button type="submit" disabled class="btn btn-primary">Saqlash</button>
+                            <input type="hidden" name="method" value="homework">
+                            <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                          {% endif %}
                         </form>
                       </div>
                     </div>

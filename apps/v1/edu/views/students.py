@@ -1,12 +1,16 @@
+import datetime
 from django.shortcuts import render
 from apps.v1.edu.models.groups import Group
 from apps.v1.edu.models.lessons import Attendance, HomeTask, HomeTaskItem, HomeWork, HomeWorkItem, Lesson
 from django.views.generic.base import View
 from django.http.response import Http404
 from django.http import HttpResponseRedirect
+from apps.v1.user.permissions import UserAuthenticateRequiredMixin
+import pytz
+utc=pytz.UTC
 
 
-class StudentDashboardView(View):
+class StudentDashboardView(UserAuthenticateRequiredMixin, View):
     def get_attendance_queryset(self):
         return Attendance.objects.select_related('student', 'lesson')
     
@@ -26,6 +30,7 @@ class StudentDashboardView(View):
         page = self.request.GET.get('page')
         group_id = self.request.GET.get('group_id')
         lesson_id = self.request.GET.get('lesson_id')
+        item_id = self.request.GET.get('item_id')
 
         student = request.user        
         student_groups = Group.objects.select_related('course', 'teacher').filter(
@@ -66,7 +71,12 @@ class StudentDashboardView(View):
             if subject_guide:
                 subject_guide_items = self.get_hometask_items_queryset().filter(home_task_id=subject_guide.id).order_by('-id')
                 context['subject_guides'] = subject_guide_items
+            context['can_upload'] = True
             if subject_hometask:
+                if subject_hometask.deadline:
+                    context['deadline'] = subject_hometask.deadline.strftime('%Y/%m/%d, %H:%M')
+                    if subject_hometask.deadline < utc.localize(datetime.datetime.today()):
+                        context['can_upload'] = False
                 subject_hometask_items = self.get_hometask_items_queryset().filter(home_task_id=subject_hometask.id).order_by('-id')
                 context['subject_hometasks'] = subject_hometask_items
             
@@ -74,14 +84,22 @@ class StudentDashboardView(View):
     
 
     def post(self, request, *args, **kwargs):
-        uploaded_files = self.request.FILES.getlist('uploaded_files')
-        print(self.request.FILES)
-        print(self.request.POST)
-        data = self.request.POST
         user = self.request.user
+        uploaded_files = self.request.FILES.getlist('uploaded_files')
+        uploaded_file = self.request.FILES.get('uploaded_file')
+        data = self.request.POST
         method = data.get('method')
         lesson_id = data.get('lesson_id')
+        file_id = data.get('file_id')
+        item_id = data.get('item_id')
+
+        # Upload file "HomeWork"
         if method == 'homework' and lesson_id and uploaded_files:
+            subject_hometask = self.get_hometask_queryset().filter(lesson_id=lesson_id).first()
+            if subject_hometask:
+                if subject_hometask.deadline:
+                    if subject_hometask.deadline < utc.localize(datetime.datetime.today()):
+                        return HttpResponseRedirect(f'?page=lesson&lesson_id={lesson_id}')
             homework, _ = HomeWork.objects.get_or_create(student_id=user.id, lesson_id=lesson_id)
             for uploaded_file in uploaded_files:
                 item = HomeWorkItem(
@@ -90,5 +108,31 @@ class StudentDashboardView(View):
                 )
                 item.save()
             return HttpResponseRedirect(f'?page=lesson&lesson_id={lesson_id}')
-
+        
+        # Edit File
+        if method == 'edit_homework' and file_id and uploaded_file:
+            subject_hometask = self.get_hometask_queryset().filter(lesson_id=lesson_id).first()
+            if subject_hometask:
+                if subject_hometask.deadline:
+                    if subject_hometask.deadline < utc.localize(datetime.datetime.today()):
+                        return HttpResponseRedirect(f'?page=lesson&lesson_id={lesson_id}')
+            user_file = self.get_homework_items_queryset().filter(id=file_id, home_work__student_id=user.id).first()
+            if user_file:
+                user_file.uploaded_file = uploaded_file
+                user_file.save()
+            return HttpResponseRedirect(f'?page=lesson&lesson_id={lesson_id}')
+        
+        #  Delete File
+        if method == 'delete_homework' and file_id:
+            print("hello")
+            subject_hometask = self.get_hometask_queryset().filter(lesson_id=lesson_id).first()
+            # if subject_hometask:
+            #     if subject_hometask.deadline:
+            #         if subject_hometask.deadline < utc.localize(datetime.datetime.today()):
+            #             return HttpResponseRedirect(f'?page=lesson&lesson_id={lesson_id}')
+            student_homework = self.get_homework_items_queryset().filter(id=file_id, home_work__student_id=user.id).first()
+            if student_homework:
+                student_homework.delete()
+                return HttpResponseRedirect(f'?page=lesson&lesson_id={lesson_id}')
+        return HttpResponseRedirect('/')
 
