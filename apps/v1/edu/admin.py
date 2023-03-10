@@ -1,8 +1,9 @@
 from django.contrib import admin
 
-from apps.v1.edu.models.courses import Course
 from apps.v1.edu.models.groups import Group, GroupStudent
+from apps.v1.edu.models.courses import Course
 from apps.v1.edu.models.lessons import HomeTaskItem, Lesson, Attendance, OnlyHomeTask, SubjectGuide
+from apps.v1.edu.models.presentations import StudentBookPresentation
 
 
 @admin.register(Course)
@@ -30,7 +31,6 @@ class GroupStudentAdmin(admin.ModelAdmin):
     list_display = ('id', 'student', 'group', 'created_at')
 
 
-
 @admin.register(SubjectGuide)
 class SubjectGuideAdmin(admin.ModelAdmin):
     list_display = ('id', 'lesson', 'teacher', 'deadline')
@@ -46,3 +46,6 @@ class HomeTaskItemAdmin(admin.ModelAdmin):
     list_display = ('id', 'home_task')
 
 
+@admin.register(StudentBookPresentation)
+class StudentBookPresentationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'book', 'is_active')

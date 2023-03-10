@@ -1,14 +1,14 @@
 from datetime import datetime
 import pprint
-from apps.v1.edu.forms import teachers
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from apps.v1.edu.models.groups import Group, GroupStudent
-from apps.v1.edu.models.lessons import Attendance, HomeTask, HomeTaskItem, HomeWork, HomeWorkItem, Lesson
 from django.views.generic.base import View
 from django.http.response import Http404, HttpResponse, HttpResponseRedirect
-from django.http import HttpResponseRedirect, JsonResponse
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
+from django.db.models import Count
+from apps.v1.edu.forms import teachers
+from apps.v1.edu.models.groups import Group, GroupStudent
+from apps.v1.edu.models.lessons import Attendance, HomeTask, HomeTaskItem, HomeWork, HomeWorkItem, Lesson
 from apps.v1.user.models import Student
 
 from apps.v1.user.permissions import UserAuthenticateRequiredMixin
@@ -60,6 +60,12 @@ class TeacherDashboardView(UserAuthenticateRequiredMixin, View):
             'groups': teacher_groups.values('id', 'name')
         }
 
+        if not page or page == 'dashboard':
+            group_statistics = teacher_groups.annotate(students_qty=Count('group_of_student__student'))
+            context['dashboard_statistics'] = {
+                "group_statistics": group_statistics
+            }
+
         # Group page
         if page == 'group' and group_id:
             group = teacher_groups.filter(id=group_id).first()
@@ -80,10 +86,10 @@ class TeacherDashboardView(UserAuthenticateRequiredMixin, View):
             if not lesson:
                 return Http404
             subject_guide = self.get_hometask_queryset().filter(
-                lesson_id=lesson_id, teacher_id=teacher.id, is_subject_guides=True
+                lesson_id=lesson_id, is_subject_guides=True
             ).first()
             subject_hometask = self.get_hometask_queryset().filter(
-                lesson_id=lesson_id, teacher_id=teacher.id, is_subject_guides=False
+                lesson_id=lesson_id, is_subject_guides=False
             ).first()
             if subject_guide:
                 subject_guide_items = self.get_hometask_items_queryset().filter(home_task_id=subject_guide.id).order_by('-id')
@@ -138,10 +144,14 @@ class TeacherDashboardView(UserAuthenticateRequiredMixin, View):
                 lesson_commit = create_lesson_form.save(commit=False)
                 lesson_commit.creator_id = creator.id
                 lesson_commit.group_id = group_id
+                lesson_commit.lesson_number = self.get_lesson_queryset().filter(group_id=group_id).count() + 1
                 lesson_commit.save()
                 group_students = self.get_group_students().filter(group_id=group.id)
                 for g_student in group_students:
-                    created, _ = Attendance.objects.get_or_create(student_id=g_student.student.id, lesson_id=lesson_commit.id)
+                    Attendance.objects.get_or_create(student_id=g_student.student.id, lesson_id=lesson_commit.id)
+                    if not g_student.student_first_lesson:
+                        g_student.student_first_lesson_id = lesson_commit.id
+                        g_student.save()
 
                 return HttpResponseRedirect(f'?page=group&group_id={group_id}')
             
@@ -163,28 +173,22 @@ class TeacherDashboardView(UserAuthenticateRequiredMixin, View):
                 return HttpResponseRedirect(f'?page=lesson&lesson_id={lesson_id}')
         
         if method == 'create_attendency':
-            students_attendance = [
-
-            ]
-            students_id = data.get('students_id')
-            iscome = bool(data.get('iscome') == 'true')
-            h_w_percentage = data.get('h_w_percentage')
-            for student_atten in range(len(students_id)):
-                print(student_atten)
-            for student_id in students_id:
-                pass
-            lesson = self.get_lesson_queryset().filter(id=lesson_id, creator_id=creator.id).first()
-            lesson_students = self.get_attendance_queryset().filter(lesson_id=lesson.id)
-            for a_student in students_attendance:
-                student_attend = lesson_students.filter(student_id=int(a_student)).first()
-                if student_attend:
-                    student_attend.is_come = True
-                    student_attend.save()
-            context = {
-                'page':'lesson',
-                'lesson_id':lesson_id
-            }
-            return HttpResponse('Created')
+            students_id = data.getlist('students_id')
+            studnets_iscome = data.getlist('iscome')
+            students_h_w_percentage = data.getlist('h_w_percentage')
+            lesson = self.get_lesson_queryset().filter(id=lesson_id).first()
+            if lesson.status == 'started':
+                for student in range(len(students_id)):
+                    student_attend_obj = self.get_attendance_queryset().filter(
+                        student_id=int(students_id[student]), lesson_id=lesson_id
+                    ).first()
+                    if student_attend_obj:
+                        if student_attend_obj.is_come != bool(studnets_iscome[student] == 'True'):
+                            student_attend_obj.is_come = bool(studnets_iscome[student] == 'True')
+                            student_attend_obj.save()
+                        if student_attend_obj.h_m_percentage != int(students_h_w_percentage[student]):
+                            student_attend_obj.h_m_percentage = int(students_h_w_percentage[student])
+                            student_attend_obj.save()
         
         if method == 'subject_guides' and page == 'lesson' and lesson_id:
             subject_guide_text = self.request.POST.get('text')
@@ -199,11 +203,7 @@ class TeacherDashboardView(UserAuthenticateRequiredMixin, View):
                         HomeTaskItem.objects.create(home_task_id=subject_guide.id, text=subject_guide_text)
                     if uploaded_files:
                         for uploaded_file in uploaded_files:
-                            type_file = uploaded_file.name.split('.')[-1]
-                            if type_file in ['mp4', 'mkv']:
-                                HomeTaskItem.objects.create(home_task_id=subject_guide.id, uploaded_file=uploaded_file, video=True)
-                            else:
-                                HomeTaskItem.objects.create(home_task_id=subject_guide.id, uploaded_file=uploaded_file)
+                            HomeTaskItem.objects.create(home_task_id=subject_guide.id, uploaded_file=uploaded_file)
             else:
                 subject_hometask, _ = HomeTask.objects.get_or_create(
                     lesson_id=lesson_id, teacher_id=creator.id,  is_subject_guides=False
@@ -213,13 +213,25 @@ class TeacherDashboardView(UserAuthenticateRequiredMixin, View):
                         HomeTaskItem.objects.create(home_task_id=subject_hometask.id, text=subject_guide_text)
                     if uploaded_files:
                         for uploaded_file in uploaded_files:
-                            type_file = uploaded_file.name.split('.')[-1]
-                            if type_file == 'mp4':
-                                HomeTaskItem.objects.create(home_task_id=subject_hometask.id, uploaded_file=uploaded_file, video=True)
-                            else:
-                                HomeTaskItem.objects.create(home_task_id=subject_hometask.id, uploaded_file=uploaded_file)
+                            HomeTaskItem.objects.create(home_task_id=subject_hometask.id, uploaded_file=uploaded_file)
             
-        
         if method == "edit_guides_and_tasks" and item_id:
-            pass
+            text = data.get('text')
+            uploaded_file = self.request.FILES.get('uploaded_file')
+            hometask_item = self.get_hometask_items_queryset().filter(
+                id=item_id, home_task__lesson_id=lesson_id
+            ).first()
+            if hometask_item:
+                if text and text != hometask_item.text:
+                    hometask_item.text = text
+                elif uploaded_file:
+                    hometask_item.uploaded_file = uploaded_file
+                hometask_item.save()
+        
+        if method == "delete_guides_and_tasks" and item_id:
+            hometask_item = self.get_hometask_items_queryset().filter(
+                id=item_id, home_task__lesson_id=lesson_id
+            ).first()
+            if hometask_item:
+                hometask_item.delete()
         return HttpResponseRedirect(f'?page=lesson&lesson_id={lesson_id}')

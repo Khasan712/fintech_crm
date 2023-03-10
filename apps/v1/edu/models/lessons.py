@@ -31,11 +31,6 @@ class Lesson(CustomBaseAbstract):
     class Meta:
         verbose_name = 'Dars'
         verbose_name_plural = 'Darslar'
-    
-    def save(self, *args, **kwargs):
-        if self.lesson_number == 0:
-            self.lesson_number = Lesson.objects.select_related('group', 'creator', 'updater', 'deleter').count() + 1
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.id} - {self.group.name}'
@@ -129,4 +124,10 @@ class HomeWorkItem(CustomBaseAbstract):
     class Meta:
         verbose_name = 'Topshiriq javobi'
         verbose_name_plural = 'Topshiriqlar javoblari'
+
+    @property
+    def get_file_name(self):
+        if self.uploaded_file:
+            return self.uploaded_file.name
+        return None
 

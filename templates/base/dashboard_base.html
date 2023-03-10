@@ -45,6 +45,10 @@
             <a style="padding:0" class="sidebar-brand brand-logo" href="{% url 'student_dashboard' %}">
               <img style="width:250px; height:180px" src="{% static '/fintech/logo/dark.png' %}" alt="FinTech" />
             </a>
+          {% elif request.user.role == 'administrator' %}
+            <a style="padding:0" class="sidebar-brand brand-logo" href="{% url 'administrator_dashboard' %}">
+              <img style="width:250px; height:180px" src="{% static '/fintech/logo/dark.png' %}" alt="FinTech" />
+            </a>
           {% endif %}
 
           <a class="sidebar-brand brand-logo-mini" href="index.html"><img src="{% static '/fintech/logo/dark.png' %}" alt="logo" /></a>
@@ -105,34 +109,28 @@
 
 
 
-          {% comment %}  Dashboard tabs  {% endcomment %}
+          {% if request.user.role == 'teacher' %}
+
+            <!-- DASHBOARD -->
             <li class="nav-item menu-items">
-              {% if request.user.role == 'teacher' %}
-                <a class="nav-link" href="{% url 'teacher_dashboard' %}">
-                  <span class="menu-icon">
-                      <i class="mdi mdi-speedometer"></i>
-                  </span>
-                  <span class="menu-title">Dashboard</span>
-                </a>
-              {% elif request.user.role == 'student' %}
-                <a class="nav-link" href="{% url 'student_dashboard' %}">
-                  <span class="menu-icon">
-                      <i class="mdi mdi-speedometer"></i>
-                  </span>
-                  <span class="menu-title">Dashboard</span>
-                </a>
-              {% endif %}
+              <a class="nav-link" href="{% url 'teacher_dashboard' %}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-speedometer"></i>
+                </span>
+                <span class="menu-title">Dashboard</span>
+              </a>
             </li>
 
+            <!-- GROUPS -->
             <li class="nav-item menu-items">
-                <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+              <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
                 <span class="menu-icon">
                     <i class="mdi mdi-laptop"></i>
                 </span>
                 <span class="menu-title">Guruhlar</span>
                 <i class="menu-arrow"></i>
-                </a>
-                <div class="collapse" id="ui-basic">
+              </a>
+              <div class="collapse" id="ui-basic">
                 <ul class="nav flex-column sub-menu">
                 
                   {% for group in groups %}
@@ -144,20 +142,20 @@
                   {% endfor %}
                 
                 </ul>
-                </div>
+              </div>
             </li>
 
-            <li class="nav-item menu-items">
-              <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+          <!-- EXAMS -->
+          {% comment %} <li class="nav-item menu-items">
+            <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
               <span class="menu-icon">
                   <i class="mdi mdi-laptop"></i>
               </span>
               <span class="menu-title">Imtixonlar</span>
               <i class="menu-arrow"></i>
-              </a>
-              <div class="collapse" id="ui-basic">
+            </a>
+            <div class="collapse" id="ui-basic">
               <ul class="nav flex-column sub-menu">
-              
                 {% for group in groups %}
                   {% if request.user.role == 'student' %}
                   <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'student_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
@@ -165,10 +163,85 @@
                   <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'teacher_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
                   {% endif %}
                 {% endfor %}
-              
               </ul>
+            </div>
+          </li> {% endcomment %}
+
+
+          {% elif request.user.role == 'student' %}
+
+            <!-- DASHBOARD -->
+            <li class="nav-item menu-items">
+              <a class="nav-link" href="{% url 'student_dashboard' %}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-speedometer"></i>
+                </span>
+                <span class="menu-title">Dashboard</span>
+              </a>
+            </li>
+
+            <!-- GROUPS -->
+            <li class="nav-item menu-items">
+              <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <span class="menu-icon">
+                    <i class="mdi mdi-laptop"></i>
+                </span>
+                <span class="menu-title">Guruhlar</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="ui-basic">
+                <ul class="nav flex-column sub-menu">
+                
+                  {% for group in groups %}
+                    {% if request.user.role == 'student' %}
+                    <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'student_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
+                    {% elif request.user.role == 'teacher' %}
+                    <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'teacher_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
+                    {% endif %}
+                  {% endfor %}
+                
+                </ul>
               </div>
-          </li>
+            </li>
+
+          <!-- EXAMS -->
+          {% comment %} <li class="nav-item menu-items">
+            <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+              <span class="menu-icon">
+                  <i class="mdi mdi-laptop"></i>
+              </span>
+              <span class="menu-title">Imtixonlar</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-basic">
+              <ul class="nav flex-column sub-menu">
+                {% for group in groups %}
+                  {% if request.user.role == 'student' %}
+                  <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'student_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
+                  {% elif request.user.role == 'teacher' %}
+                  <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'teacher_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+          </li> {% endcomment %}
+
+
+          {% elif request.user.role == 'administrator' %}
+
+            <!-- DASHBOARD -->
+            <li class="nav-item menu-items">
+              <a class="nav-link" href="{% url 'administrator_dashboard' %}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-speedometer"></i>
+                </span>
+                <span class="menu-title">Dashboard</span>
+              </a>
+            </li>
+
+          {% endif %}
+
+            
 
 
         </ul>
@@ -193,7 +266,8 @@
             <ul class="navbar-nav w-100">
               <li class="nav-item w-100">
                 <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-                  <input type="text" class="form-control" placeholder="Search products">
+                  <input type="text" class="form-control" placeholder="Search products" style="color: #fff;">
+                  <i class="mdi mdi-yeast" style="position: relative; right: 80px; font-size: 20px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; background-color: #2A3038; padding: 0 30px; padding-top: 4px;"></i>
                 </form>
               </li>
             </ul>
@@ -438,11 +512,6 @@
             <div class="card-body" style="margin-bottom: 70px;">
               <h4 class="card-title">O'chirish</h4>
               <form class="forms-sample delteModals" method="POST" enctype="multipart/form-data">{% csrf_token %}
-                <div class="form-group">
-                  <br>
-                  <br>
-                  <input name="uploaded_file" type="file" value="">
-                </div>
                 <input type="hidden" name="method" value="delete_homework">
                 <input type="hidden" class="item_id" name="file_id" value="">
                 <input class="lesson_id" type="hidden" name="lesson_id" value="{{ lesson.id }}">
@@ -454,11 +523,101 @@
             </div>
           </div>
         </div>
+
+
+        <!-- Mavzuga oid qo'llanmalar Text update -->
+        <div 
+          class="col-md-12 stretch-card container" id="editGuideOrTaskText" class="container" 
+          style="width: 500px; height: 400px; position: absolute; top: 104%; width: 370px; height: 120px; padding: 0;
+          background-color: white;" 
+        >
+          <div class="card">
+            <div class="card-body">
+              <form class="forms-sample editGuideTaskText" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="hidden" name="method" value="edit_guides_and_tasks">
+                <input type="hidden" class="item_id" name="item_id" value="">
+                <input type="hidden" class="edit_guide_task_text" name="text" value="">
+                <input class="lesson_id" type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                <button type="submit" class="btn btn-primary btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> Saqlash 
+                </button>
+                <button type="button" id="ok" onclick="closeEditGuideOrTaskText()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mavzuga oid qo'llanmalar Text delete -->
+        <div 
+          class="col-md-12 stretch-card container" id="deleteGuideOrTaskText" class="container" 
+          style="width: 500px; height: 400px; position: absolute; top: 104%; width: 370px; height: 120px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form class="forms-sample deleteGuideTaskText" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="hidden" name="method" value="delete_guides_and_tasks">
+                <input type="hidden" class="item_id" name="item_id" value="">
+                <input class="lesson_id" type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                <button type="submit" class="btn btn-danger btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> O'chirish 
+                </button>
+                <button type="button" id="ok" onclick="closeDeleteGuideOrTaskText()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mavzuga oid qo'llanmalar File update -->
+        <div 
+          class="col-md-12 stretch-card container" id="editGuideOrTaskFileCard" class="container" 
+          style="width: 500px; height: 400px; position: absolute; top: 104%; width: 370px; height: 175px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form 
+                class="forms-sample editGuideTaskFileForm" method="POST" enctype="multipart/form-data"
+                style="padding: 0;"
+              >{% csrf_token %}
+                <input name="uploaded_file" type="file" style="width: -moz-available;">
+                <br>
+                <br>
+                <input type="hidden" name="method" value="edit_guides_and_tasks">
+                <input type="hidden" class="item_id" name="item_id" value="">
+                <input class="lesson_id" type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                <button type="submit" class="btn btn-primary btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> Yuklash 
+                </button>
+                <button type="button" id="ok" onclick="closeEditGuideOrTaskFile()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mavzuga oid qo'llanmalar File delete -->
+        <div 
+          class="col-md-12 stretch-card container" id="deleteGuideOrTaskFile" class="container" 
+          style="width: 500px; height: 400px; position: absolute; top: 104%; width: 370px; height: 120px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form class="forms-sample deleteGuideTaskFileForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="hidden" name="method" value="delete_guides_and_tasks">
+                <input type="hidden" class="item_id" name="item_id" value="">
+                <input class="lesson_id" type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                <button type="submit" class="btn btn-danger btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> O'chirish 
+                </button>
+                <button type="button" id="ok" onclick="closeDeleteGuideOrTaskFile()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
         
-    <script
-      src="https://code.jquery.com/jquery-3.6.3.min.js"
->
-    </script>
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+    <script src="js/jquery.fileDownload.js"></script>
 
  
         
@@ -494,25 +653,65 @@
           var lesson_id = $(this).attr('data-lesson-id')
           var lessonId = $('.modals .lesson_id').attr('value' , lesson_id)
           var fileId = $('.modals .file_id').attr('value' , id)
-          console.log(fileId)
-      })
+        }
+      )
 
       $(".deleteItem").click(function() {
           var delete_id = $(this).attr('delete-data-id')
           var delete_lesson_id = $(this).attr('delete-data-lesson-id')
           var delete_lessonId = $('.delteModals .lesson_id').attr('value' , delete_lesson_id)
           var delete_fileId = $('.delteModals .item_id').attr('value' , delete_id)
-      })
+        }
+      )
 
-      $(".editGuideOrTask").click(function() {
-        var delete_id = $(this).attr('delete-data-id')
-        var delete_lesson_id = $(this).attr('delete-data-lesson-id')
-        var delete_lessonId = $('.delteModals .lesson_id').attr('value' , delete_lesson_id)
-        var delete_fileId = $('.delteModals .item_id').attr('value' , delete_id)
-    })
+      // Mavzuga oid qo'llanmalar text, Uyga vazifalar text edit.
+      $(".editGuideOrTaskText").click(function(e) {
+        e.preventDefault()
+        var updated_guide_or_task_text_id = $(this).attr('updated-guide-or-task-id')
+        var updated_guide_or_task_text_fileId = $('.editGuideTaskText .item_id').attr('value' , updated_guide_or_task_text_id)
+        var inpVal = $(this).parent().parent().find('textarea').val();
+        var modalInp = $('.edit_guide_task_text').attr('value' , inpVal)
+        }
+      )
 
 
-    </script>
+      // Mavzuga oid qo'llanmalar text, Uyga vazifalar text delete.
+      $(".deleteGuideOrTaskText").click(function(e) {
+        e.preventDefault()
+        var delete_guide_or_task_text_id = $(this).attr('delete-guide-or-task-id')
+        var delete_guide_or_task_text_fileId = $('.deleteGuideTaskText .item_id').attr('value' , delete_guide_or_task_text_id)
+        }
+      )
+
+
+      // Mavzuga oid qo'llanmalar file, Uyga vazifalar file edit.
+      $(".editGuideOrTaskFile").click(function(e) {
+        e.preventDefault()  
+        var updated_guide_or_task_file_id = $(this).attr('updated-guide-or-task-id')
+        var updated_guide_or_task_file_fileId = $('.editGuideTaskFileForm .item_id').attr('value' , updated_guide_or_task_file_id)
+        }
+      )
+
+
+      // Mavzuga oid qo'llanmalar file, Uyga vazifalar file delete.
+      $(".deleteGuideOrTaskFile").click(function(e) {
+        e.preventDefault()
+        var delete_guide_or_task_file_id = $(this).attr('delete-guide-or-task-id')
+        var delete_guide_or_task_file_fileId = $('.deleteGuideTaskFileForm .item_id').attr('value' , delete_guide_or_task_file_id)
+        }
+      )
+
+
+      // Download File
+      $(document).ready(function () {
+        $(".downloadFile").click(function (e) {
+            e.preventDefault();
+            window.location.href = $(this).attr('href');
+        });
+      });
+
+
+  </script>
 
     <!-- End custom js for this page -->
   </body>

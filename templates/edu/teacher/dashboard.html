@@ -12,86 +12,45 @@
 
             {% if page == 'dashboard' %}
               <div class="row">
-                <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                  <div class="card">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-9">
-                          <div class="d-flex align-items-center align-self-start">
-                            <h3 class="mb-0">$12.34</h3>
-                            <p class="text-success ms-2 mb-0 font-weight-medium">+3.5%</p>
-                          </div>
+                {% for group_statistic in dashboard_statistics.group_statistics %}
+                  <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                    <div class="card">
+                      <div class="card-body">
+                        <h4 class="mb-3">{{ group_statistic.name }}</h4>
+                        <h5 class="text-muted font-weight-normal">O'quvchilar soni - {{ group_statistic.students_qty }}</h5>
+                        <div style="display: flex; justify-content: space-between;">
+                          <h5 class="text-muted font-weight-normal">Kunlari: </h5>
+                          {% if group_statistic.monday %}
+                            <p>Dushanba</p>
+                          {% endif %}
+                          {% if group_statistic.tuesday %}
+                            <p>Seshanba</p>
+                          {% endif %}
+                          {% if group_statistic.wednesday %}
+                            <p>Chorshanba</p>
+                          {% endif %}
+                          {% if group_statistic.thursday %}
+                            <p>Payshanba</p>
+                          {% endif %}
+                          {% if group_statistic.friday %}
+                            <p>Juma</p>
+                          {% endif %}
+                          {% if group_statistic.saturday %}
+                            <p>Shanba</p>
+                          {% endif %}
+                          {% if group_statistic.sunday %}
+                            <p>Yakshanba</p>
+                          {% endif %}
                         </div>
-                        <div class="col-3">
-                          <div class="icon icon-box-success ">
-                            <span class="mdi mdi-arrow-top-right icon-item"></span>
-                          </div>
+                        <div style="display: flex;">
+                          <h5 class="text-muted font-weight-normal">Soat: </h5>
+                          <p style="margin-left: 10px;"> {{ group_statistic.start_time }} - {{ group_statistic.end_time }}</p>
                         </div>
+                          
                       </div>
-                      <h6 class="text-muted font-weight-normal">Potential growth</h6>
                     </div>
                   </div>
-                </div>
-                <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                  <div class="card">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-9">
-                          <div class="d-flex align-items-center align-self-start">
-                            <h3 class="mb-0">$17.34</h3>
-                            <p class="text-success ms-2 mb-0 font-weight-medium">+11%</p>
-                          </div>
-                        </div>
-                        <div class="col-3">
-                          <div class="icon icon-box-success">
-                            <span class="mdi mdi-arrow-top-right icon-item"></span>
-                          </div>
-                        </div>
-                      </div>
-                      <h6 class="text-muted font-weight-normal">Revenue current</h6>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                  <div class="card">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-9">
-                          <div class="d-flex align-items-center align-self-start">
-                            <h3 class="mb-0">$12.34</h3>
-                            <p class="text-danger ms-2 mb-0 font-weight-medium">-2.4%</p>
-                          </div>
-                        </div>
-                        <div class="col-3">
-                          <div class="icon icon-box-danger">
-                            <span class="mdi mdi-arrow-bottom-left icon-item"></span>
-                          </div>
-                        </div>
-                      </div>
-                      <h6 class="text-muted font-weight-normal">Daily Income</h6>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                  <div class="card">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-9">
-                          <div class="d-flex align-items-center align-self-start">
-                            <h3 class="mb-0">$31.53</h3>
-                            <p class="text-success ms-2 mb-0 font-weight-medium">+3.5%</p>
-                          </div>
-                        </div>
-                        <div class="col-3">
-                          <div class="icon icon-box-success ">
-                            <span class="mdi mdi-arrow-top-right icon-item"></span>
-                          </div>
-                        </div>
-                      </div>
-                      <h6 class="text-muted font-weight-normal">Expense current</h6>
-                    </div>
-                  </div>
-                </div>
+                {% endfor %}
               </div>
               <div class="row">
                 <div class="col-sm-4 grid-margin">
@@ -392,8 +351,8 @@
                                 <thead>
                                   <tr>
                                     <th> Ismi Familiyasi </th>
-                                    <th>Davomat</th>
-                                    <th> Baho </th>
+                                    <th style="text-align: center;">Davomat</th>
+                                    <th style="text-align: center;">Baho</th>
                                     <th> O'qish turi </th>
                                   </tr>
                                 </thead>
@@ -410,40 +369,42 @@
                                           {% if lesson.status == 'started' %}
                                             <select name="iscome" class="form-control form-control-sm" style="color: #fff;" id="exampleFormControlSelect3">
                                               {% if student.is_come %}
-                                                <option value="true" selected style="background-color: green;">Keldi</option>
-                                                <option value="false">Kelmadi</option>
+                                                <option value="True" selected style="background-color: green;">Keldi</option>
+                                                <option value="False">Kelmadi</option>
                                               {% else %}
-                                                <option value="false" selected >Kelmadi</option>
-                                                <option value="true" >Keldi</option>
+                                                <option value="False" selected >Kelmadi</option>
+                                                <option value="True" >Keldi</option>
                                               {% endif %}
                                             </select>
                                           {% else %}
-                                            <select name="iscome" class="form-control form-control-sm" style="color: #fff;" id="exampleFormControlSelect3">
                                               {% if student.is_come %}
-                                                <option value="true" selected style="background-color: green;">Keldi</option>
+                                                <p style="background-color: green; padding: 10px 0; color: white; text-align: center; border-radius: 5px;">Keldi</p>
                                               {% else %}
-                                                <option value="false" selected >Kelmadi</option>
+                                                <p style="background-color: red; padding: 10px 0; color: white; text-align: center; border-radius: 5px;">Kelmadi</p>
                                               {% endif %}
-                                            </select>
                                           {% endif %}
                                         </div>
                                       </td>
                                       <td> 
-
                                         <div class="form-group">
-                                          <select name="h_w_percentage" class="form-control form-control-sm" style="color: #fff;" id="exampleFormControlSelect3">
-                                            <option value="{{ student.h_m_percentage }}" selected >{{ student.h_m_percentage }}</option>
-                                            <option value="1" >1</option>
-                                            <option value="2" >2</option>
-                                            <option value="3" >3</option>
-                                            <option value="4" >4</option>
-                                            <option value="5" >5</option>
-                                            <option value="6" >6</option>
-                                            <option value="7" >7</option>
-                                            <option value="8" >8</option>
-                                            <option value="9" >9</option>
-                                            <option value="10" >10</option>
-                                          </select>
+                                          {% if lesson.status == 'started' %}
+                                            <select name="h_w_percentage" class="form-control form-control-sm" style="color: #fff;" id="exampleFormControlSelect3">
+                                              <option value="{{ student.h_m_percentage }}" selected >{{ student.h_m_percentage }}</option>
+                                              <option value="1" >1</option>
+                                              <option value="2" >2</option>
+                                              <option value="3" >3</option>
+                                              <option value="4" >4</option>
+                                              <option value="5" >5</option>
+                                              <option value="6" >6</option>
+                                              <option value="7" >7</option>
+                                              <option value="8" >8</option>
+                                              <option value="9" >9</option>
+                                              <option value="10" >10</option>
+                                            </select>
+                                          {% else %}
+                                            <p style="background-color: #3b4046; width: 40px; padding: 10px; color: white; border-radius: 5px; text-align: center; position: relative; left: 20px;">{{ student.h_m_percentage }}</p>
+                                          {% endif %}
+
                                         </div>
                                       </td> 
                                       {% if student.student__student_type == 'online' %}
@@ -478,7 +439,7 @@
 
 
 
-                <div class="col-5 grid-margin  stretch-card">
+                <div class="col-12 grid-margin  stretch-card">
                   <div class="card">
                     <div class="card-body">
                       <h4 class="card">Mavzuga oid qo'llanmalarni yuklash.</h4>
@@ -514,131 +475,87 @@
                 </div>
 
 
-                <div class="col-7 grid-margin  stretch-card">
+                <div class="col-6 grid-margin  stretch-card">
                   <div class="card">
                     <div class="col-12 grid-margin">
                       <div class="card">
                         <div class="card-body">
                           <h4 class="card-title">Mavzuga oid qo'llanmalar.</h4>
-
-                          <div>
+                          
+                          {% if subject_guides %}
+                          <div class="table-responsive" style="height: 300px; overflow-y: scroll; border-bottom: 2px solid #fff;">
                             {% for subject_guide in subject_guides %}
                               {% if subject_guide.text %}
-                                <form action="" method="POST" id='edit_guides_and_tasks'>{% csrf_token %}
+                                <form action=""  method="POST" id='edit_guides_and_tasks'>{% csrf_token %}
                                   <blockquote class="blockquote blockquote-primary">
-                                    <textarea name="" id="" cols="64" rows="5" style="background-color: #2A3038; color: white;">{{ subject_guide.text }}</textarea>
+                                    <textarea name="text" cols="53" rows="3" style="background-color: #2A3038; width: auto; color: white;">{{ subject_guide.text }}</textarea>
                                     <br>
-                                    <br>
-                                    <button type="button" class="btn btn-warning btn-icon">
+                                    <button 
+                                      type="button" class="btn btn-warning btn-icon editGuideOrTaskText"
+                                      updated-guide-or-task-id="{{ subject_guide.id }}" 
+                                      onclick="editGuideOrTaskTextOpen()" id="editGuideOrTaskTextID"
+                                    >
                                       <div class="col-sm-6 col-md-4 col-lg-3">
                                         <i class="mdi mdi-pencil"></i>
                                       </div>
                                     </button>
-                                    <button type="submit" class="btn btn-danger btn-icon">
+                                    <button 
+                                    type="button" class="btn btn-danger btn-icon deleteGuideOrTaskText"
+                                    delete-guide-or-task-id="{{ subject_guide.id }}"
+                                    onclick="deleteGuideOrTaskTextOpen()" id="deleteGuideOrTaskTextID"
+                                    >
                                       <div class="col-sm-6 col-md-4 col-lg-3">
                                         <i class="mdi mdi-delete"></i>
                                       </div>
                                     </button>
                                   </blockquote>
-                                </form>
-                              {% endif %}
-                            {% endfor %}
+                                  </form>
+                                {% endif %}
+                              {% endfor %}
                           </div>
+                          {% endif %}
                           
-                          <div class="table-responsive">
-                            <div style="display: flex;">
+                          {% if subject_guides %}
+                            <div class="table-responsive" style="height: 400px;">
                               
-                                                           
-                                  <!-- {% if subject_guide.video %}
-                                    <div style="margin-right: 10px;">
-                                      <form action="" method="POST" id="createAttendance">{% csrf_token %}
-                                        <div class="item">
-                                          {% if subject_guide.uploaded_file %}
-                                            <video style="width: 300px; height: 200px; background-size: cover;" controls src="{{ subject_guide.uploaded_file.url }}"></video>
-                                          {% endif %}
-                                        </div>
-                                        <button class="btn btn-warning btn-icon">
-                                          <div class="col-sm-6 col-md-4 col-lg-3">
-                                            <i class="mdi mdi-pencil"></i>
-                                          </div>
-                                        </button>
-                                        <button class="btn btn-danger btn-icon">
-                                          <div class="col-sm-6 col-md-4 col-lg-3">
-                                            <i class="mdi mdi-delete"></i>
-                                          </div>
-                                        </button>
-                                      </form>
-                                    </div>
-                                  {% else %}
-                                    <div style="margin-right: 10px;">
-                                      <form action="" method="POST" id="createAttendance">{% csrf_token %}
-                                        <div class="item">
-                                          {% if subject_guide.uploaded_file %}
-                                            <img style="width: 300px; height: 200px; background-size: cover;" src="{{ subject_guide.uploaded_file.url }}" alt="">
-                                          {% endif %}
-                                        </div>
-                                        <button class="btn btn-warning btn-icon">
-                                          <div class="col-sm-6 col-md-4 col-lg-3">
-                                            <i class="mdi mdi-pencil"></i>
-                                          </div>
-                                        </button>
-                                        <button class="btn btn-danger btn-icon">
-                                          <div class="col-sm-6 col-md-4 col-lg-3">
-                                            <i class="mdi mdi-delete"></i>
-                                          </div>
-                                        </button>
-                                      </form>
-                                    </div>
-                                  {% endif %} -->
-
-                                  <div class="table-responsive">
-                                    <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
-                                      <table class="table"  >
-                                        <thead>
-                                          <tr>
-                                            <th> nomi </th>
-                                            <th> Taxrirlash </th>
-                                            <th>O'chirish</th>
+                                <table class="table">
+                                  <thead>
+                                    <tr>
+                                      <th> nomi </th>
+                                      <th> Taxrirlash </th>
+                                      <th>O'chirish</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {% for subject_guide in subject_guides %}
+                                      {% if subject_guide.uploaded_file %}
+                                        <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                                          <tr >
+                                            <td> {{ subject_guide.uploaded_file.name }} </td>
+                                            <td> 
+                                              <label
+                                                class="badge badge-info editGuideOrTaskFile" onclick="editGuideOrTaskFileOpen()"
+                                                updated-guide-or-task-id="{{ subject_guide.id }}" id="editGuideOrTaskFileID"
+                                                >
+                                                <i class="mdi mdi-lead-pencil"></i>
+                                              </label>
+                                            </td>
+                                            <td>
+                                              <label
+                                                class="badge badge-danger deleteGuideOrTaskFile" onclick="deleteGuideOrTaskFileOpen()"
+                                                delete-guide-or-task-id="{{ subject_guide.id }}" id="deleteGuideOrTaskTextID" 
+                                                ><i class="mdi mdi-delete"></i>
+                                              </label>
+                                            </td>
                                           </tr>
-                                        </thead>
-                                        <tbody>
-                                          {% for subject_guide in subject_guides %}
-                                            {% if subject_guide.uploaded_file %} 
-                                            <tr >
-                                              <td> {{ subject_guide.uploaded_file }} </td>
-                                                <td> 
-                                                  <label id="editHomeWork" data-lesson-id="{{ lesson.id }}" 
-                                                    class="badge badge-info editFile" onclick="editFile()" 
-                                                    data-id="{{ homework_item.id }}"  name="item_id" >
-                                                    <i class="mdi mdi-lead-pencil"></i>
-                                                  </label>
-                                                </td>
-                                                <td>
-                                                  <label delete-data-lesson-id="{{ lesson.id }}" 
-                                                    class="badge badge-danger deleteItem" onclick="deleteFile()" 
-                                                    delete-data-id="{{ homework_item.id }}"  name="item_id" 
-                                                    delete-id="deleteHomeWorkMedia"><i class="mdi mdi-delete"></i>
-                                                  </label>
-                                                </td>
-                                              </tr>
-                                            {% endif %}
-                                          {% endfor %}
-                                        </tbody>
-                                      </table>
-                                      <br>
-                                        <input type="file" multiple name="uploaded_files">
-                                        <br>
-                                        <br>
-                                        <button type="submit" class="btn btn-primary">Saqlash</button>
-                                        <input type="hidden" name="method" value="homework">
-                                        <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
-                                    </form>
-                                  </div>
-
-
+                                        </form>
+                                      {% endif %}
+                                    {% endfor %}
+                                  </tbody>
+                                </table>
+                              
                             </div>
-                            
-                          </div>
+                          {% endif %}
                         </div>
                       </div>
                     </div>
@@ -647,25 +564,33 @@
 
 
                 
-                <div class="col-12 grid-margin  stretch-card">
+                <div class="col-6 grid-margin  stretch-card">
                   <div class="card">
                     <div class="col-12 grid-margin">
                       <div class="card">
                         <div class="card-body">
                           <h4 class="card-title">Uyga vazifalar.</h4>
 
-                          <div>
+                          <div class="table-responsive" style="height: 300px; overflow-y: scroll; border-bottom: 2px solid #fff;">
                             {% for subject_hometask_item in subject_hometasks %}
                               {% if subject_hometask_item.text %}
                                 <form action="" method="POST" id='edit_or_delete_guide_text'>{% csrf_token %}
                                   <blockquote class="blockquote blockquote-primary">
-                                    <p>{{ subject_hometask_item.text }}</p>
-                                    <button type="submit" class="btn btn-warning btn-icon">
+                                    <textarea class="edit_guide_task_text_input" id="" cols="53" rows="3" style="background-color: #2A3038; width: auto; color: white;">{{ subject_hometask_item.text }}</textarea>
+                                    <button 
+                                      type="button" class="btn btn-warning btn-icon editGuideOrTaskText"
+                                      updated-guide-or-task-id="{{ subject_hometask_item.id }}" 
+                                      onclick="editGuideOrTaskTextOpen()" id="editGuideOrTaskTextID"
+                                    >
                                       <div class="col-sm-6 col-md-4 col-lg-3">
                                         <i class="mdi mdi-pencil"></i>
                                       </div>
                                     </button>
-                                    <button type="submit" class="btn btn-danger btn-icon">
+                                    <button 
+                                    type="button" class="btn btn-danger btn-icon deleteGuideOrTaskText"
+                                    delete-guide-or-task-id="{{ subject_hometask_item.id }}"
+                                    onclick="deleteGuideOrTaskTextOpen()" id="deleteGuideOrTaskTextID"
+                                    >
                                       <div class="col-sm-6 col-md-4 col-lg-3">
                                         <i class="mdi mdi-delete"></i>
                                       </div>
@@ -676,59 +601,46 @@
                             {% endfor %}
                           </div>
                           
-                          <div class="table-responsive">
-                            <div style="display: flex;">
-                              
-                              {% for subject_hometask_item in subject_hometasks %}
-                                {% if subject_hometask_item.uploaded_file %}                              
-                                  {% if subject_hometask_item.video %}
-                                    <div style="margin-right: 10px;">
-                                      <form action="" method="POST" id="createAttendance">{% csrf_token %}
-                                        <div class="item">
-                                          {% if subject_hometask_item.uploaded_file %}
-                                            <video style="width: 300px; height: 200px; background-size: cover;" controls src="{{ subject_hometask_item.uploaded_file.url }}"></video>
-                                          {% endif %}
-                                        </div>
-                                        <button class="btn btn-warning btn-icon">
-                                          <div class="col-sm-6 col-md-4 col-lg-3">
-                                            <i class="mdi mdi-pencil"></i>
-                                          </div>
-                                        </button>
-                                        <button class="btn btn-danger btn-icon">
-                                          <div class="col-sm-6 col-md-4 col-lg-3">
+                          {% if subject_hometasks %}
+                            <div class="table-responsive" style="height: 400px;">
+                              <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                                <table class="table">
+                                  <thead>
+                                    <tr>
+                                      <th> nomi </th>
+                                      <th style="text-align: center;"> Taxrirlash </th>
+                                      <th style="text-align: center;">O'chirish</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {% for subject_hometask_item in subject_hometasks %}
+                                      {% if subject_hometask_item.uploaded_file %}
+                                      <tr >
+                                        <td> {{ subject_hometask_item.uploaded_file }} </td>
+                                        <td style="text-align: center;"> 
+                                          <label
+                                            class="badge badge-info editGuideOrTaskFile" onclick="editGuideOrTaskFileOpen()" 
+                                            updated-guide-or-task-id="{{ subject_hometask_item.id }}" id="editGuideOrTaskFileID"
+                                            >
+                                            <i class="mdi mdi-lead-pencil"></i>
+                                          </label>
+                                        </td>
+                                        <td style="text-align: center;">
+                                          <label class="badge badge-danger deleteGuideOrTaskFile"
+                                            delete-guide-or-task-id="{{ subject_hometask_item.id }}"
+                                            id="deleteGuideOrTaskTextID" onclick="deleteGuideOrTaskFileOpen()"
+                                            > 
                                             <i class="mdi mdi-delete"></i>
-                                          </div>
-                                        </button>
-                                      </form>
-                                    </div>
-                                  {% else %}
-                                    <div style="margin-right: 10px;">
-                                      <form action="" method="POST" id="createAttendance">{% csrf_token %}
-                                        <div class="item">
-                                          {% if subject_hometask_item.uploaded_file %}
-                                            <img style="width: 300px; height: 200px; background-size: cover;" src="{{ subject_hometask_item.uploaded_file.url }}" alt="">
-                                          {% endif %}
-                                        </div>
-                                        <button class="btn btn-warning btn-icon">
-                                          <div class="col-sm-6 col-md-4 col-lg-3">
-                                            <i class="mdi mdi-pencil"></i>
-                                          </div>
-                                        </button>
-                                        <button class="btn btn-danger btn-icon">
-                                          <div class="col-sm-6 col-md-4 col-lg-3">
-                                            <i class="mdi mdi-delete"></i>
-                                          </div>
-                                        </button>
-                                      </form>
-                                    </div>
-                                  {% endif %}
-                                {% endif %}
-                              {% endfor %}
-
-
+                                          </label>
+                                        </td>
+                                      </tr>
+                                      {% endif %}
+                                    {% endfor %}
+                                  </tbody>
+                                </table>
+                              </form>
                             </div>
-                            
-                          </div>
+                          {% endif %}
                         </div>
                       </div>
                     </div>
@@ -755,7 +667,7 @@
                           {% for homework_item in homework_items %}
                           <tr>
                             <td class="text-info"> {{ homework_item.uploaded_file.name }} </td>
-                            <td><label class="badge badge-danger">Yuklab olish</label></td>
+                            <td><a target="_blank" href="{{ homework_item.uploaded_file.url }}"><label style="cursor: pointer;" class="badge badge-danger">Ko'rish</label></a></td>
                           </tr>
                           {% endfor %}
                         </tbody>

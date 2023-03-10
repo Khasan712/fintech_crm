@@ -59,7 +59,7 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
                 return Http404
             homework = self.get_homework_queryset().filter(student_id=student.id, lesson_id=lesson_id).first()
             if homework:
-                context['homework_items'] = self.get_homework_items_queryset().filter(home_work_id=homework.id).values('id', 'uploaded_file')
+                context['homework_items'] = self.get_homework_items_queryset().filter(home_work_id=homework.id).order_by('-id').values('id', 'uploaded_file')
             context['lesson'] = lesson
             context['page'] = 'lesson'
             subject_guide = self.get_hometask_queryset().filter(

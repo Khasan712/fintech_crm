@@ -225,7 +225,7 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Mavzu</label>
                               <div id="bloodhound" class="col-sm-9">
-                                <input class="typeahead" type="text" placeholder="{{ lesson.theme }}">
+                                <input class="typeahead" disabled style="background-color: #2A3038;" type="text" placeholder="{{ lesson.theme }}">
                               </div>
                             </div>
                           </div>
@@ -236,7 +236,7 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">Dars haqida</label>
                               <div id="bloodhound" class="col-sm-9">
-                                <input class="typeahead" type="text" placeholder="{{ lesson.description }}">
+                                <input class="typeahead" disabled style="background-color: #2A3038;" type="text" placeholder="{{ lesson.description }}">
                               </div>
                             </div>
                           </div>
@@ -247,7 +247,7 @@
                             <div class="form-group row">
                               <label class="col-sm-3 col-form-label">O'qituvchi</label>
                               <div id="bloodhound" class="col-sm-9">
-                                <input class="typeahead" type="text" placeholder="{{ lesson.creator.first_name }} {{ lesson.creator.last_name }}">
+                                <input class="typeahead" disabled style="background-color: #2A3038;" type="text" placeholder="{{ lesson.creator.first_name }} {{ lesson.creator.last_name }}">
                               </div>
                             </div>
                           </div>
@@ -257,7 +257,7 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Yaratilgan sana </label>
                                 <div id="bloodhound" class="col-sm-9">
-                                <input class="typeahead" type="text" placeholder="{{ lesson.created_at }}">
+                                <input class="typeahead" disabled style="background-color: #2A3038;" type="text" placeholder="{{ lesson.created_at }}">
                                 </div>
                             </div>
                             </div>
@@ -267,7 +267,7 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Boshlangan vaqt </label>
                                 <div id="bloodhound" class="col-sm-9">
-                                <input class="typeahead" type="text" placeholder="{{ lesson.start_time }}">
+                                <input class="typeahead" disabled style="background-color: #2A3038;" type="text" placeholder="{{ lesson.start_time }}">
                                 </div>
                             </div>
                             </div>
@@ -278,9 +278,9 @@
                                 <label class="col-sm-3 col-form-label">Tugatilgan vaqt </label>
                                 <div id="bloodhound" class="col-sm-9">
                                 {% if lesson.end_time is not None %}
-                                    <input class="typeahead" type="text" placeholder="{{ lesson.end_time }}">
+                                    <input class="typeahead" disabled style="background-color: #2A3038;" type="text" placeholder="{{ lesson.end_time }}">
                                 {% else %}
-                                <input class="typeahead" type="text" placeholder="-">
+                                <input class="typeahead" disabled style="background-color: #2A3038;" type="text" placeholder="-">
                                 {% endif %}
                                 </div>
                             </div>
@@ -297,10 +297,25 @@
                     <div class="card-body">
                       <div style="display: flex; justify-content: space-between;">
                         <h4 class="card-title">Uy ishi topshirish</h4>
-                        <h5>Muddat: {{ deadline }}</h5>
+                        {% if deadline %}
+                          <h5>Muddat: {{ deadline }}</h5>
+                        {% endif %}
                       </div>
                       <div class="table-responsive">
                         <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                          {% if can_upload %}
+                            <button type="submit" class="btn btn-primary">Saqlash</button>
+                            <input type="file" multiple name="uploaded_files">
+                            <input type="hidden" name="method" value="homework">
+                            <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                          {% else %}
+                            <button type="submit" disabled class="btn btn-primary">Saqlash</button>
+                            <input type="file" disabled>
+                            <input type="hidden" name="method" value="homework">
+                            <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                          {% endif %}
+                          <br>
+                          <br>
                           <table class="table"  >
                             <thead>
                               <tr>
@@ -338,21 +353,7 @@
                             </tbody>
                           </table>
                           <br>
-                          {% if can_upload %}
-                            <input type="file" multiple name="uploaded_files">
-                            <br>
-                            <br>
-                            <button type="submit" class="btn btn-primary">Saqlash</button>
-                            <input type="hidden" name="method" value="homework">
-                            <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
-                          {% else %}
-                            <input type="file" disabled>
-                            <br>
-                            <br>
-                            <button type="submit" disabled class="btn btn-primary">Saqlash</button>
-                            <input type="hidden" name="method" value="homework">
-                            <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
-                          {% endif %}
+                          
                         </form>
                       </div>
                     </div>
@@ -361,58 +362,51 @@
 
 
 
-                <div class="col-12 grid-margin  stretch-card">
+                <div class="col-6 stretch-card">
                   <div class="card">
                     <div class="col-12 grid-margin">
                       <div class="card">
                         <div class="card-body">
                           <h4 class="card-title">Mavzuga oid qo'llanmalar.</h4>
-
-                          <div>
-                            {% for subject_guide in subject_guides %}
-                              {% if subject_guide.text %}
-                                <form action="" method="POST" id='edit_or_delete_guide_text'>{% csrf_token %}
+                          {% if subject_guides %}
+                            <div class="table-responsive" style="height: 300px; border-bottom: 2px solid #fff;">
+                              {% for subject_guide in subject_guides %}
+                                {% if subject_guide.text %}
                                   <blockquote class="blockquote blockquote-primary">
                                     <p>{{ subject_guide.text }}</p>
                                   </blockquote>
-                                </form>
-                              {% endif %}
-                            {% endfor %}
-                          </div>
-                          
-                          <div class="table-responsive">
-                            <div style="display: flex;">
-                              
-                              {% for subject_guide in subject_guides %}
-                                {% if subject_guide.uploaded_file %}                              
-                                  {% if subject_guide.video %}
-                                    <div style="margin-right: 10px;">
-                                      <form action="">{% csrf_token %}
-                                        <div class="item">
-                                          {% if subject_guide.uploaded_file %}
-                                            <video style="width: 300px; height: 200px; background-size: cover;" controls src="{{ subject_guide.uploaded_file.url }}"></video>
-                                          {% endif %}
-                                        </div>
-                                      </form>
-                                    </div>
-                                  {% else %}
-                                    <div style="margin-right: 10px;">
-                                      <form action="">{% csrf_token %}
-                                        <div class="item">
-                                          {% if subject_guide.uploaded_file %}
-                                            <img style="width: 300px; height: 200px; background-size: cover;" src="{{ subject_guide.uploaded_file.url }}" alt="">
-                                          {% endif %}
-                                        </div>
-                                      </form>
-                                    </div>
-                                  {% endif %}
                                 {% endif %}
                               {% endfor %}
-
-
                             </div>
-                            
-                          </div>
+                          {% endif %}
+                          
+                          {% if subject_guides %}
+                            <div class="table-responsive" style="height: 400px; margin-top: 30px;">
+                              <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th> nomi </th>
+                                    <th style="text-align: center;">Yuklab olish</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for subject_guide in subject_guides %}
+                                    {% if subject_guide.uploaded_file %} 
+                                    <tr >
+                                      <td> {{ subject_guide.uploaded_file.name }} </td>
+                                        <td style="display: flex; justify-content: center;"> 
+                                          <label id="editHomeWork"
+                                            class="badge badge-primary" >
+                                            <i class="mdi mdi-download"></i>
+                                          </label>
+                                        </td>
+                                      </tr>
+                                    {% endif %}
+                                  {% endfor %}
+                                </tbody>
+                              </table>
+                            </div>
+                          {% endif %}
                         </div>
                       </div>
                     </div>
@@ -421,58 +415,51 @@
 
 
                 
-                <div class="col-12 grid-margin  stretch-card">
+                <div class="col-6 stretch-card">
                   <div class="card">
                     <div class="col-12 grid-margin">
                       <div class="card">
                         <div class="card-body">
                           <h4 class="card-title">Uyga vazifalar.</h4>
-
-                          <div>
-                            {% for subject_hometask_item in subject_hometasks %}
-                              {% if subject_hometask_item.text %}
-                                <form action="">{% csrf_token %}
-                                  <blockquote class="blockquote blockquote-primary">
-                                    <p>{{ subject_hometask_item.text }}</p>
-                                  </blockquote>
-                                </form>
-                              {% endif %}
-                            {% endfor %}
-                          </div>
-                          
-                          <div class="table-responsive">
-                            <div style="display: flex;">
-                              
+                          {% if subject_hometasks %}
+                            <div class="table-responsive" style="height: 300px; overflow-y: scroll; border-bottom: 2px solid #fff;">
                               {% for subject_hometask_item in subject_hometasks %}
-                                {% if subject_hometask_item.uploaded_file %}                              
-                                  {% if subject_hometask_item.video %}
-                                    <div style="margin-right: 10px;">
-                                      <form action="">{% csrf_token %}
-                                        <div class="item">
-                                          {% if subject_hometask_item.uploaded_file %}
-                                            <video style="width: 300px; height: 200px; background-size: cover;" controls src="{{ subject_hometask_item.uploaded_file.url }}"></video>
-                                          {% endif %}
-                                        </div>
-                                      </form>
-                                    </div>
-                                  {% else %}
-                                    <div style="margin-right: 10px;">
-                                      <form action="">{% csrf_token %}
-                                        <div class="item">
-                                          {% if subject_hometask_item.uploaded_file %}
-                                            <img style="width: 300px; height: 200px; background-size: cover;" src="{{ subject_hometask_item.uploaded_file.url }}" alt="">
-                                          {% endif %}
-                                        </div>
-                                      </form>
-                                    </div>
-                                  {% endif %}
+                                {% if subject_hometask_item.text %}
+                                    <blockquote class="blockquote blockquote-primary">
+                                      <p>{{ subject_hometask_item.text }}</p>
+                                    </blockquote>
                                 {% endif %}
                               {% endfor %}
-
-
                             </div>
-                            
-                          </div>
+                          {% endif %}
+                          
+                          {% if subject_hometasks %}
+                            <div class="table-responsive">
+                              <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th> nomi </th>
+                                    <th style="text-align: center;">Yuklab olish</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for subject_hometask_item in subject_hometasks %}
+                                    {% if subject_hometask_item.uploaded_file %}
+                                    <tr >
+                                      <td> {{ subject_hometask_item.uploaded_file }} </td>
+                                      <td style="display: flex; justify-content: center;"> 
+                                        <label id="editHomeWork" class="badge badge-primary">
+                                          <i class=" mdi mdi-download "></i>
+                                        </label>
+                                      </td>
+                                    </tr>
+                                    {% endif %}
+                                  {% endfor %}
+                                </tbody>
+                              </table>
+                              
+                            </div>
+                          {% endif %}
                         </div>
                       </div>
                     </div>

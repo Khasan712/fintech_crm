@@ -1,6 +1,7 @@
 from django.db import models
 
 from apps.commons.models import CustomBaseAbstract, CustomWeekAbstract
+from apps.v1.edu.enums import StudentInGroupStatus
 from apps.v1.edu.models.courses import Course
 from apps.v1.user.models import Student, User, Teacher
 
@@ -11,8 +12,8 @@ class Group(CustomBaseAbstract, CustomWeekAbstract):
     course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True)
     teacher = models.ForeignKey(Teacher, on_delete=models.SET_NULL, null=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_creator')
-    updater = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_updater')
-    deleter = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_deleter')
+    updater = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_updater', blank=True)
+    deleter = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_deleter', blank=True)
 
     start_time = models.TimeField()
     end_time = models.TimeField()
@@ -33,6 +34,9 @@ class GroupStudent(CustomBaseAbstract):
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_creator_student')
     updater = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_updater_student', blank=True)
     deleter = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_deleter_student', blank=True)
+    student_status = models.CharField(max_length=8, choices=StudentInGroupStatus.choices(), default='studying')
+    student_first_lesson = models.ForeignKey('Lesson', on_delete=models.SET_NULL, null=True, blank=True)
+
     class Meta:
         verbose_name = 'Guruhdagi o\'quvchi'
         verbose_name_plural = 'Guruhdagi o\'quvchilar'

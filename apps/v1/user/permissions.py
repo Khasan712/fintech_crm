@@ -22,14 +22,15 @@ class UserAuthenticateRequiredMixin(AccessMixin):
                 raise Http404
             return super().dispatch(request, *args, **kwargs)
         
-        if self.request.user.role == 'admin':
-            if request.path != '/admin/dashboard/':
+        if self.request.user.role == 'administrator':
+            if request.path != '/administrator/dashboard/':
                 raise Http404
-            return HttpResponse(f"'admin' bo'limi ustida ish olib borilmoqda")
+            return super().dispatch(request, *args, **kwargs)
+            # return HttpResponse(f"administratorlar bo'limi ustida ish olib borilmoqda")
         
         if self.request.user.role == 'super_admin':
-            if request.path != '/super_admin/dashboard/':
+            if request.path != '/super-admin/dashboard/':
                 raise Http404
             return HttpResponse(f"'Super admin' bo'limi ustida ish olib borilmoqda")
-
-        return super().dispatch(request, *args, **kwargs)
+        else:
+            raise Http404
