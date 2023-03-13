@@ -615,6 +615,102 @@
             </div>
           </div>
         </div>
+
+
+
+        <!-- Add book presentation -->
+        <div class="col-md-12 stretch-card container" id="addBookPresentationCard" class="container" 
+          style="width: 500px; height: 400px; width: 368px; height: 200px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form class="forms-sample addBookPresentationForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="text" placeholder="Kitob nomini kiriting" name="book" style="color: #fff;" class="form-control">
+                <br>
+                <br>
+                <input type="hidden" name="method" value="add_book_presentation">
+                <div style="display: flex; justify-content: space-between;">
+                  <button type="submit" class="btn btn-primary btn-icon-text">
+                    <i class="mdi mdi-file-check btn-icon-prepend"></i> Saqlash
+                  </button>
+                  <button type="button" id="ok" onclick="closeaddBookPresentation()" class="btn btn-warning me-2">Bekor qilish</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Add project -->
+        <div class="col-md-12 stretch-card container" id="addProjectCard" class="container" 
+          style="width: 500px; height: 400px; width: 368px; height: 200px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form class="forms-sample addProjectForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="file" name="uploaded_file" class="form-control">
+                <br>
+                <br>
+                <input type="hidden" name="method" value="add_project">
+                <input type="hidden" class='group_id' name="group_id" value="">
+                <div style="display: flex; justify-content: space-between;">
+                  <button type="submit" class="btn btn-primary btn-icon-text">
+                    <i class="mdi mdi-file-check btn-icon-prepend"></i> Yuklash
+                  </button>
+                  <button type="button" id="ok" onclick="closeProjectBtn()" class="btn btn-warning me-2">Bekor qilish</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- edit project -->
+        <div class="col-md-12 stretch-card container" id="editProjectCard" class="container" 
+          style="width: 368px; height: 200px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form class="forms-sample editProjectForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="file" name="uploaded_file" class="form-control">
+                <br>
+                <br>
+                <input type="hidden" name="method" value="edit_project">
+                <input type="hidden" class='group_id' name="group_id" value="">
+                <input type="hidden" class='file_id' name="file_id" value="">
+                <div style="display: flex; justify-content: space-between;">
+                  <button type="submit" class="btn btn-primary btn-icon-text">
+                    <i class="mdi mdi-file-check btn-icon-prepend"></i> Saqlash
+                  </button>
+                  <button type="button" id="ok" onclick="closeEditProjectBtn()" class="btn btn-warning me-2">Bekor qilish</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- delete project -->
+        <div 
+          class="col-md-12 stretch-card container" id="deleteProjectCard" class="container" 
+          style="width: 368px; height: 112px; padding: 0; background-color: white;"
+          >
+          <div class="card">
+            <div class="card-body">
+              <form class="forms-sample deleteProjectForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="hidden" name="method" value="delete_project">
+                <input type="hidden" class='group_id' name="group_id" value="">
+                <input type="hidden" class='file_id' name="file_id" value="">
+                <button type="submit" class="btn btn-danger btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> O'chirish 
+                </button>
+                <button type="button" id="ok" onclick="closeDeleteProjectBtn()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
         
     <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
     <script src="js/jquery.fileDownload.js"></script>
@@ -708,7 +804,35 @@
             e.preventDefault();
             window.location.href = $(this).attr('href');
         });
-      });
+      }); 
+
+      // add project
+      $(".add-project").click(function(e) {
+        e.preventDefault()
+        var group_id = $(this).attr('group-id')
+        var group_id_add_form = $('.addProjectForm .group_id').attr('value' , group_id)
+        }
+      )
+
+      // edit project
+      $(".edit-project").click(function(e) {
+          e.preventDefault()
+          var group_id = $(this).parent().parent().parent().parent().parent().parent().find('button').attr("group-id")
+          var group_id_edit_form = $('.editProjectForm .group_id').attr('value' , group_id)
+          var file_id = $(this).attr('edit-file-id')
+          var file_id_edit_form = $('.editProjectForm .file_id').attr('value' , file_id)
+        }
+      )
+
+      // delete project
+      $(".delete-project").click(function(e) {
+          e.preventDefault()
+          var group_id = $(this).parent().parent().parent().parent().parent().parent().find('button').attr("group-id")
+          var group_id_edit_form = $('.deleteProjectForm .group_id').attr('value' , group_id)
+          var file_id = $(this).attr('edit-file-id')
+          var file_id_edit_form = $('.deleteProjectForm .file_id').attr('value' , file_id)
+        }
+      )
 
 
   </script>

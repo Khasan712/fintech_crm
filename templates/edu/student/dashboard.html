@@ -18,8 +18,7 @@
                       <div class="row">
                         <div class="col-9">
                           <div class="d-flex align-items-center align-self-start">
-                            <h3 class="mb-0">$12.34</h3>
-                            <p class="text-success ms-2 mb-0 font-weight-medium">+3.5%</p>
+                            <a href="{% url 'student_dashboard' %}?page=book_presentation"><h3 class="mb-0">Kitob taqdimoti</h3></a>
                           </div>
                         </div>
                         <div class="col-3">
@@ -28,30 +27,35 @@
                           </div>
                         </div>
                       </div>
-                      <h6 class="text-muted font-weight-normal">Potential growth</h6>
+                      <h6 class="text-muted font-weight-normal">Jami: {{ dashboard_statistics.book_presentation_qty }} / {{ dashboard_statistics.book_presentation.total_qty }}</h6>
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                  <div class="card">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-9">
-                          <div class="d-flex align-items-center align-self-start">
-                            <h3 class="mb-0">$17.34</h3>
-                            <p class="text-success ms-2 mb-0 font-weight-medium">+11%</p>
+
+                {% for project in dashboard_statistics.projects %}
+                  <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                    <div class="card">
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                              <a href="{% url 'student_dashboard' %}?page=projects&group_id={{ project.group.id }}">
+                                <h3 class="mb-0">Projectlar</h3>
+                              </a>
+                            </div>
+                          </div>
+                          <div class="col-3">
+                            <div class="icon icon-box-success">
+                              <span class="mdi mdi-arrow-top-right icon-item"></span>
+                            </div>
                           </div>
                         </div>
-                        <div class="col-3">
-                          <div class="icon icon-box-success">
-                            <span class="mdi mdi-arrow-top-right icon-item"></span>
-                          </div>
-                        </div>
+                        <h6 class="text-muted font-weight-normal">Kurs: {{ project.group.course.name }}</h6>
+                        <h6 class="text-muted font-weight-normal">Jami: {{ project.approved_projects_qty }} / {{ project.course_projects_qty }}</h6>
                       </div>
-                      <h6 class="text-muted font-weight-normal">Revenue current</h6>
                     </div>
                   </div>
-                </div>
+                {% endfor %}
                 <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                   <div class="card">
                     <div class="card-body">
@@ -210,7 +214,6 @@
                 </div>
               </div>
             {% elif page == 'lesson' %}
-
               <div class="row">
                 <div class="col-6 grid-margin  stretch-card">
                   <div class="card">
@@ -466,7 +469,95 @@
                   </div>
                 </div>
               </div>
+            
+            {% elif page == 'book_presentation' %}
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div style="display: flex; justify-content: space-between;">
+                      <h4 class="card-title">Kitob taqdimoti</h4>
+                      <button class="btn btn-primary add-book-presentation" id="add-book-presentation" onclick="addBookPresentation()">Qo'shish</button>
+                    </div>
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Kitob</th>
+                            <th>Yaratilgan sana</th>
+                            <th>Holati</th>
+                            <th>Tasdiqlovchi</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for book_presentation in book_presentations %}
+                            <tr>
+                              <td>Jacob</td>
+                              <td>{{ book_presentation.book }}</td>
+                              <td> {{ book_presentation.created_at }} </td>
+                              {% if book_presentation.is_aproved %}
+                                <td><label class="badge badge-success">Tasdiqlangan</label></td>
+                              {% else %}
+                                <td><label class="badge badge-danger">Tasdiqlanmagan</label></td>
+                              {% endif %}
 
+                              {% if book_presentation.approver %}
+                                <td><label class="badge badge-danger">Tasdiqlanmagan</label></td>
+                              {% else %}
+                                <td>-</td>
+                              {% endif %}
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            
+            {% elif page == 'projects' %}
+            <div class="col-lg-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <div style="display: flex; justify-content: space-between;">
+                    <h4 class="card-title">Projectlar</h4>
+                    <button class="btn btn-primary add-project" id="add-project" group-id="{{ projects.project_card.group.id }}" onclick="addProject()">Qo'shish</button>
+                  </div>
+                  <p>Jami: {{ projects.project_card.approved_projects_qty }} / {{ projects.project_card.course_projects_qty }}</p>
+                  <p>Yuklandi: {{ projects.uploaded_qty }}</p>
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>File</th>
+                          <th>Yuklangan sana</th>
+                          <th>Ustoz</th>
+                          <th style="text-align: center;">Taxrirlash</th>
+                          <th style="text-align: center;">O'chirish</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for project in projects.projects %}
+                          <tr>
+                            <td>1</td>
+                            <td>{{ project.uploaded_file }}</td>
+                            <td> {{ project.created_at }} </td>
+                            <td>{{ project.project_card.group.teacher.first_name }}</td>
+                            <td style="text-align: center;">
+                              <i class="mdi mdi-pencil edit-project" id="edit-project" edit-file-id="{{ project.id }}" onclick="editProjectBtn()" style="padding: 10px 15px; border-radius: 5px; color: #fff; background-color: rgb(255, 187, 0); font-size: 20px;"></i>
+                            </td>
+                            <td style="text-align: center;">
+                              <i class="mdi mdi-delete delete-project" id="delete-project" edit-file-id="{{ project.id }}" onclick="deleteProjectBtn()" style="padding: 10px 15px; border-radius: 5px; color: #fff; background-color: rgb(255, 8, 0); font-size: 20px;"></i>
+                            </td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
             {% endif %}
             
           </div>

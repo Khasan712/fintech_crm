@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from apps.v1.edu.models.groups import Group, GroupStudent
+from apps.v1.edu.models.groups import Group, GroupStudent, StudentProject, StudentProjectsCard
 from apps.v1.edu.models.courses import Course
 from apps.v1.edu.models.lessons import HomeTaskItem, Lesson, Attendance, OnlyHomeTask, SubjectGuide
-from apps.v1.edu.models.presentations import StudentBookPresentation
+from apps.v1.edu.models.presentations import BookPresentationQty, StudentBookPresentation, StudentBookPresentationCard
 
 
 @admin.register(Course)
@@ -48,4 +48,23 @@ class HomeTaskItemAdmin(admin.ModelAdmin):
 
 @admin.register(StudentBookPresentation)
 class StudentBookPresentationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'student', 'book', 'is_active')
+    list_display = ('id', 'book_card', 'get_student', 'book', 'is_aproved', 'approver')
+
+
+@admin.register(BookPresentationQty)
+class BookPresentationQtyAdmin(admin.ModelAdmin):
+    list_display = ('id', 'book_qty')
+
+
+@admin.register(StudentBookPresentationCard)
+class StudentBookPresentationCardAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'total_qty',)
+
+
+@admin.register(StudentProjectsCard)
+class StudentProjectsCardAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'group', 'approved_projects_qty', 'course_projects_qty')
+
+@admin.register(StudentProject)
+class StudentProjectAdmin(admin.ModelAdmin):
+    list_display = ('id', 'project_card', 'uploaded_file')

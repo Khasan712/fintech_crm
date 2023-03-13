@@ -8,3 +8,13 @@ class StudentInGroupStatus(Enum):
     @classmethod
     def choices(cls):
         return ((key.value, key.name) for key in cls)
+    
+
+class StudentProjectStatus(Enum):
+    in_progress = "in_progress"
+    accepted = "accepted"
+    rejected = "rejected"
+
+    @classmethod
+    def choices(cls):
+        return ((key.value, key.name) for key in cls)

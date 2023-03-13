@@ -4,6 +4,7 @@ from apps.commons.models import CustomBaseAbstract
 
 class Course(CustomBaseAbstract):
     name = models.CharField(max_length=50)
+    number_projects = models.IntegerField(default=0)
 
     class Meta:
         verbose_name_plural = 'Kurslar'

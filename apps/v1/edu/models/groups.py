@@ -1,7 +1,7 @@
 from django.db import models
 
 from apps.commons.models import CustomBaseAbstract, CustomWeekAbstract
-from apps.v1.edu.enums import StudentInGroupStatus
+from apps.v1.edu.enums import StudentInGroupStatus, StudentProjectStatus
 from apps.v1.edu.models.courses import Course
 from apps.v1.user.models import Student, User, Teacher
 
@@ -43,4 +43,32 @@ class GroupStudent(CustomBaseAbstract):
 
     def __str__(self) -> str:
         return f'{self.student.first_name}: {self.group.name}'
+
+
+class StudentProjectsCard(CustomBaseAbstract):
+    student = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True, related_name='student_projects_card')
+    group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, related_name='student_projects_card_group')
+    approved_projects_qty = models.IntegerField(default=0)
+    course_projects_qty = models.IntegerField(default=0)
+
+    class Meta:
+        verbose_name = 'O\'quvchi loyiha kart'
+        verbose_name_plural = 'O\'quvchilar loyiha kart'
+    
+    def __str__(self) -> str:
+        return f'{self.student.first_name} - {self.group.name} - {self.approved_projects_qty}'
+
+
+class StudentProject(CustomBaseAbstract):
+    project_card = models.ForeignKey(StudentProjectsCard, on_delete=models.SET_NULL, null=True, related_name="student_project_item")
+    uploaded_file = models.FileField(upload_to='projects/')
+    status = models.CharField(max_length=11, choices=StudentProjectStatus.choices(), default='in_progress')
+
+    class Meta:
+        verbose_name = 'O\'quvchi loyihasi'
+        verbose_name_plural = 'O\'quvchilar loyihalari'
+
+    def __str__(self) -> str:
+        return f'{self.project_card.student.first_name} - {self.status}'
+    
 

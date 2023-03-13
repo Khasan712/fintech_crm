@@ -16,7 +16,6 @@ class UpdateLessonForm(forms.ModelForm):
     
     # def clean(self):
     #     lesson_status = self.cleaned_data.get('status')
-    #     print(lesson_status)
     #     return super().clean()
     
 

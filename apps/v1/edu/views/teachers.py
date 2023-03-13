@@ -173,6 +173,7 @@ class TeacherDashboardView(UserAuthenticateRequiredMixin, View):
                 return HttpResponseRedirect(f'?page=lesson&lesson_id={lesson_id}')
         
         if method == 'create_attendency':
+            print(self.request.POST)
             students_id = data.getlist('students_id')
             studnets_iscome = data.getlist('iscome')
             students_h_w_percentage = data.getlist('h_w_percentage')
