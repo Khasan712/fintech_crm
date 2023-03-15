@@ -48,7 +48,6 @@ class GroupStudent(CustomBaseAbstract):
 class StudentProjectsCard(CustomBaseAbstract):
     student = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True, related_name='student_projects_card')
     group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, related_name='student_projects_card_group')
-    approved_projects_qty = models.IntegerField(default=0)
     course_projects_qty = models.IntegerField(default=0)
 
     class Meta:
@@ -56,12 +55,15 @@ class StudentProjectsCard(CustomBaseAbstract):
         verbose_name_plural = 'O\'quvchilar loyiha kart'
     
     def __str__(self) -> str:
-        return f'{self.student.first_name} - {self.group.name} - {self.approved_projects_qty}'
+        return f'{self.student.first_name} - {self.group.name}'
 
 
 class StudentProject(CustomBaseAbstract):
+    name = models.CharField(max_length=255)
     project_card = models.ForeignKey(StudentProjectsCard, on_delete=models.SET_NULL, null=True, related_name="student_project_item")
     uploaded_file = models.FileField(upload_to='projects/')
+    github_link = models.URLField()
+    netlify_link = models.URLField(blank=True, null=True)
     status = models.CharField(max_length=11, choices=StudentProjectStatus.choices(), default='in_progress')
 
     class Meta:

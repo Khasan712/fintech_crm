@@ -51,51 +51,11 @@
                           </div>
                         </div>
                         <h6 class="text-muted font-weight-normal">Kurs: {{ project.group.course.name }}</h6>
-                        <h6 class="text-muted font-weight-normal">Jami: {{ project.approved_projects_qty }} / {{ project.course_projects_qty }}</h6>
+                        <h6 class="text-muted font-weight-normal">Jami: {{ project.accepted_proj_qty }} / {{ project.course_projects_qty }}</h6>
                       </div>
                     </div>
                   </div>
                 {% endfor %}
-                <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                  <div class="card">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-9">
-                          <div class="d-flex align-items-center align-self-start">
-                            <h3 class="mb-0">$12.34</h3>
-                            <p class="text-danger ms-2 mb-0 font-weight-medium">-2.4%</p>
-                          </div>
-                        </div>
-                        <div class="col-3">
-                          <div class="icon icon-box-danger">
-                            <span class="mdi mdi-arrow-bottom-left icon-item"></span>
-                          </div>
-                        </div>
-                      </div>
-                      <h6 class="text-muted font-weight-normal">Daily Income</h6>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                  <div class="card">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-9">
-                          <div class="d-flex align-items-center align-self-start">
-                            <h3 class="mb-0">$31.53</h3>
-                            <p class="text-success ms-2 mb-0 font-weight-medium">+3.5%</p>
-                          </div>
-                        </div>
-                        <div class="col-3">
-                          <div class="icon icon-box-success ">
-                            <span class="mdi mdi-arrow-top-right icon-item"></span>
-                          </div>
-                        </div>
-                      </div>
-                      <h6 class="text-muted font-weight-normal">Expense current</h6>
-                    </div>
-                  </div>
-                </div>
               </div>
               <div class="row">
                 <div class="col-sm-4 grid-margin">
@@ -521,29 +481,87 @@
                 <div class="card-body">
                   <div style="display: flex; justify-content: space-between;">
                     <h4 class="card-title">Projectlar</h4>
+                    <p>Yuklandi: {{ projects.uploaded_qty }}</p>
+                    <p>Tasdiqlandi: {{ projects.accepted_qty }} / {{ projects.project_card.course_projects_qty }}</p>
+                    <p>Jarayonda: {{ projects.in_progress_qty }}</p>
+                    <p>Rad etilganlar: {{ projects.rejected_qty }}</p>
                     <button class="btn btn-primary add-project" id="add-project" group-id="{{ projects.project_card.group.id }}" onclick="addProject()">Qo'shish</button>
                   </div>
-                  <p>Jami: {{ projects.project_card.approved_projects_qty }} / {{ projects.project_card.course_projects_qty }}</p>
-                  <p>Yuklandi: {{ projects.uploaded_qty }}</p>
+                  
                   <div class="table-responsive">
                     <table class="table table-hover">
                       <thead>
                         <tr>
-                          <th>#</th>
-                          <th>File</th>
-                          <th>Yuklangan sana</th>
-                          <th>Ustoz</th>
-                          <th style="text-align: center;">Taxrirlash</th>
-                          <th style="text-align: center;">O'chirish</th>
+                          <th>
+                            <p>#</p>
+                          </th>
+                          <th>
+                            <p>Nomi</p>
+                          </th>
+                          <th>
+                            <p>File</p>
+                          </th>
+                          <th>
+                            <p>GitHub</p>
+                          </th>
+                          <th>
+                            <p>Netlify</p>
+                          </th>
+                          <th>
+                            <p>Yuklangan sana</p>
+                          </th>
+                          <th>
+                            <p>Ustoz</p>
+                          </th>
+                          <th>
+                            <p>Holati</p>
+                          </th>
+                          <th style="text-align: center;">
+                            <p>Taxrirlash</p>
+                          </th>
+                          <th style="text-align: center;">
+                            <p>O'chirish</p>
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
                         {% for project in projects.projects %}
                           <tr>
-                            <td>1</td>
-                            <td>{{ project.uploaded_file }}</td>
-                            <td> {{ project.created_at }} </td>
-                            <td>{{ project.project_card.group.teacher.first_name }}</td>
+                            <td>
+                              <p style="margin-bottom: 0;">#</p>
+                            </td>
+                            <td>
+                              <p style="margin-bottom: 0;" project-name="{{ project.name }}">{{ project.name }}</p>
+                            </td>
+                            <td>
+                              <p style="margin-bottom: 0;" project-file="{{ project.uploaded_file }}"><a href="{{ project.uploaded_file.url }}" target="_blank">Ko'rish</a=></p>
+                            </td>
+                            <td>
+                              <p style="margin-bottom: 0;" project-github="{{ project.github_link }}"><a href="{{ project.github_link }}" target="_blank">GitHub</a=></p>
+                            </td>
+                            <td>
+                              {% if project.netlify_link %}
+                                <p style="margin-bottom: 0;" project-netlify_link="{{ project.netlify_link }}"><a style="margin-bottom: 0;" href="{{ project.netlify_link }}">Netlify</a></p>
+                              {% else %}
+                                <p style="margin-bottom: 0;">-</p>
+                              {% endif %}
+                            </td>
+                            <td>
+                              <p style="margin-bottom: 0;">{{ project.created_at }}</p>
+                            </td>
+                            <td>
+                              <p style="margin-bottom: 0;">{{ project.project_card.group.teacher.first_name }}</p>
+                            </td>
+                            
+                            <td>
+                              {% if project.status == 'in_progress' %}
+                                <p style="margin-bottom: 0; background-color: rgb(255, 187, 0); border-radius: 5px; padding: 15px 0px; width: 110px; text-align: center; color: #000000;">Jarayonda</p>
+                              {% elif project.status == 'accepted' %}
+                                <p style="margin-bottom: 0; background-color: rgb(0, 255, 42); border-radius: 5px; padding: 15px 15px; text-align: center; width: 110px; color: #000000;">Qabul qilindi</p>
+                              {% else %}
+                                <p style="margin-bottom: 0; background-color: rgb(255, 41, 34); border-radius: 5px; padding: 15px 15px; text-align: center; width: 110px; color: #fff;">Rad etildi</p>
+                              {% endif %}
+                            </td>
                             <td style="text-align: center;">
                               <i class="mdi mdi-pencil edit-project" id="edit-project" edit-file-id="{{ project.id }}" onclick="editProjectBtn()" style="padding: 10px 15px; border-radius: 5px; color: #fff; background-color: rgb(255, 187, 0); font-size: 20px;"></i>
                             </td>

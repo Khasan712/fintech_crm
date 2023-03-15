@@ -181,7 +181,7 @@
                     <div class="col-12 grid-margin">
                         <div class="card">
                             <div class="card-body">
-                                <h4 class="card-title">Guruh: {{ group.id }}</h4>
+                                <h4 class="card-title">Guruh: {{ group.name }}</h4>
                                 <h4 class="card-title">O'quvchilar ro'yhati</h4>
                                     <div class="table-responsive">
                                         <table class="table">
@@ -189,37 +189,38 @@
                                                 <tr>
                                                     <th> Ism </th>
                                                     <th> Familiyasi </th>
-                                                    <th> Yaratilgan sana </th>
-                                                    <th> Boshlangan vaqt </th>
-                                                    <th> Tugatilgan vaqt </th>
-                                                    <th> Holati </th>
+                                                    <th> Qo'shilgan dars </th>
+                                                    <th> Loyihalar </th>
+                                                    <th> Haftalik baho </th>
+                                                    <th> O'qish turi </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
 
-                                                {% for student in students %}
-                                                    <tr>
-                                                        <td>
-                                                            <!-- <img src="{% static 'app/assets/images/faces/face1.jpg' %}" alt="image" /> -->
-                                                            <span class="ps-2">{{ student.student__first_name }}</span>
-                                                        </td>
-                                                        <td> {{ student.student__last_name }} </td>
-                                                        <td> {{ lesson.created_at }} </td>
-                                                        <td> {{ lesson.start_time }} </td>
-                                                        {% if lesson.end_time is not None %}
-                                                        <td> {{ lesson.end_time }} </td>
-                                                        {% else %}
-                                                        <td> - </td>
-                                                        {% endif %}
-                                                        <td>
-                                                        {% if lesson.status == 'started' %}
-                                                            <div class="badge badge-outline-success">Boshlandi</div>
-                                                            {% elif lesson.status == 'finished' %}
-                                                                <div class="badge badge-outline-danger">Tugadi</div>
-                                                        {% endif %}
-                                                        </td>
-                                                    </tr>
-                                                {% endfor %}
+                                              {% for student in students %}
+                                                <tr>
+                                                    <td>
+                                                        <!-- <img src="{% static 'app/assets/images/faces/face1.jpg' %}" alt="image" /> -->
+                                                        <span class="ps-2">{{ student.student.first_name }}</span>
+                                                    </td>
+                                                    <td> {{ student.student.last_name }} </td>
+                                                    <td> {{ student.student_first_lesson.lesson_number }} - dars</td>
+                                                    {% if student.uploaded_file_qty %}
+                                                      <td><a href="{% url 'teacher_dashboard' %}?page=student_projects&group_id={{ group.id }}&student_id={{ student.student.id }}">Yuklandi - {{ student.uploaded_file_qty }} | Tasdiqlandi - {{ student.accepted_project_qty }}</a></td>
+                                                    {% else %}
+                                                      <td> Yuklandi - {{ student.uploaded_file_qty }} | Tasdiqlandi - {{ student.accepted_project_qty }}</td>
+                                                    {% endif %}
+                                                    <td> {{ student.weekly_point }} </td>
+                                                    <td> {{ student.student.student_type }} </td>
+                                                    <td>
+                                                    {% if lesson.status == 'started' %}
+                                                        <div class="badge badge-outline-success">Boshlandi</div>
+                                                        {% elif lesson.status == 'finished' %}
+                                                            <div class="badge badge-outline-danger">Tugadi</div>
+                                                    {% endif %}
+                                                    </td>
+                                                </tr>
+                                              {% endfor %}
 
                                             
                                             </tbody>
@@ -333,7 +334,7 @@
                           </div>
                         {% endif %}
                         <button type="submit" class="btn btn-primary">Saqlash</button>
-                        <input type="hidden" name="page" value="update_lesson">
+                        <input type="hidden" name="method" value="update_lesson">
                         <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
                       </form>
                     </div>
@@ -676,6 +677,107 @@
                   </div>
                 </div>
               </div>
+            
+            {% elif page == 'student_projects' %}
+            <div class="col-lg-12 grid-margin stretch-card">
+              <div class="card">
+                <form method="POST">{% csrf_token %}
+                  <input type="hidden" name="method" value="give_status_to_proj">
+                  <input type="hidden" name="student_id" value="{{ student.id }}">
+                  <input type="hidden" name="group_id" value="{{ group_id }}">
+                
+                  <div class="card-body">
+                    <h3>O'quvchi: {{ student.first_name }} {{ student.last_name }}</h3>
+                    <br>
+                    <div style="display: flex; justify-content: space-between;">
+                      <h4 class="card-title">Projectlar</h4>
+                      <p>Yuklandi: {{ projects_statistics.uploaded_proj_qty }}</p>
+                      <p>Tasdiqlandi: {{ projects_statistics.accepted_proj_qty }} / {{ projects_statistics.course_projects_qty }}</p>
+                      <p>Jarayonda: {{ projects_statistics.in_progress_proj_qty }}</p>
+                      <p>Rad etilganlar: {{ projects_statistics.rejected_proj_qty }}</p>
+                      <button class="btn btn-primary" type="submit">Saqlash</button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>
+                              <p>#</p>
+                            </th>
+                            <th>
+                              <p>Nomi</p>
+                            </th>
+                            <th>
+                              <p>File</p>
+                            </th>
+                            <th>
+                              <p>GitHub</p>
+                            </th>
+                            <th>
+                              <p>Netlify</p>
+                            </th>
+                            <th>
+                              <p>Yuklangan sana</p>
+                            </th>
+                            <th>
+                              <p>Holati</p>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for project in projects %}
+                            <tr>
+                              <td>
+                                <p style="margin-bottom: 0;">#</p>
+                              </td>
+                              <td>
+                                <p style="margin-bottom: 0;">{{ project.name }}</p>
+                              </td>
+                              <td>
+                                <p style="margin-bottom: 0;"><a href="{{ project.uploaded_file.url }}" target="_blank">Ko'rish</a=></p>
+                              </td>
+                              <td>
+                                <p style="margin-bottom: 0;"><a href="{{ project.github_link }}" target="_blank">GitHub</a=></p>
+                              </td>
+                              <td>
+                                {% if project.netlify_link %}
+                                  <p style="margin-bottom: 0;"><a href="{{ project.netlify_link }}" target="_blank">Netlify</a></p>
+                                {% else %}
+                                  <p style="margin-bottom: 0;">-</p>
+                                {% endif %}
+                              </td>
+                              <td>
+                                <p style="margin-bottom: 0;">{{ project.created_at }}</p>
+                              </td>
+                              <input type="hidden" name="item_id" value="{{ project.id }}">
+                              <td>
+                                <select name="status">
+                                    {% if project.status == 'in_progress' %}
+                                      <option value="in_progress" selected>Jarayonda</option>
+                                      <option value="accepted">Qabul qilindi</option>
+                                      <option value="rejected">Rad etildi</option>
+                                    {% elif project.status == 'accepted' %}
+                                      <option value="accepted" selected>Qabul qilindi</option>
+                                      <option value="in_progress">Jarayonda</option>
+                                      <option value="rejected">Rad etildi</option>
+                                    {% else %}
+                                      <option value="rejected" selected>Rad etildi</option>
+                                      <option value="in_progress">Jarayonda</option>
+                                      <option value="accepted">Qabul qilindi</option>
+                                    {% endif %}
+                                  </select>
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                </form>
+              </div>
+            </div>
             {% endif %}
             
           </div>

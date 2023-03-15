@@ -63,7 +63,7 @@ class StudentBookPresentationCardAdmin(admin.ModelAdmin):
 
 @admin.register(StudentProjectsCard)
 class StudentProjectsCardAdmin(admin.ModelAdmin):
-    list_display = ('id', 'student', 'group', 'approved_projects_qty', 'course_projects_qty')
+    list_display = ('id', 'student', 'group', 'course_projects_qty')
 
 @admin.register(StudentProject)
 class StudentProjectAdmin(admin.ModelAdmin):

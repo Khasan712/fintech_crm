@@ -1,11 +1,12 @@
 import pytz
 import datetime
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Case, When, IntegerField
 from django.db.models.functions import Coalesce
 from django.shortcuts import render
 from django.views.generic.base import View
 from django.http.response import Http404
 from django.http import HttpResponseRedirect
+from apps.v1.edu.forms.students import StudentProjectItemForm
 from apps.v1.edu.models.groups import Group, GroupStudent, StudentProject, StudentProjectsCard
 from apps.v1.edu.models.lessons import Attendance, HomeTask, HomeTaskItem, HomeWork, HomeWorkItem, Lesson
 from apps.v1.edu.models.presentations import StudentBookPresentation, StudentBookPresentationCard
@@ -73,7 +74,12 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
                 context['dashboard_statistics'] = {
                     "book_presentation": self.get_book_presentation_queryset().filter(student_id=student.id).first(),
                     "book_presentation_qty": len(self.get_book_presentation_item_queryset().filter(book_card__student_id=student.id, is_aproved=True)),
-                    "projects": self.get_student_projects_card_queryset().filter(student_id=student.id)
+                    "projects": self.get_student_projects_card_queryset().filter(student_id=student.id).annotate(
+                        accepted_proj_qty=Coalesce(Count(Case(When(
+                            student_project_item__status='accepted',
+                            then='student_project_item'
+                        ), distinct=True)), 0)
+                    )
                 }
 
             # book presentation
@@ -134,7 +140,10 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
                 context['projects'] = {
                     'projects': projects,
                     'project_card': self.get_student_projects_card_queryset().filter(student_id=student.id).filter(group_id=group_id).first(),
-                    'uploaded_qty': len(projects)
+                    'uploaded_qty': projects.aggregate(qty=Coalesce(Count('id'), 0))['qty'],
+                    'accepted_qty': projects.filter(status='accepted').aggregate(qty=Coalesce(Count('id'), 0))['qty'],
+                    'rejected_qty': projects.filter(status='rejected').aggregate(qty=Coalesce(Count('id'), 0))['qty'],
+                    'in_progress_qty': projects.filter(status='in_progress').aggregate(qty=Coalesce(Count('id'), 0))['qty'],
                 }
         
         return render(request, 'edu/student/dashboard.html', context)
@@ -207,7 +216,10 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
                     raise Http404
                 if uploaded_file:
                     project_card, _ = self.get_student_projects_card_queryset().get_or_create(student_id=user.id, group_id=group_id)
-                    self.get_student_projects().create(uploaded_file=uploaded_file, project_card_id=project_card.id)
+                    self.get_student_projects().create(
+                        uploaded_file=uploaded_file, project_card_id=project_card.id, name=request.POST['name'],
+                        github_link=request.POST['github_link'], netlify_link=request.POST.get('netlify_link')
+                    )
                 return HttpResponseRedirect(f'?page=projects&group_id={group_id}')
             
             # edit Project

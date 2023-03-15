@@ -644,20 +644,25 @@
 
         <!-- Add project -->
         <div class="col-md-12 stretch-card container" id="addProjectCard" class="container" 
-          style="width: 500px; height: 400px; width: 368px; height: 200px; padding: 0;
+          style="width: 368px; height: 360px; padding: 0;
           background-color: white;"
         >
           <div class="card">
             <div class="card-body">
               <form class="forms-sample addProjectForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
-                <input type="file" name="uploaded_file" class="form-control">
+                <input type="text" placeholder="Project name" name="name" class="form-control" required>
                 <br>
+                <input type="file" name="uploaded_file" class="form-control" required>
+                <br>
+                <input type="url" placeholder="GitHub havola" name="github_link" class="form-control" required>
+                <br>
+                <input type="url" placeholder="Netlify havola" name="netlify_link" class="form-control">
                 <br>
                 <input type="hidden" name="method" value="add_project">
                 <input type="hidden" class='group_id' name="group_id" value="">
                 <div style="display: flex; justify-content: space-between;">
                   <button type="submit" class="btn btn-primary btn-icon-text">
-                    <i class="mdi mdi-file-check btn-icon-prepend"></i> Yuklash
+                    <i class="mdi mdi-file-check btn-icon-prepend"></i> Saqlash
                   </button>
                   <button type="button" id="ok" onclick="closeProjectBtn()" class="btn btn-warning me-2">Bekor qilish</button>
                 </div>
@@ -669,14 +674,19 @@
 
         <!-- edit project -->
         <div class="col-md-12 stretch-card container" id="editProjectCard" class="container" 
-          style="width: 368px; height: 200px; padding: 0;
+          style="width: 368px; height: 360px; padding: 0;
           background-color: white;"
         >
           <div class="card">
             <div class="card-body">
               <form class="forms-sample editProjectForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
-                <input type="file" name="uploaded_file" class="form-control">
+                <input type="text" placeholder="Project name" name="name" value="" class="form-control name" style="color: #fff;">
                 <br>
+                <input type="file" name="uploaded_file" class="form-control" style="color: #fff;">
+                <br>
+                <input type="url" placeholder="GitHub havola" name="github_link" class="form-control github_link" style="color: #fff;">
+                <br>
+                <input type="url" placeholder="Netlify havola" name="netlify_link" class="form-control netlify_link" style="color: #fff;">
                 <br>
                 <input type="hidden" name="method" value="edit_project">
                 <input type="hidden" class='group_id' name="group_id" value="">
@@ -818,9 +828,15 @@
       $(".edit-project").click(function(e) {
           e.preventDefault()
           var group_id = $(this).parent().parent().parent().parent().parent().parent().find('button').attr("group-id")
-          var group_id_edit_form = $('.editProjectForm .group_id').attr('value' , group_id)
           var file_id = $(this).attr('edit-file-id')
+          var project_name = $(this).parent().parent().find('p')[1].getAttribute('project-name')
+          var edit_project_github_link = $(this).parent().parent().find('p')[3].getAttribute('project-github')
+          var edit_project_netlify_link = $(this).parent().parent().find('p')[4].getAttribute('project-netlify_link')
+          var group_id_edit_form = $('.editProjectForm .group_id').attr('value' , group_id)
           var file_id_edit_form = $('.editProjectForm .file_id').attr('value' , file_id)
+          var project_name_form = $('.editProjectForm .name').attr('value' , project_name)
+          var project_github_form = $('.editProjectForm .github_link').attr('value' , edit_project_github_link)
+          var project_github_form = $('.editProjectForm .netlify_link').attr('value' , edit_project_netlify_link)
         }
       )
 
