@@ -135,3 +135,6 @@ migrations/
 static/
 staticfiles/
 media/
+
+erp_mysql/
+fintech_crm_mysql/
