@@ -346,7 +346,7 @@ class TeacherDashboardView(UserAuthenticateRequiredMixin, View):
                                 student_attend_obj.h_m_percentage = int(students_h_w_percentage[student])
                                 student_attend_obj.save()
                 parametr = f'?page=lesson&lesson_id={lesson_id}'
-                
+
             # Add subject guides
             case 'subject_guides':
                 if page == 'lesson':
