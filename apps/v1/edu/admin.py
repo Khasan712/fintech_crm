@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from apps.v1.edu.models.exams import Exam, ExamFile, ExamStudentCard, ExamStudentItem
 from apps.v1.edu.models.groups import Group, GroupStudent, StudentProject, StudentProjectsCard
 from apps.v1.edu.models.courses import Course
 from apps.v1.edu.models.lessons import HomeTaskItem, Lesson, Attendance, OnlyHomeTask, SubjectGuide
@@ -68,3 +69,23 @@ class StudentProjectsCardAdmin(admin.ModelAdmin):
 @admin.register(StudentProject)
 class StudentProjectAdmin(admin.ModelAdmin):
     list_display = ('id', 'project_card', 'uploaded_file')
+
+
+@admin.register(Exam)
+class ExamAdmin(admin.ModelAdmin):
+    list_display = ('id', 'group', 'name', 'created_at', 'deadline')
+
+
+@admin.register(ExamFile)
+class ExamFileAdmin(admin.ModelAdmin):
+    list_display = ('id', 'exam', 'uploaded_file', 'created_at')
+
+
+@admin.register(ExamStudentCard)
+class ExamStudentCardAdmin(admin.ModelAdmin):
+    list_display = ('id', 'exam', 'student', 'exam_point', 'created_at')
+
+
+@admin.register(ExamStudentItem)
+class ExamStudentItemAdmin(admin.ModelAdmin):
+    list_display = ('id', 'exam_card', 'name', 'github_link', 'created_at')

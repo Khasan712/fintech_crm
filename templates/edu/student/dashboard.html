@@ -121,7 +121,14 @@
                 <div class="col-12 grid-margin">
                   <div class="card">
                     <div class="card-body">
-                      <h4 class="card-title">Guruh: {{ group }}</h4>
+                      <div style="display: flex; justify-content:space-between;">
+                        <div>
+                          <h4 class="card-title">Guruh: {{ group.name }}</h4>
+                        </div>
+                        <div>
+                          <a href="{% url 'student_dashboard' %}?page=exams&group_id={{ group.id }}"><button style="font-size: 20px;" class="btn btn-success">Imtoxonlar</button></a>
+                        </div>
+                      </div>
                       <h4 class="card-title">Darslar</h4>
                       <div class="table-responsive">
                         <table class="table">
@@ -476,106 +483,415 @@
               </div>
             
             {% elif page == 'projects' %}
-            <div class="col-lg-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <div style="display: flex; justify-content: space-between;">
-                    <h4 class="card-title">Projectlar</h4>
-                    <p>Yuklandi: {{ projects.uploaded_qty }}</p>
-                    <p>Tasdiqlandi: {{ projects.accepted_qty }} / {{ projects.project_card.course_projects_qty }}</p>
-                    <p>Jarayonda: {{ projects.in_progress_qty }}</p>
-                    <p>Rad etilganlar: {{ projects.rejected_qty }}</p>
-                    <button class="btn btn-primary add-project" id="add-project" group-id="{{ projects.project_card.group.id }}" onclick="addProject()">Qo'shish</button>
-                  </div>
-                  
-                  <div class="table-responsive">
-                    <table class="table table-hover">
-                      <thead>
-                        <tr>
-                          <th>
-                            <p>#</p>
-                          </th>
-                          <th>
-                            <p>Nomi</p>
-                          </th>
-                          <th>
-                            <p>File</p>
-                          </th>
-                          <th>
-                            <p>GitHub</p>
-                          </th>
-                          <th>
-                            <p>Netlify</p>
-                          </th>
-                          <th>
-                            <p>Yuklangan sana</p>
-                          </th>
-                          <th>
-                            <p>Ustoz</p>
-                          </th>
-                          <th>
-                            <p>Holati</p>
-                          </th>
-                          <th style="text-align: center;">
-                            <p>Taxrirlash</p>
-                          </th>
-                          <th style="text-align: center;">
-                            <p>O'chirish</p>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for project in projects.projects %}
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div style="display: flex; justify-content: space-between;">
+                      <h4 class="card-title">Projectlar</h4>
+                      <p>Yuklandi: {{ projects.uploaded_qty }}</p>
+                      <p>Tasdiqlandi: {{ projects.accepted_qty }} / {{ projects.project_card.course_projects_qty }}</p>
+                      <p>Jarayonda: {{ projects.in_progress_qty }}</p>
+                      <p>Rad etilganlar: {{ projects.rejected_qty }}</p>
+                      <button class="btn btn-primary add-project" id="add-project" group-id="{{ projects.project_card.group.id }}" onclick="addProject()">Qo'shish</button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
                           <tr>
-                            <td>
-                              <p style="margin-bottom: 0;">#</p>
-                            </td>
-                            <td>
-                              <p style="margin-bottom: 0;" project-name="{{ project.name }}">{{ project.name }}</p>
-                            </td>
-                            <td>
-                              <p style="margin-bottom: 0;" project-file="{{ project.uploaded_file }}"><a href="{{ project.uploaded_file.url }}" target="_blank">Ko'rish</a=></p>
-                            </td>
-                            <td>
-                              <p style="margin-bottom: 0;" project-github="{{ project.github_link }}"><a href="{{ project.github_link }}" target="_blank">GitHub</a=></p>
-                            </td>
-                            <td>
-                              {% if project.netlify_link %}
-                                <p style="margin-bottom: 0;" project-netlify_link="{{ project.netlify_link }}"><a style="margin-bottom: 0;" href="{{ project.netlify_link }}">Netlify</a></p>
-                              {% else %}
-                                <p style="margin-bottom: 0;">-</p>
-                              {% endif %}
-                            </td>
-                            <td>
-                              <p style="margin-bottom: 0;">{{ project.created_at }}</p>
-                            </td>
-                            <td>
-                              <p style="margin-bottom: 0;">{{ project.project_card.group.teacher.first_name }}</p>
-                            </td>
-                            
-                            <td>
-                              {% if project.status == 'in_progress' %}
-                                <p style="margin-bottom: 0; background-color: rgb(255, 187, 0); border-radius: 5px; padding: 15px 0px; width: 110px; text-align: center; color: #000000;">Jarayonda</p>
-                              {% elif project.status == 'accepted' %}
-                                <p style="margin-bottom: 0; background-color: rgb(0, 255, 42); border-radius: 5px; padding: 15px 15px; text-align: center; width: 110px; color: #000000;">Qabul qilindi</p>
-                              {% else %}
-                                <p style="margin-bottom: 0; background-color: rgb(255, 41, 34); border-radius: 5px; padding: 15px 15px; text-align: center; width: 110px; color: #fff;">Rad etildi</p>
-                              {% endif %}
-                            </td>
-                            <td style="text-align: center;">
-                              <i class="mdi mdi-pencil edit-project" id="edit-project" edit-file-id="{{ project.id }}" onclick="editProjectBtn()" style="padding: 10px 15px; border-radius: 5px; color: #fff; background-color: rgb(255, 187, 0); font-size: 20px;"></i>
-                            </td>
-                            <td style="text-align: center;">
-                              <i class="mdi mdi-delete delete-project" id="delete-project" edit-file-id="{{ project.id }}" onclick="deleteProjectBtn()" style="padding: 10px 15px; border-radius: 5px; color: #fff; background-color: rgb(255, 8, 0); font-size: 20px;"></i>
-                            </td>
+                            <th>
+                              <p>#</p>
+                            </th>
+                            <th>
+                              <p>Nomi</p>
+                            </th>
+                            <th>
+                              <p>File</p>
+                            </th>
+                            <th>
+                              <p>GitHub</p>
+                            </th>
+                            <th>
+                              <p>Netlify</p>
+                            </th>
+                            <th>
+                              <p>Yuklangan sana</p>
+                            </th>
+                            <th>
+                              <p>Ustoz</p>
+                            </th>
+                            <th>
+                              <p>Holati</p>
+                            </th>
+                            <th style="text-align: center;">
+                              <p>Taxrirlash</p>
+                            </th>
+                            <th style="text-align: center;">
+                              <p>O'chirish</p>
+                            </th>
                           </tr>
-                        {% endfor %}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {% for project in projects.projects %}
+                            <tr>
+                              <td>
+                                <p style="margin-bottom: 0;">#</p>
+                              </td>
+                              <td>
+                                <p style="margin-bottom: 0;" project-name="{{ project.name }}">{{ project.name }}</p>
+                              </td>
+                              <td>
+                                <p style="margin-bottom: 0;" project-file="{{ project.uploaded_file }}"><a href="{{ project.uploaded_file.url }}" target="_blank">Ko'rish</a></p>
+                              </td>
+                              <td>
+                                <p style="margin-bottom: 0;" project-github="{{ project.github_link }}"><a href="{{ project.github_link }}" target="_blank">GitHub</a></p>
+                              </td>
+                              <td>
+                                {% if project.netlify_link %}
+                                  <p style="margin-bottom: 0;" project-netlify_link="{{ project.netlify_link }}"><a style="margin-bottom: 0;" href="{{ project.netlify_link }}">Netlify</a></p>
+                                {% else %}
+                                  <p style="margin-bottom: 0;">-</p>
+                                {% endif %}
+                              </td>
+                              <td>
+                                <p style="margin-bottom: 0;">{{ project.created_at }}</p>
+                              </td>
+                              <td>
+                                <p style="margin-bottom: 0;">{{ project.project_card.group.teacher.first_name }}</p>
+                              </td>
+                              
+                              <td>
+                                {% if project.status == 'in_progress' %}
+                                  <p style="margin-bottom: 0; background-color: rgb(255, 187, 0); border-radius: 5px; padding: 15px 0px; width: 110px; text-align: center; color: #000000;">Jarayonda</p>
+                                {% elif project.status == 'accepted' %}
+                                  <p style="margin-bottom: 0; background-color: rgb(0, 255, 42); border-radius: 5px; padding: 15px 15px; text-align: center; width: 110px; color: #000000;">Qabul qilindi</p>
+                                {% else %}
+                                  <p style="margin-bottom: 0; background-color: rgb(255, 41, 34); border-radius: 5px; padding: 15px 15px; text-align: center; width: 110px; color: #fff;">Rad etildi</p>
+                                {% endif %}
+                              </td>
+                              <td style="text-align: center;">
+                                <i class="mdi mdi-pencil edit-project" id="edit-project" edit-file-id="{{ project.id }}" onclick="editProjectBtn()" style="padding: 10px 15px; border-radius: 5px; color: #fff; background-color: rgb(255, 187, 0); font-size: 20px;"></i>
+                              </td>
+                              <td style="text-align: center;">
+                                <i class="mdi mdi-delete delete-project" id="delete-project" edit-file-id="{{ project.id }}" onclick="deleteProjectBtn()" style="padding: 10px 15px; border-radius: 5px; color: #fff; background-color: rgb(255, 8, 0); font-size: 20px;"></i>
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            {% elif page == 'exams' %}
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <form method="POST">{% csrf_token %}
+                    <input type="hidden" name="method" value="give_status_to_proj">
+                    <input type="hidden" name="student_id" value="{{ student.id }}">
+                    <input type="hidden" name="group_id" value="{{ group_id }}">
+                    <div class="card-body">
+                      <div style="display: flex; justify-content: space-between;">
+                        <h3>Guruh: {{ group.name }}</h3>
+                      </div>
+                      <h4 class="card-title">Imtixonlar</h4>
+                      <br>
+                      
+                      <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                          <thead>
+                            <tr style="text-align: center;">
+                              <th>
+                                <p>#</p>
+                              </th>
+                              <th>
+                                <p>Imtixon</p>
+                              </th>
+                              <th>
+                                <p>Qo'shilgan sana</p>
+                              </th>
+                              <th>
+                                <p>Tugash vaqti</p>
+                              </th>
+                              <th>
+                                <p>Yuklandi</p>
+                              </th>
+                              <th>
+                                <p>Jarayonda</p>
+                              </th>
+                              <th>
+                                <p>Qabul qilindi</p>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for exam in exams %}
+                              <tr style="text-align: center;">
+                                <td>
+                                  <p style="margin-bottom: 0;">#</p>
+                                </td>
+                                <td>
+                                  <a href="{% url 'student_dashboard' %}?page=exam&exam_id={{ exam.id }}&group_id={{ group.id }}">
+                                    <p style="margin-bottom: 0;">{{ exam.name }}</p>
+                                  </a>
+                                </td>
+                                <td>
+                                  <p style="margin-bottom: 0;">{{ exam.created_at }}</p>
+                                </td>
+                                <td>
+                                  <p style="margin-bottom: 0;">{{ exam.deadline }}</p>
+                                </td>
+                                <td>
+                                  <p style="margin-bottom: 0;">{{ exam.uploaded_qty }}</p>
+                                </td>
+                                <td>
+                                  <p style="margin-bottom: 0;">{{ exam.in_progress_qty }}</p>
+                                </td>
+                                <td>
+                                  <p style="margin-bottom: 0;">{{ exam.accepted_qty }}</p>
+                                </td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  </form>
+                </div>
+              </div>
+            {% elif page == 'exam' %}
+              <div class="row">
+                <div class="col-7 grid-margin">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">{{ exam.name }}</h4>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Guruh</label>
+                                <div id="bloodhound" class="col-sm-9">
+                                  <input class="typeahead text-dark" disabled type="text" placeholder="{{ exam.group.name }}">
+                                </div>
+                              </div>
+                          </div>
+                        </div>
+
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Imtixon oluvchi</label>
+                                <div id="bloodhound" class="col-sm-9">
+                                  <input class="typeahead text-dark" disabled type="text" placeholder="{{ exam.group.teacher.first_name }} {{ exam.group.teacher.last_name }}">
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Yaratilgan sana </label>
+                                <div id="bloodhound" class="col-sm-9">
+                                <input class="typeahead text-dark" disabled type="text" placeholder="{{ exam.created_at }}">
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Tugash vaqti </label>
+                                <div id="bloodhound" class="col-sm-9">
+                                  <input class="typeahead text-dark" disabled type="datetime-local" name="deadline" value="{{ exam.get_formated_deadline }}">
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group row">
+                              <label class="col-sm-3 col-form-label">Imtixon</label>
+                              <div class="col-sm-9">
+                                <input type="text" name="name" disabled class="form-control text-dark" value="{{ exam.name }}" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group row">
+                              <label class="col-sm-3 col-form-label">Batafsil</label>
+                              <div class="col-sm-9">
+                                <textarea name="description" disabled style="background-color: #2A3038; padding: 10px; width: 100%; height: 200px"class="custom-textarea text-light" >{{ exam.description }}</textarea>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-5 grid-margin">
+                  <div class="card" style="height: 585px; overflow-y: scroll;">
+                    <div class="col-12 grid-margin">
+                      <div class="card">
+                        <div class="card-body">
+                          <h4>Imtixonga oid yuklamalar</h4>
+                          <div class="table-responsive">
+                            <table class="table">
+                              <thead>
+                                <tr>
+                                  <th>#</th>
+                                  <th> Nomi </th>
+                                  <th style="text-align: center;">Yuklama</th>
+                                  <th style="text-align: center;">Havola</th>
+                                  <th> Yuklandi </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {% for exam_item in exam_items %}
+                                <tr>
+                                  <td>#</td>
+                                  <td>
+                                    <p>{{ exam_item.name }}</p>
+                                  </td>
+                                  <td>
+                                    {% if exam_item.uploaded_file %}
+                                      <p><a href="{{ exam_item.uploaded_file.url }}" target="_blank">Yuklab olish</a></p>
+                                    {% else %}
+                                      <p>-</p>
+                                    {% endif %}
+                                  </td>
+                                  <td>
+                                    {% if exam_item.url_address %}
+                                      <p><a href="{{ exam_item.url_address }}" target="_blank">Kirish</a></p>
+                                    {% else %}
+                                      <p>-</p>
+                                    {% endif %}
+                                  </td>
+                                  <td>
+                                    <p>{{ exam_item.created_at }}</p>
+                                  </td>
+                                </tr>
+                                {% endfor %}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-lg-12 grid-margin stretch-card">
+                  <div class="card">
+                      <div class="card-body">
+                        <div style="display: flex; justify-content: space-between;">
+                          <h3>Yuklamalarim<h3>
+                          {% if can_upload == True %}
+                            <button class="btn btn-primary">Yuklash</button>
+                          {% else %}
+                            <button class="btn btn-primary" disabled>Yuklash</button>
+                          {% endif %}
+                        </div>
+                        <br>
+                        <div style="display: flex; justify-content: space-around;">
+                          <p>Yuklandi: {{ exam_card.uploaded_files_qty }}</p>
+                          <p>Tasdiqlandi: {{ exam_card.accepted_files_qty }}</p>
+                          <p>Jarayonda: {{ exam_card.in_progress_files_qty }}</p>
+                          <p>Rad etilganlar: {{ exam_card.rejected_files_qty }}</p>
+                        </div>
+                        
+                        <div class="table-responsive" style="overflow-y: scroll; height: 600px;">
+                          <table class="table table-hover">
+                            <thead>
+                              <tr>
+                                <th>
+                                  <p>#</p>
+                                </th>
+                                <th>
+                                  <p>Nomi</p>
+                                </th>
+                                <th>
+                                  <p>Yuklama</p>
+                                </th>
+                                <th>
+                                  <p>GitHub</p>
+                                </th>
+                                <th>
+                                  <p>Netlify</p>
+                                </th>
+                                <th>
+                                  <p>Yuklangan sana</p>
+                                </th>
+                                <th>
+                                  <p>Holati</p>
+                                </th>
+                                <th>
+                                  <p>O'zgartirish</p>
+                                </th>
+                                <th>
+                                  <p>O'chirish</p>
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for item in my_items %}
+                                <tr>
+                                  <td>
+                                    <p style="margin-bottom: 0;">#</p>
+                                  </td>
+                                  <td>
+                                    <p style="margin-bottom: 0;">{{ item.name }}</p>
+                                  </td>
+                                  <td>
+                                    <p style="margin-bottom: 0;"><a href="{{ item.uploaded_file.url }}" target="_blank">Ko'rish</a=></p>
+                                  </td>
+                                  <td>
+                                    <p style="margin-bottom: 0;"><a href="{{ item.github_link }}" target="_blank">GitHub</a=></p>
+                                  </td>
+                                  <td>
+                                    {% if item.netlify_link %}
+                                      <p style="margin-bottom: 0;"><a href="{{ item.netlify_link }}" target="_blank">Netlify</a></p>
+                                    {% else %}
+                                      <p style="margin-bottom: 0;">-</p>
+                                    {% endif %}
+                                  </td>
+                                  <td>
+                                    <p style="margin-bottom: 0;">{{ item.created_at }}</p>
+                                  </td>
+                                  <td>
+                                    {% if item.status == 'accepted' %}
+                                    <p style="margin-bottom: 0;">Qabul qilindi</p>
+                                    {% elif item.status == 'in_progress' %}
+                                    <p style="margin-bottom: 0;">Jarayonda</p>
+                                    {% elif item.status == 'rejected' %}
+                                    <p style="margin-bottom: 0;">Rad etildi</p>
+                                    {% endif %}
+                                  </td>
+                                  <td> 
+                                    <label
+                                      class="badge badge-info editGuideOrTaskFile" onclick="editGuideOrTaskFileOpen()"
+                                      updated-guide-or-task-id="{{ subject_guide.id }}" id="editGuideOrTaskFileID"
+                                      >
+                                      <i class="mdi mdi-lead-pencil"></i>
+                                    </label>
+                                  </td> 
+                                  <td>
+                                    <label
+                                      class="badge badge-danger deleteGuideOrTaskFile" onclick="deleteGuideOrTaskFileOpen()"
+                                      delete-guide-or-task-id="{{ subject_guide.id }}" id="deleteGuideOrTaskTextID" 
+                                      ><i class="mdi mdi-delete"></i>
+                                    </label>
+                                  </td>
+                                </tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
             {% endif %}
             
           </div>

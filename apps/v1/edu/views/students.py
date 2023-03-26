@@ -1,12 +1,13 @@
 import pytz
 import datetime
-from django.db.models import Sum, Count, Case, When, IntegerField
+from django.db.models import Sum, Count, Case, When, IntegerField, BigAutoField, Q
 from django.db.models.functions import Coalesce
 from django.shortcuts import render
 from django.views.generic.base import View
 from django.http.response import Http404
 from django.http import HttpResponseRedirect
 from apps.v1.edu.forms.students import StudentProjectItemForm
+from apps.v1.edu.models.exams import Exam, ExamFile, ExamStudentCard, ExamStudentItem
 from apps.v1.edu.models.groups import Group, GroupStudent, StudentProject, StudentProjectsCard
 from apps.v1.edu.models.lessons import Attendance, HomeTask, HomeTaskItem, HomeWork, HomeWorkItem, Lesson
 from apps.v1.edu.models.presentations import StudentBookPresentation, StudentBookPresentationCard
@@ -48,11 +49,24 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
     def get_group_queryset(self):
         return Group.objects.select_related('course', 'teacher', 'creator', 'updater', 'deleter')
     
+    def get_exam_queryset(self):
+        return Exam.objects.select_related('group')
+    
+    def get_exam_file_queryset(self):
+        return ExamFile.objects.select_related("exam")
+    
+    def get_student_exam_item_queryset(self):
+        return ExamStudentItem.objects.select_related('exam_card')
+    
+    def get_student_exam_card_queryset(self):
+        return ExamStudentCard.objects.select_related('exam', 'student')
+    
 
     def get(self, request, *args, **kwargs):
         page = self.request.GET.get('page')
         group_id = self.request.GET.get('group_id')
         lesson_id = self.request.GET.get('lesson_id')
+        exam_id = self.request.GET.get('exam_id')
 
         student = request.user        
         student_groups = Group.objects.select_related('course', 'teacher').filter(
@@ -92,19 +106,19 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
 
             # group
             case 'group':
-                group = student_groups.filter(id=group_id).first()
+                group = student_groups.filter(id=group_id).values('id', 'name').first()
                 if group:
                     group_lessons = student_lessons.filter(
                         group_id=group_id).order_by('-id').values('id', 'creator__first_name', 'lesson_number', 'created_at', 'start_time', 'end_time', 'status')
                     context['lessons'] = group_lessons
-                    context['group'] = group.name
+                    context['group'] = group
                     context['page'] = 'group'
-        
+
             # lesson
             case 'lesson':
                 lesson = student_lessons.filter(id=lesson_id).first()
                 if not lesson:
-                    return Http404
+                    raise Http404
                 homework = self.get_homework_queryset().filter(student_id=student.id, lesson_id=lesson_id).first()
                 if homework:
                     context['homework_items'] = self.get_homework_items_queryset().filter(home_work_id=homework.id).order_by('-id').values('id', 'uploaded_file')
@@ -146,6 +160,59 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
                     'in_progress_qty': projects.filter(status='in_progress').aggregate(qty=Coalesce(Count('id'), 0))['qty'],
                 }
         
+            # exams
+            case 'exams':
+                group = self.get_group_queryset().filter(id=group_id, group_of_student__student_id=student.id).values('id', 'name').first()
+                if not group:
+                    raise Http404
+                context['page'] = 'exams'
+                context['exams'] = self.get_exam_queryset().filter(group_id=group_id, exam_item__student_id=student.id,).annotate(
+                    uploaded_qty=Coalesce(Count('exam_item__student_item_exam_card'), 0, output_field=IntegerField()),
+                    in_progress_qty=Coalesce(Count(Case(When(
+                        exam_item__student_item_exam_card__status='in_progress',
+                        then='exam_item__student_item_exam_card'
+                    ))), 0, output_field=IntegerField()),
+                    accepted_qty=Coalesce(Count(Case(When(
+                        exam_item__student_item_exam_card__status='accepted',
+                        then='exam_item__student_item_exam_card'
+                    ))), 0, output_field=IntegerField()),
+                ).values('id', 'name', 'deadline', 'created_at', 'uploaded_qty', 'in_progress_qty', 'accepted_qty')
+                context['group'] = group
+
+            # exam
+            case 'exam':
+                exam = self.get_exam_queryset().filter(
+                    id=exam_id, group_id=group_id, group__group_of_student__student_id=student.id,
+                    exam_item__student_id=student.id
+                ).first()
+                if not exam:
+                    raise Http404
+                context['page'] = 'exam'
+                context['exam'] = exam
+                context['group'] = self.get_group_queryset().filter(id=group_id).values('id', 'name', 'teacher').first()
+                context['exam_items'] = self.get_exam_file_queryset().filter(exam=exam_id)
+                context['my_items'] = self.get_student_exam_item_queryset().filter(exam_card__exam_id=exam_id, exam_card__student_id=student.id).values(
+                    'id', 'uploaded_file', 'netlify_link', 'status', 'name', 'github_link', 'created_at'
+                )
+                context['exam_card'] = self.get_student_exam_card_queryset().filter(exam_id=exam_id, student_id=student.id).annotate(
+                    uploaded_files_qty=Coalesce(Count(
+                        'student_item_exam_card', distinct=True
+                    ), 0, output_field=IntegerField()),
+                    accepted_files_qty=Coalesce(Count(Case(When(
+                            student_item_exam_card__status='accepted',
+                            then='student_item_exam_card'
+                    )), distinct=True), 0, output_field=IntegerField()),
+                    in_progress_files_qty=Coalesce(Count(Case(When(
+                            student_item_exam_card__status='in_progress',
+                            then='student_item_exam_card'
+                    )), distinct=True), 0, output_field=IntegerField()),
+                    rejected_files_qty=Coalesce(Count(Case(When(
+                            student_item_exam_card__status='rejected',
+                            then='student_item_exam_card'
+                    )), distinct=True), 0, output_field=IntegerField())
+                ).values('id', 'uploaded_files_qty', 'accepted_files_qty', 'in_progress_files_qty', 'rejected_files_qty').first()
+                context['can_upload'] = False if exam.deadline < utc.localize(datetime.datetime.today()) else True
+                
         return render(request, 'edu/student/dashboard.html', context)
     
 

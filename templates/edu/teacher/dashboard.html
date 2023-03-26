@@ -52,7 +52,7 @@
                   </div>
                 {% endfor %}
               </div>
-              <div class="row">
+              <!-- <div class="row">
                 <div class="col-sm-4 grid-margin">
                   <div class="card">
                     <div class="card-body">
@@ -110,7 +110,7 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
             {% elif page == 'group' %}
                 <div class="row ">
                 <div class="col-12 grid-margin">
@@ -119,8 +119,11 @@
                         <div style="display: flex; justify-content: space-between;">
                         <h4 class="card-title">Guruh: {{ group.name }}</h4>
                         <div>
+                          <a href="{% url 'teacher_dashboard' %}?page=exams&group_id={{ group.id }}">
+                              <button type="button" class="btn btn-info btn-fw">Imtixonlar</button>
+                          </a>
                           <a href="{% url 'teacher_dashboard' %}?page=group_students&group_id={{ group.id }}">
-                              <button type="button" class="btn btn-secondary btn-fw">O'quvchilar</button>
+                            <button type="button" class="btn btn-secondary btn-fw">O'quvchilar</button>
                           </a>
                           <button type="submit" id="addBtn" onclick="openBtn()" class="btn btn-primary btn-fw">+ Dars qo'shish</button>
                         </div>
@@ -130,12 +133,12 @@
                         <table class="table">
                             <thead>
                             <tr>
-                                <th> O'qituvchi </th>
-                                <th> Dars No </th>
-                                <th> Yaratilgan sana </th>
-                                <th> Boshlangan vaqt </th>
-                                <th> Tugatilgan vaqt </th>
-                                <th> Holati </th>
+                              <th> O'qituvchi </th>
+                              <th> Dars No </th>
+                              <th> Yaratilgan sana </th>
+                              <th> Boshlangan vaqt </th>
+                              <th> Tugatilgan vaqt </th>
+                              <th> Holati </th>
                             </tr>
                             </thead>
                             <tbody>
@@ -540,7 +543,7 @@
                                                 >
                                                 <i class="mdi mdi-lead-pencil"></i>
                                               </label>
-                                            </td>
+                                            </td> 
                                             <td>
                                               <label
                                                 class="badge badge-danger deleteGuideOrTaskFile" onclick="deleteGuideOrTaskFileOpen()"
@@ -679,105 +682,487 @@
               </div>
             
             {% elif page == 'student_projects' %}
-            <div class="col-lg-12 grid-margin stretch-card">
-              <div class="card">
-                <form method="POST">{% csrf_token %}
-                  <input type="hidden" name="method" value="give_status_to_proj">
-                  <input type="hidden" name="student_id" value="{{ student.id }}">
-                  <input type="hidden" name="group_id" value="{{ group_id }}">
-                
-                  <div class="card-body">
-                    <h3>O'quvchi: {{ student.first_name }} {{ student.last_name }}</h3>
-                    <br>
-                    <div style="display: flex; justify-content: space-between;">
-                      <h4 class="card-title">Projectlar</h4>
-                      <p>Yuklandi: {{ projects_statistics.uploaded_proj_qty }}</p>
-                      <p>Tasdiqlandi: {{ projects_statistics.accepted_proj_qty }} / {{ projects_statistics.course_projects_qty }}</p>
-                      <p>Jarayonda: {{ projects_statistics.in_progress_proj_qty }}</p>
-                      <p>Rad etilganlar: {{ projects_statistics.rejected_proj_qty }}</p>
-                      <button class="btn btn-primary" type="submit">Saqlash</button>
-                    </div>
-                    
-                    <div class="table-responsive">
-                      <table class="table table-hover">
-                        <thead>
-                          <tr>
-                            <th>
-                              <p>#</p>
-                            </th>
-                            <th>
-                              <p>Nomi</p>
-                            </th>
-                            <th>
-                              <p>File</p>
-                            </th>
-                            <th>
-                              <p>GitHub</p>
-                            </th>
-                            <th>
-                              <p>Netlify</p>
-                            </th>
-                            <th>
-                              <p>Yuklangan sana</p>
-                            </th>
-                            <th>
-                              <p>Holati</p>
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {% for project in projects %}
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <form method="POST">{% csrf_token %}
+                    <input type="hidden" name="method" value="give_status_to_proj">
+                    <input type="hidden" name="student_id" value="{{ student.id }}">
+                    <input type="hidden" name="group_id" value="{{ group_id }}">
+                  
+                    <div class="card-body">
+                      <h3>O'quvchi: {{ student.first_name }} {{ student.last_name }}</h3>
+                      <br>
+                      <div style="display: flex; justify-content: space-between;">
+                        <h4 class="card-title">Projectlar</h4>
+                        <p>Yuklandi: {{ projects_statistics.uploaded_proj_qty }}</p>
+                        <p>Tasdiqlandi: {{ projects_statistics.accepted_proj_qty }} / {{ projects_statistics.course_projects_qty }}</p>
+                        <p>Jarayonda: {{ projects_statistics.in_progress_proj_qty }}</p>
+                        <p>Rad etilganlar: {{ projects_statistics.rejected_proj_qty }}</p>
+                        <button class="btn btn-primary" type="submit">Saqlash</button>
+                      </div>
+                      
+                      <div class="table-responsive">
+                        <table class="table table-hover">
+                          <thead>
                             <tr>
-                              <td>
-                                <p style="margin-bottom: 0;">#</p>
-                              </td>
-                              <td>
-                                <p style="margin-bottom: 0;">{{ project.name }}</p>
-                              </td>
-                              <td>
-                                <p style="margin-bottom: 0;"><a href="{{ project.uploaded_file.url }}" target="_blank">Ko'rish</a=></p>
-                              </td>
-                              <td>
-                                <p style="margin-bottom: 0;"><a href="{{ project.github_link }}" target="_blank">GitHub</a=></p>
-                              </td>
-                              <td>
-                                {% if project.netlify_link %}
-                                  <p style="margin-bottom: 0;"><a href="{{ project.netlify_link }}" target="_blank">Netlify</a></p>
-                                {% else %}
-                                  <p style="margin-bottom: 0;">-</p>
-                                {% endif %}
-                              </td>
-                              <td>
-                                <p style="margin-bottom: 0;">{{ project.created_at }}</p>
-                              </td>
-                              <input type="hidden" name="item_id" value="{{ project.id }}">
-                              <td>
-                                <select name="status">
-                                    {% if project.status == 'in_progress' %}
-                                      <option value="in_progress" selected>Jarayonda</option>
-                                      <option value="accepted">Qabul qilindi</option>
-                                      <option value="rejected">Rad etildi</option>
-                                    {% elif project.status == 'accepted' %}
-                                      <option value="accepted" selected>Qabul qilindi</option>
-                                      <option value="in_progress">Jarayonda</option>
-                                      <option value="rejected">Rad etildi</option>
-                                    {% else %}
-                                      <option value="rejected" selected>Rad etildi</option>
-                                      <option value="in_progress">Jarayonda</option>
-                                      <option value="accepted">Qabul qilindi</option>
-                                    {% endif %}
-                                  </select>
-                              </td>
+                              <th>
+                                <p>#</p>
+                              </th>
+                              <th>
+                                <p>Nomi</p>
+                              </th>
+                              <th>
+                                <p>File</p>
+                              </th>
+                              <th>
+                                <p>GitHub</p>
+                              </th>
+                              <th>
+                                <p>Netlify</p>
+                              </th>
+                              <th>
+                                <p>Yuklangan sana</p>
+                              </th>
+                              <th>
+                                <p>Holati</p>
+                              </th>
                             </tr>
-                          {% endfor %}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {% for project in projects %}
+                              <tr>
+                                <td>
+                                  <p style="margin-bottom: 0;">#</p>
+                                </td>
+                                <td>
+                                  <p style="margin-bottom: 0;">{{ project.name }}</p>
+                                </td>
+                                <td>
+                                  <p style="margin-bottom: 0;"><a href="{{ project.uploaded_file.url }}" target="_blank">Ko'rish</a=></p>
+                                </td>
+                                <td>
+                                  <p style="margin-bottom: 0;"><a href="{{ project.github_link }}" target="_blank">GitHub</a=></p>
+                                </td>
+                                <td>
+                                  {% if project.netlify_link %}
+                                    <p style="margin-bottom: 0;"><a href="{{ project.netlify_link }}" target="_blank">Netlify</a></p>
+                                  {% else %}
+                                    <p style="margin-bottom: 0;">-</p>
+                                  {% endif %}
+                                </td>
+                                <td>
+                                  <p style="margin-bottom: 0;">{{ project.created_at }}</p>
+                                </td>
+                                <input type="hidden" name="item_id" value="{{ project.id }}">
+                                <td>
+                                  <select name="status">
+                                      {% if project.status == 'in_progress' %}
+                                        <option value="in_progress" selected>Jarayonda</option>
+                                        <option value="accepted">Qabul qilindi</option>
+                                        <option value="rejected">Rad etildi</option>
+                                      {% elif project.status == 'accepted' %}
+                                        <option value="accepted" selected>Qabul qilindi</option>
+                                        <option value="in_progress">Jarayonda</option>
+                                        <option value="rejected">Rad etildi</option>
+                                      {% else %}
+                                        <option value="rejected" selected>Rad etildi</option>
+                                        <option value="in_progress">Jarayonda</option>
+                                        <option value="accepted">Qabul qilindi</option>
+                                      {% endif %}
+                                    </select>
+                                </td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  </form>
+                </div>
+              </div>
+            {% elif page == 'exams' %}
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <input group-id="{{ group.id }}" value="Imtixon qo'shish"  class="btn btn-primary addExam" style="padding: 8px 0;" onclick="addExamBtn()" id="addExam">
+                  <form method="POST">{% csrf_token %}
+                    <input type="hidden" name="group_id" value="{{ group_id }}">
+                    <div class="card-body">
+                      <div style="display: flex; justify-content: space-between;">
+                        <h3>Guruh: {{ group.name }}</h3>
+                      </div>
+                      <h4 class="card-title">Imtixonlar</h4>
+                      <br>
+                      
+                      <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                          <thead>
+                            <tr style="text-align: center;">
+                              <th>
+                                <p>#</p>
+                              </th>
+                              <th>
+                                <p>Imtixon</p>
+                              </th>
+                              <th>
+                                <p>Qo'shilgan sana</p>
+                              </th>
+                              <th>
+                                <p>Tugash vaqti</p>
+                              </th>
+                              <th>
+                                <p>O'quvchilar soni</p>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for exam in exams %}
+                              <tr style="text-align: center;">
+                                <td>
+                                  <p style="margin-bottom: 0;">#</p>
+                                </td>
+                                <td>
+                                  <a href="{% url 'teacher_dashboard' %}?page=exam&exam_id={{ exam.id }}&group_id={{ group.id }}">
+                                    <p style="margin-bottom: 0;">{{ exam.name }}</p>
+                                  </a>
+                                </td>
+                                <td>
+                                  <p style="margin-bottom: 0;">{{ exam.created_at }}</p>
+                                </td>
+                                <td>
+                                  <p style="margin-bottom: 0;">{{ exam.deadline }}</p>
+                                </td>
+                                <td>
+                                  <p style="margin-bottom: 0;">{{ exam.students_qty }}</p>
+                                </td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  </form>
+                </div>
+              </div>
+            {% elif page == 'exam' %}
+              <div class="row">
+                <div class="col-7 grid-margin">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">Imtixon: {{ exam.name }}</h4>
+                      <form class="form-sample" method="POST">{% csrf_token %}
+                        <br>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Guruh</label>
+                                <div id="bloodhound" class="col-sm-9">
+                                  <input class="typeahead text-dark" disabled type="text" placeholder="{{ exam.group.name }}">
+                                </div>
+                              </div>
+                          </div>
+                        </div>
+
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Imtixon oluvchi</label>
+                                <div id="bloodhound" class="col-sm-9">
+                                  <input class="typeahead text-dark" disabled type="text" placeholder="{{ exam.group.teacher.first_name }} {{ exam.group.teacher.last_name }}">
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Yaratilgan sana </label>
+                                <div id="bloodhound" class="col-sm-9">
+                                <input class="typeahead text-dark" disabled type="text" placeholder="{{ exam.created_at }}">
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Tugash vaqti </label>
+                                <div id="bloodhound" class="col-sm-9">
+                                  <input class="typeahead text-light" type="datetime-local" name="deadline" value="{{ exam.get_formated_deadline }}">
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group row">
+                              <label class="col-sm-3 col-form-label">Imtixon</label>
+                              <div class="col-sm-9">
+                                <input type="text" name="name" class="form-control text-light" value="{{ exam.name }}" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group row">
+                              <label class="col-sm-3 col-form-label">Batafsil</label>
+                              <div class="col-sm-9">
+                                <textarea name="description" style="background-color: #2A3038; padding: 10px;" id="" cols="68" rows="7" class="custom-textarea text-light" >{{ exam.description }}</textarea>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                          <input type="hidden" name="method" value="edit_exam">
+                          <input type="hidden" name="exam_id" value="{{ exam.id }}">
+                          <input type="hidden" name="group_id" value="{{ group_id }}">
+                          <button type="submit" class="btn btn-primary">Saqlash</button>
+                      </form>
+                      <button onclick="deleteExamBtn()" exam-id="{{ exam.id }}" group-id="{{ group_id }}" class="btn btn-danger deleteExam" id="deleteExam" style="position: relative; bottom: 50px; left: 83%;">O'chirish</button>
                     </div>
                   </div>
+                </div>
+                <div class="col-5 grid-margin">
+                  <div class="card" style="height: 700px; overflow-y: scroll;">
+                    <div class="col-12 grid-margin">
+                      <div class="card">
+                        <div class="card-body">
+                          <h4 class="card-title">O'quvchilar</h4>
+                          <div class="table-responsive">
+                            <form action="" method="POST" id="createAttendance">{% csrf_token %}
+                              <table class="table"  >
+                                <thead>
+                                  <tr>
+                                    <th> Ismi Familiyasi </th>
+                                    <th style="text-align: center;">Yuklandi</th>
+                                    <th style="text-align: center;">Tasdiqlandi</th>
+                                    <th> O'qish turi </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for student in students %}
+                                    <tr>
+                                      <td>
+                                        <img src="" alt="?" />
+                                        <span class="ps-2"><a href="{% url 'teacher_dashboard' %}?page=student_in_exam&exam_id={{ exam.id }}&student_id={{ student.id }}">{{ student.first_name }} {{ student.last_name }}</a></span>
+                                      </td>
+                                      <td style="text-align: center;">
+                                        <p>{{ student.uploaded_files_qty }}</p>
+                                      </td>
+                                      <td style="text-align: center;">
+                                        <p>{{ student.accepted_files_qty }}</p>
+                                      </td> 
+                                      {% if student.student_type == 'online' %}
+                                        <td> <label class="badge badge-danger">Online</label></td>
+                                      {% elif student.student_type == 'offline' %}
+                                        <td> <label class="badge badge-info">Offline</label></td>
+                                      {% endif %}
+                                    </tr>
+                                  {% endfor %}
+                                </tbody>
+                              </table>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-                </form>
+                <div class="col-lg-12 grid-margin stretch-card">
+                  <div class="card">
+                    <form method="POST">{% csrf_token %}
+                      <input type="hidden" name="method" value="check_exam">
+                      <input type="hidden" name="student_id" value="{{ student.id }}">
+                      <input type="hidden" name="exam_id" value="{{ exam_card.exam.id }}">
+                    
+                      <div class="card-body">
+                        <div style="display: flex; justify-content: space-between;">
+                          <h3>Imtixonga oid yuklamalar</h3>
+                          <input class="btn btn-primary addExamItem" id="addExamItemID" value="Qo'shish" type="button" style="padding: 18px 45px;" onclick="addExamItemOpen()">
+                        </div>
+                        <br>                        
+                        <br>                        
+                        <div class="table-responsive" style="overflow-y: scroll; height: 600px;">
+                          <table class="table table-hover table-bordered">
+                            <thead>
+                              <tr>
+                                <th>
+                                  <p>#</p>
+                                </th>
+                                <th>
+                                  <p>Nomi</p>
+                                </th>
+                                <th>
+                                  <p>Yuklama</p>
+                                </th>
+                                <th>
+                                  <p>Havola</p>
+                                </th>
+                                <th>
+                                  <p>Yuklandi</p>
+                                </th>
+                                <th>
+                                  <p>O'zgartirish</p>
+                                </th>
+                                <th>
+                                  <p>O'chirish</p>
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for exam_item in exam_items %}
+                                <tr>
+                                  <td>
+                                    <p style="margin-bottom: 0;">#</p>
+                                  </td>
+                                  <td>
+                                    <p style="margin-bottom: 0;">{{ exam_item.name }}</p>
+                                  </td>
+                                  <td>
+                                    {% if exam_item.uploaded_file %}
+                                      <p style="margin-bottom: 0;"><a href="{{ exam_item.uploaded_file.url }}" target="_blank">Kirish</a></p>
+                                    {% else %}
+                                      <p>-</p>
+                                    {% endif %}
+                                  </td>
+                                  <td>
+                                    {% if exam_item.url_address %}
+                                      <p style="margin-bottom: 0;"><a href="{{ exam_item.url_address }}" target="_blank">Kirish</a></p>
+                                    {% else %}
+                                      <p>-</p>
+                                    {% endif %}
+                                  </td>
+                                  <td>
+                                    <p style="margin-bottom: 0;">{{ exam_item.created_at }}</p>
+                                  </td>
+                                  <td> 
+                                    <label class="badge badge-info editExamItem" onclick="editExamItemOpen()" 
+                                      id="editExamItemID" item-name="{{ exam_item.name }}" item-id="{{ exam_item.id }}"
+                                      item-uploaded-file="{{ exam_item.uploaded_file.name }}" item-url-address="{{ exam_item.url_address }}"
+                                    > 
+                                      <i class="mdi mdi-lead-pencil"></i>
+                                    </label>
+                                  </td>
+                                  <td>
+                                    <label class="badge badge-danger deleteExamItem" onclick="deleteExamItemOpen()" 
+                                      id="deleteExamItemID" item-id="{{ exam_item.id }}"
+                                    >
+                                      <i class="mdi mdi-delete"></i>
+                                    </label>
+                                  </td>
+                                </tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+  
+                    </form>
+                  </div>
+                </div>
               </div>
-            </div>
+            {% elif page == 'student_in_exam' %}
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <form method="POST">{% csrf_token %}
+                    <input type="hidden" name="method" value="check_exam">
+                    <input type="hidden" name="student_id" value="{{ student.id }}">
+                    <input type="hidden" name="exam_id" value="{{ exam_card.exam.id }}">
+                  
+                    <div class="card-body">
+                      <h3>O'quvchi: {{ student.first_name }} {{ student.last_name }}</h3>
+                      <br>
+                      <div style="display: flex; justify-content: space-between;">
+                        <h4 class="card-title">Yuklamalar</h4>
+                        <p>Yuklandi: {{ exam_card.uploaded_files_qty }}</p>
+                        <p>Tasdiqlandi: {{ exam_card.accepted_files_qty }}</p>
+                        <p>Jarayonda: {{ exam_card.in_progress_files_qty }}</p>
+                        <p>Rad etilganlar: {{ exam_card.rejected_files_qty }}</p>
+                        <button type='submit' class="btn btn-primary" type="submit">Saqlash</button>
+                      </div>
+                      
+                      <div class="table-responsive">
+                        <table class="table table-hover">
+                          <thead>
+                            <tr>
+                              <th>
+                                <p>#</p>
+                              </th>
+                              <th>
+                                <p>Nomi</p>
+                              </th>
+                              <th>
+                                <p>File</p>
+                              </th>
+                              <th>
+                                <p>GitHub</p>
+                              </th>
+                              <th>
+                                <p>Netlify</p>
+                              </th>
+                              <th>
+                                <p>Yuklangan sana</p>
+                              </th>
+                              <th>
+                                <p>Holati</p>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for project in uploaded_files %}
+                              <tr>
+                                <td>
+                                  <p style="margin-bottom: 0;">#</p>
+                                </td>
+                                <td>
+                                  <p style="margin-bottom: 0;">{{ project.name }}</p>
+                                </td>
+                                <td>
+                                  <p style="margin-bottom: 0;"><a href="{{ project.uploaded_file.url }}" target="_blank">Ko'rish</a=></p>
+                                </td>
+                                <td>
+                                  <p style="margin-bottom: 0;"><a href="{{ project.github_link }}" target="_blank">GitHub</a=></p>
+                                </td>
+                                <td>
+                                  {% if project.netlify_link %}
+                                    <p style="margin-bottom: 0;"><a href="{{ project.netlify_link }}" target="_blank">Netlify</a></p>
+                                  {% else %}
+                                    <p style="margin-bottom: 0;">-</p>
+                                  {% endif %}
+                                </td>
+                                <td>
+                                  <p style="margin-bottom: 0;">{{ project.created_at }}</p>
+                                </td>
+                                <input type="hidden" name="item_id" value="{{ project.id }}">
+                                <td>
+                                  <select name="status">
+                                      {% if project.status == 'in_progress' %}
+                                        <option value="in_progress" selected>Jarayonda</option>
+                                        <option value="accepted">Qabul qilindi</option>
+                                        <option value="rejected">Rad etildi</option>
+                                      {% elif project.status == 'accepted' %}
+                                        <option value="accepted" selected>Qabul qilindi</option>
+                                        <option value="in_progress">Jarayonda</option>
+                                        <option value="rejected">Rad etildi</option>
+                                      {% else %}
+                                        <option value="rejected" selected>Rad etildi</option>
+                                        <option value="in_progress">Jarayonda</option>
+                                        <option value="accepted">Qabul qilindi</option>
+                                      {% endif %}
+                                    </select>
+                                </td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  </form>
+                </div>
+              </div>
             {% endif %}
             
           </div>

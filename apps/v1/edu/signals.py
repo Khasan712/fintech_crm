@@ -22,12 +22,12 @@ def create_project_tasks_for_student(sender, instance, created, **kwargs):
 
 
 @receiver(post_save, sender=Exam)
-def exam_signal(sender, instanse, created, **kwargs):
+def exam_signal(sender, instance, created, **kwargs):
     if created:
         group_students = GroupStudent.objects.select_related('student', 'group', 'creator', 'updater', 'deleter', 'student_first_lesson')
         with transaction.atomic():
             for group_student in group_students:
                 ExamStudentCard.objects.get_or_create(
-                    exam_id=instanse.id,
-                    student_id=group_student.id
+                    exam_id=instance.id,
+                    student_id=group_student.student.id
                 )
