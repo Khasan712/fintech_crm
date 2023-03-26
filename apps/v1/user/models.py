@@ -2,11 +2,11 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
 from apps.commons.models import CustomBaseAbstract
-from apps.v1.user.enums import UserRole
+from apps.v1.user.enums import StudentType, UserRole
 from apps.v1.user.managers import (
+    AdministratorManager,
     UserManager,
     SuperAdminManager,
-    AdminManager,
     TeacherManager,
     StudentManager
 )
@@ -16,7 +16,8 @@ class User(AbstractBaseUser, PermissionsMixin, CustomBaseAbstract):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=50, unique=True)
-    role = models.CharField(max_length=11, choices=UserRole.choices())
+    role = models.CharField(max_length=13, choices=UserRole.choices())
+    student_type = models.CharField(max_length=7, choices=StudentType.choices(), blank=True, null=True)
 
     mother_full_name = models.CharField(max_length=50, blank=True, null=True)
     mother_phone = models.CharField(max_length=50, blank=True, null=True)
@@ -49,13 +50,13 @@ class SuperAdmin(User):
         verbose_name_plural = 'Super adminlar'
 
 
-class Admin(User):
-    objects = AdminManager()
+class Administrator(User):
+    objects = AdministratorManager()
 
     class Meta:
         proxy = True
-        verbose_name = 'Admin'
-        verbose_name_plural = 'Adminlar'
+        verbose_name = 'Administrator'
+        verbose_name_plural = 'Administratorlar'
 
 
 class Teacher(User):
@@ -74,14 +75,21 @@ class Student(User):
         proxy = True
         verbose_name = "O'quvchi"
         verbose_name_plural = "O'quvchilar"
+    
+    @property
+    def get_verified(self):
+        return self.is_verified
 
 
 class RegisterCode(models.Model):
     phone_number = models.CharField(max_length=15)
-    code = models.IntegerField()
+    code = models.CharField(max_length=256)
+    tries = models.IntegerField(default=0)
+    state = models.CharField(max_length=128, default="step_one")
+    is_expired = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, auto_now=False, editable=False)
 
     class Meta:
         verbose_name = "Registratsiya kod"
         verbose_name_plural = "Registratsiya kodlari"
-
 

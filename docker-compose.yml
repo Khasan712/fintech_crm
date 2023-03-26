@@ -1,0 +1,139 @@
+version: '3.9'
+
+services:
+  f_crm:
+    build:
+      context: .
+    container_name: f_crm
+    restart: always
+    volumes:
+      - .:/app
+      - static_files:/app/staticfiles
+      - static:/app/static
+      - media:/app/media
+      - /tmp/app/mysqld:/run/mysqld
+    ports:
+      - "8000:8000"
+    command: python manage.py runserver 0.0.0.0:8000
+    env_file:
+      - .env
+    # depends_on:
+    #   - f_db
+
+
+  # f_db:
+  #   image: postgres
+  #   environment:
+  #     POSTGRES_USER: f_db_user
+  #     POSTGRES_DB: f_db
+  #     POSTGRES_PASSWORD: f_db_1234
+  #   ports:
+  #     - "5433:5432"
+  #   volumes:
+  #     - pgdata:/var/lib/posgresql/data
+
+
+
+volumes:
+  static_files:
+  static:
+  media:
+  redis_data:
+  # pgdata:
+
+
+
+
+
+
+
+
+
+  # f_db:
+  #   image: postgres
+  #   environment:
+  #     POSTGRES_USER: f_db_user
+  #     POSTGRES_DB: f_db
+  #     POSTGRES_PASSWORD: f_db_1234
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - pgdata:/var/lib/posgresql/data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  # nginx:
+  #   build: ./nginx
+  #   container_name: nginx
+  #   restart: always
+  #   volumes:
+  #     - ./nginx/conf/:/etc/nginx/conf.d/:rw
+  #     - static_files:/home/app/staticfiles/
+  #     - static:/home/app/static/
+  #     - media:/home/app/media/
+  #     - .:/app
+  #   depends_on:
+  #     - fintech_web
+  #   ports:
+  #     - 1080:80
+  #     - 1443:443
+  #   env_file:
+  #     - .env
+
+
+  # redis:
+  #   container_name: erp_redis
+  #   image: redis:alpine
+  #   ports:
+  #     - 6379:6379
+  #   volumes:
+  #     - redis_data:/data
+  #   depends_on:
+  #     - fintech_crm_mysql
+  #     - fintech_web
+
+
+  # celery-worker:
+  #   container_name: erp_celery_worker
+  #   restart: always
+  #   build:
+  #     context: .
+  #   command: celery -A config worker -l info
+  #   volumes:
+  #     - .:/app
+  #     - /tmp/app/mysqld:/run/mysqld
+  #   depends_on:
+  #     - fintech_web
+  #     - redis
+  #     - fintech_crm_mysql
+
+
+  # celery-beat:
+  #   container_name: erp_celery_beat
+  #   restart: always
+  #   build:
+  #     context: .
+  #   command: celery -A config beat -l info
+  #   volumes:
+  #     - .:/app
+  #     - /tmp/app/mysqld:/run/mysqld
+  #   depends_on:
+  #     - fintech_web
+  #     - redis
+  #     - celery-worker
+  #     - fintech_crm_mysql
+
+
+

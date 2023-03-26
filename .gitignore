@@ -136,5 +136,11 @@ static/
 staticfiles/
 media/
 
+
+# Templates
+template/
+
+
+# Docker
 erp_mysql/
 fintech_crm_mysql/

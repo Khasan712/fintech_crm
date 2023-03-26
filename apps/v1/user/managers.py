@@ -49,9 +49,9 @@ class SuperAdminManager(manager.Manager):
         return super().get_queryset().filter(role="super_admin")
 
 
-class AdminManager(manager.Manager):
+class AdministratorManager(manager.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(role="admin")
+        return super().get_queryset().filter(role="administrator")
 
 
 class TeacherManager(manager.Manager):

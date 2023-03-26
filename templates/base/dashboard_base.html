@@ -21,10 +21,14 @@
     <!-- endinject -->
     <!-- Layout styles -->
     <link rel="stylesheet" href="{% static 'app/assets/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'app/modal/learn.css' %}">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="{% static 'app/assets/images/favicon.png' %}" />
+
   </head>
   <body>
+
+
     <div class="container-scroller">
       <!-- partial:partials/_sidebar.html -->
       
@@ -32,7 +36,21 @@
       
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div style="padding-top: 15px ;" class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-          <a style="padding:0" class="sidebar-brand brand-logo" href="{% url 'student_dashboard' %}"><img style="width:250px; height:180px" src="{% static '/fintech/logo/dark.png' %}" alt="FinTech" /></a>
+
+          {% if request.user.role == 'teacher' %}
+            <a style="padding:0" class="sidebar-brand brand-logo" href="{% url 'teacher_dashboard' %}">
+              <img style="width:250px; height:180px" src="{% static '/fintech/logo/dark.png' %}" alt="FinTech" />
+            </a>
+          {% elif request.user.role == 'student' %}
+            <a style="padding:0" class="sidebar-brand brand-logo" href="{% url 'student_dashboard' %}">
+              <img style="width:250px; height:180px" src="{% static '/fintech/logo/dark.png' %}" alt="FinTech" />
+            </a>
+          {% elif request.user.role == 'administrator' %}
+            <a style="padding:0" class="sidebar-brand brand-logo" href="{% url 'administrator_dashboard' %}">
+              <img style="width:250px; height:180px" src="{% static '/fintech/logo/dark.png' %}" alt="FinTech" />
+            </a>
+          {% endif %}
+
           <a class="sidebar-brand brand-logo-mini" href="index.html"><img src="{% static '/fintech/logo/dark.png' %}" alt="logo" /></a>
         </div>
         <ul class="nav">
@@ -44,7 +62,7 @@
                   <span class="count bg-success"></span>
                 </div>
                 <div class="profile-name">
-                  <h5 class="mb-0 font-weight-normal">{{ user.first_name }} {{ user.last_name | slice:"10" }}</h5>
+                  <h5 class="mb-0 font-weight-normal">{{ user.first_name }}</h5>
                   <span>{{ user.role }}</span>
                 </div>
               </div>
@@ -91,99 +109,141 @@
 
 
 
-          {% comment %}  Student tabs  {% endcomment %}
-          {% if request.user.role == 'student' %}
+          {% if request.user.role == 'teacher' %}
+
+            <!-- DASHBOARD -->
             <li class="nav-item menu-items">
-                <a class="nav-link" href="{% url 'student_dashboard' %}">
+              <a class="nav-link" href="{% url 'teacher_dashboard' %}">
                 <span class="menu-icon">
                     <i class="mdi mdi-speedometer"></i>
                 </span>
                 <span class="menu-title">Dashboard</span>
-                </a>
+              </a>
             </li>
 
+            <!-- GROUPS -->
             <li class="nav-item menu-items">
-                <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+              <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
                 <span class="menu-icon">
                     <i class="mdi mdi-laptop"></i>
                 </span>
                 <span class="menu-title">Guruhlar</span>
                 <i class="menu-arrow"></i>
-                </a>
-                <div class="collapse" id="ui-basic">
+              </a>
+              <div class="collapse" id="ui-basic">
                 <ul class="nav flex-column sub-menu">
                 
                   {% for group in groups %}
-                      <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'student_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
+                    {% if request.user.role == 'student' %}
+                    <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'student_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
+                    {% elif request.user.role == 'teacher' %}
+                    <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'teacher_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
+                    {% endif %}
                   {% endfor %}
                 
                 </ul>
-                </div>
+              </div>
             </li>
-          {% endif %}
 
-
-
-
-
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="pages/forms/basic_elements.html">
+          <!-- EXAMS -->
+          {% comment %} <li class="nav-item menu-items">
+            <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
               <span class="menu-icon">
-                <i class="mdi mdi-playlist-play"></i>
+                  <i class="mdi mdi-laptop"></i>
               </span>
-              <span class="menu-title">Form Elements</span>
-            </a>
-          </li>
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="pages/tables/basic-table.html">
-              <span class="menu-icon">
-                <i class="mdi mdi-table-large"></i>
-              </span>
-              <span class="menu-title">Tables</span>
-            </a>
-          </li>
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="pages/charts/chartjs.html">
-              <span class="menu-icon">
-                <i class="mdi mdi-chart-bar"></i>
-              </span>
-              <span class="menu-title">Charts</span>
-            </a>
-          </li>
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="pages/icons/mdi.html">
-              <span class="menu-icon">
-                <i class="mdi mdi-contacts"></i>
-              </span>
-              <span class="menu-title">Icons</span>
-            </a>
-          </li>
-          <li class="nav-item menu-items">
-            <a class="nav-link" data-bs-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
-              <span class="menu-icon">
-                <i class="mdi mdi-security"></i>
-              </span>
-              <span class="menu-title">User Pages</span>
+              <span class="menu-title">Imtixonlar</span>
               <i class="menu-arrow"></i>
             </a>
-            <div class="collapse" id="auth">
+            <div class="collapse" id="ui-basic">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="pages/samples/blank-page.html"> Blank Page </a></li>
-                <li class="nav-item"> <a class="nav-link" href="pages/samples/error-404.html"> 404 </a></li>
-                <li class="nav-item"> <a class="nav-link" href="pages/samples/error-500.html"> 500 </a></li>
-                <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html"> Login </a></li>
-                <li class="nav-item"> <a class="nav-link" href="pages/samples/register.html"> Register </a></li>
+                {% for group in groups %}
+                  {% if request.user.role == 'student' %}
+                  <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'student_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
+                  {% elif request.user.role == 'teacher' %}
+                  <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'teacher_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
+                  {% endif %}
+                {% endfor %}
               </ul>
             </div>
-          </li>
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="http://www.bootstrapdash.com/demo/corona-free/jquery/documentation/documentation.html">
+          </li> {% endcomment %}
+
+
+          {% elif request.user.role == 'student' %}
+
+            <!-- DASHBOARD -->
+            <li class="nav-item menu-items">
+              <a class="nav-link" href="{% url 'student_dashboard' %}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-speedometer"></i>
+                </span>
+                <span class="menu-title">Dashboard</span>
+              </a>
+            </li>
+
+            <!-- GROUPS -->
+            <li class="nav-item menu-items">
+              <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                <span class="menu-icon">
+                    <i class="mdi mdi-laptop"></i>
+                </span>
+                <span class="menu-title">Guruhlar</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="ui-basic">
+                <ul class="nav flex-column sub-menu">
+                
+                  {% for group in groups %}
+                    {% if request.user.role == 'student' %}
+                    <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'student_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
+                    {% elif request.user.role == 'teacher' %}
+                    <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'teacher_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
+                    {% endif %}
+                  {% endfor %}
+                
+                </ul>
+              </div>
+            </li>
+
+          <!-- EXAMS -->
+          {% comment %} <li class="nav-item menu-items">
+            <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
               <span class="menu-icon">
-                <i class="mdi mdi-file-document-box"></i>
+                  <i class="mdi mdi-laptop"></i>
               </span>
-              <span class="menu-title">Documentation</span>
+              <span class="menu-title">Imtixonlar</span>
+              <i class="menu-arrow"></i>
             </a>
-          </li>
+            <div class="collapse" id="ui-basic">
+              <ul class="nav flex-column sub-menu">
+                {% for group in groups %}
+                  {% if request.user.role == 'student' %}
+                  <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'student_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
+                  {% elif request.user.role == 'teacher' %}
+                  <li class="nav-item"> <a type="submit" class="nav-link" href="{% url 'teacher_dashboard' %}?page=group&group_id={{ group.id }}">{{ group.name }}</a></li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+          </li> {% endcomment %}
+
+
+          {% elif request.user.role == 'administrator' %}
+
+            <!-- DASHBOARD -->
+            <li class="nav-item menu-items">
+              <a class="nav-link" href="{% url 'administrator_dashboard' %}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-speedometer"></i>
+                </span>
+                <span class="menu-title">Dashboard</span>
+              </a>
+            </li>
+
+          {% endif %}
+
+            
+
+
         </ul>
       </nav>
 
@@ -206,7 +266,8 @@
             <ul class="navbar-nav w-100">
               <li class="nav-item w-100">
                 <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-                  <input type="text" class="form-control" placeholder="Search products">
+                  <input type="text" class="form-control" placeholder="Search products" style="color: #fff;">
+                  <i class="mdi mdi-yeast" style="position: relative; right: 80px; font-size: 20px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; background-color: #2A3038; padding: 0 30px; padding-top: 4px;"></i>
                 </form>
               </li>
             </ul>
@@ -373,8 +434,9 @@
                         <i class="mdi mdi-logout text-danger"></i>
                       </div>
                     </div>
-                    <div class="preview-item-content">
-                      <p class="preview-subject mb-1">Log out</p>
+                    <div class="preview-item-content" >
+                      
+                      <p class="preview-subject mb-1"  >Log out </p>
                     </div>
                   </a>
                   <div class="dropdown-divider"></div>
@@ -394,9 +456,425 @@
         
         {% endblock content %}
 
+        <div class="col-md-12 stretch-card container" id="card" class="container">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title">Dars qo'shish</h4>
+              <form class="forms-sample" method="POST">{% csrf_token %}
+                <div class="form-group">
+                  <label for="exampleInputUsername1">Mavzu</label>
+                  <input name="theme" type="text" style="color: white;" class="form-control" required placeholder="Mavzuni kiriting">
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputEmail1">Dars haqida</label>
+                  <textarea name="description" style="background-color: #2A3038; color: white;" id="" cols="58" rows="7" class="custom-textarea" ></textarea>
+                </div>
+                <input type="hidden" name="method" value="create_lesson">
+                <input type="hidden" name="page" value="group">
+                <input type="hidden" name="group_id" value="{{ group.id }}">
+                <button type="submit" class="btn btn-primary btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> Yaratish 
+                </button>
+                <button type="button" id="ok" onclick="closeLesson()" class="btn btn-warning me-2">Cancel</button>
+                <!-- <button class="oke" type="button" id="ok" onclick="closeBtn()">OK</button> -->
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+
+        <div class="col-md-12 stretch-card container" id="editCard" class="container" style="width: 500px; height: 400px;">
+          <div class="card">
+            <div class="card-body" style="margin-bottom: 70px;">
+              <h4 class="card-title">Taxrirlash</h4>
+              <form class="forms-sample modals" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <div class="form-group">
+                  <br>
+                  <br>
+                  <input name="uploaded_file" type="file">
+                </div>
+                <input type="hidden" name="method" value="edit_homework">
+                <input type="hidden" class="file_id" name="file_id" value="">
+                <input class="lesson_id" type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                <button type="submit" class="btn btn-primary btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> Saqlash 
+                </button>
+                <button type="button" id="ok" onclick="closeEdit()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="col-md-12 stretch-card container" id="deleteHomeWorkCard" class="container" style="width: 500px; height: 400px;">
+          <div class="card">
+            <div class="card-body" style="margin-bottom: 70px;">
+              <h4 class="card-title">O'chirish</h4>
+              <form class="forms-sample delteModals" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="hidden" name="method" value="delete_homework">
+                <input type="hidden" class="item_id" name="file_id" value="">
+                <input class="lesson_id" type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                <button type="submit" class="btn btn-primary btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> O'chirish 
+                </button>
+                <button type="button" id="ok" onclick="closeDelete()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Mavzuga oid qo'llanmalar Text update -->
+        <div 
+          class="col-md-12 stretch-card container" id="editGuideOrTaskText" class="container" 
+          style="width: 500px; height: 400px; position: absolute; top: 104%; width: 370px; height: 120px; padding: 0;
+          background-color: white;" 
+        >
+          <div class="card">
+            <div class="card-body">
+              <form class="forms-sample editGuideTaskText" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="hidden" name="method" value="edit_guides_and_tasks">
+                <input type="hidden" class="item_id" name="item_id" value="">
+                <input type="hidden" class="edit_guide_task_text" name="text" value="">
+                <input class="lesson_id" type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                <button type="submit" class="btn btn-primary btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> Saqlash 
+                </button>
+                <button type="button" id="ok" onclick="closeEditGuideOrTaskText()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mavzuga oid qo'llanmalar Text delete -->
+        <div 
+          class="col-md-12 stretch-card container" id="deleteGuideOrTaskText" class="container" 
+          style="width: 500px; height: 400px; position: absolute; top: 104%; width: 370px; height: 120px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form class="forms-sample deleteGuideTaskText" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="hidden" name="method" value="delete_guides_and_tasks">
+                <input type="hidden" class="item_id" name="item_id" value="">
+                <input class="lesson_id" type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                <button type="submit" class="btn btn-danger btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> O'chirish 
+                </button>
+                <button type="button" id="ok" onclick="closeDeleteGuideOrTaskText()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mavzuga oid qo'llanmalar File update -->
+        <div 
+          class="col-md-12 stretch-card container" id="editGuideOrTaskFileCard" class="container" 
+          style="width: 500px; height: 400px; position: absolute; top: 104%; width: 370px; height: 175px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form 
+                class="forms-sample editGuideTaskFileForm" method="POST" enctype="multipart/form-data"
+                style="padding: 0;"
+              >{% csrf_token %}
+                <input name="uploaded_file" type="file" style="width: -moz-available;">
+                <br>
+                <br>
+                <input type="hidden" name="method" value="edit_guides_and_tasks">
+                <input type="hidden" class="item_id" name="item_id" value="">
+                <input class="lesson_id" type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                <button type="submit" class="btn btn-primary btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> Yuklash 
+                </button>
+                <button type="button" id="ok" onclick="closeEditGuideOrTaskFile()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mavzuga oid qo'llanmalar File delete -->
+        <div 
+          class="col-md-12 stretch-card container" id="deleteGuideOrTaskFile" class="container" 
+          style="width: 500px; height: 400px; position: absolute; top: 104%; width: 370px; height: 120px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form class="forms-sample deleteGuideTaskFileForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="hidden" name="method" value="delete_guides_and_tasks">
+                <input type="hidden" class="item_id" name="item_id" value="">
+                <input class="lesson_id" type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                <button type="submit" class="btn btn-danger btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> O'chirish 
+                </button>
+                <button type="button" id="ok" onclick="closeDeleteGuideOrTaskFile()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+
+        <!-- Add book presentation -->
+        <div class="col-md-12 stretch-card container" id="addBookPresentationCard" class="container" 
+          style="width: 500px; height: 400px; width: 368px; height: 200px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form class="forms-sample addBookPresentationForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="text" placeholder="Kitob nomini kiriting" name="book" style="color: #fff;" class="form-control">
+                <br>
+                <br>
+                <input type="hidden" name="method" value="add_book_presentation">
+                <div style="display: flex; justify-content: space-between;">
+                  <button type="submit" class="btn btn-primary btn-icon-text">
+                    <i class="mdi mdi-file-check btn-icon-prepend"></i> Saqlash
+                  </button>
+                  <button type="button" id="ok" onclick="closeaddBookPresentation()" class="btn btn-warning me-2">Bekor qilish</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Add project -->
+        <div class="col-md-12 stretch-card container" id="addProjectCard" class="container" 
+          style="width: 368px; height: 360px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form class="forms-sample addProjectForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="text" placeholder="Project name" name="name" class="form-control" required>
+                <br>
+                <input type="file" name="uploaded_file" class="form-control" required>
+                <br>
+                <input type="url" placeholder="GitHub havola" name="github_link" class="form-control" required>
+                <br>
+                <input type="url" placeholder="Netlify havola" name="netlify_link" class="form-control">
+                <br>
+                <input type="hidden" name="method" value="add_project">
+                <input type="hidden" class='group_id' name="group_id" value="">
+                <div style="display: flex; justify-content: space-between;">
+                  <button type="submit" class="btn btn-primary btn-icon-text">
+                    <i class="mdi mdi-file-check btn-icon-prepend"></i> Saqlash
+                  </button>
+                  <button type="button" id="ok" onclick="closeProjectBtn()" class="btn btn-warning me-2">Bekor qilish</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- edit project -->
+        <div class="col-md-12 stretch-card container" id="editProjectCard" class="container" 
+          style="width: 368px; height: 360px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form class="forms-sample editProjectForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="text" placeholder="Project name" name="name" value="" class="form-control name" style="color: #fff;">
+                <br>
+                <input type="file" name="uploaded_file" class="form-control" style="color: #fff;">
+                <br>
+                <input type="url" placeholder="GitHub havola" name="github_link" class="form-control github_link" style="color: #fff;">
+                <br>
+                <input type="url" placeholder="Netlify havola" name="netlify_link" class="form-control netlify_link" style="color: #fff;">
+                <br>
+                <input type="hidden" name="method" value="edit_project">
+                <input type="hidden" class='group_id' name="group_id" value="">
+                <input type="hidden" class='file_id' name="file_id" value="">
+                <div style="display: flex; justify-content: space-between;">
+                  <button type="submit" class="btn btn-primary btn-icon-text">
+                    <i class="mdi mdi-file-check btn-icon-prepend"></i> Saqlash
+                  </button>
+                  <button type="button" id="ok" onclick="closeEditProjectBtn()" class="btn btn-warning me-2">Bekor qilish</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- delete project -->
+        <div 
+          class="col-md-12 stretch-card container" id="deleteProjectCard" class="container" 
+          style="width: 368px; height: 112px; padding: 0; background-color: white;"
+          >
+          <div class="card">
+            <div class="card-body">
+              <form class="forms-sample deleteProjectForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="hidden" name="method" value="delete_project">
+                <input type="hidden" class='group_id' name="group_id" value="">
+                <input type="hidden" class='file_id' name="file_id" value="">
+                <button type="submit" class="btn btn-danger btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> O'chirish 
+                </button>
+                <button type="button" id="ok" onclick="closeDeleteProjectBtn()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+
+        <!-- add exam -->
+        <div 
+          class="col-md-12 stretch-card container" id="addExamCard" class="container" 
+          style="width: 700px; height: 500px; padding: 0; background-color: white;"
+          >
+          <div class="card">
+            <div class="card-body">
+              <form class="forms-sample addExamForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="hidden" name="method" value="add_exam">
+                <input type="hidden" class='group_id' name="group_id" value="">
+                <input type="text" name="name" class="form-control text-light" placeholder="Imtoxon nomi">
+                <br>
+                <input class="typeahead text-light" name="deadline" type="datetime-local" name="deadline">
+                <br>
+                <textarea name="" id="" style="width: 100%; height: 250px;" name="description" ></textarea>
+                <br>
+                <button type="submit" class="btn btn-success btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> Yaratish 
+                </button>
+                <button type="button" id="ok" onclick="closeAddExamBtn()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- delete exam -->
+        <div 
+          class="col-md-12 stretch-card container" id="deleteExamCard" class="container" 
+          style="width: 368px; height: 112px; padding: 0; background-color: white;"
+          >
+          <div class="card">
+            <div class="card-body">
+              <form class="forms-sample deleteExamForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="hidden" name="method" value="delete_exam">
+                <input type="hidden" class='group_id' name="group_id" value="">
+                <input type="hidden" class='exam_id' name="exam_id" value="">
+                <button type="submit" class="btn btn-danger btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> O'chirish 
+                </button>
+                <button type="button" id="ok" onclick="closeDeleteExamBtn()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+
+        <!-- Exam item add modal-->
+        <div 
+          class="col-md-12 stretch-card container" id="addExamItemCard" class="container" 
+          style="width: 500px; height: 400px; width: 370px; height: 290px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form 
+                class="forms-sample addExamItemForm" method="POST" enctype="multipart/form-data" 
+                style="padding: 0;"
+              >{% csrf_token %}
+                <input type="text" name="name" class="form-control text-light" placeholder="Name" required>
+                <br>
+                <input name="uploaded_files" type="file" multiple>
+                <br>
+                <br>
+                <input type="url" name="url_address" class="form-control text-light" placeholder="Url">
+                <br>
+                <input type="hidden" name="method" value="upload_exam_files">
+                <input type="hidden" name="group_id" value="{{ group_id }}">
+                <input type="hidden" name="exam_id" value="{{ exam.id }}">
+                <button type="submit" class="btn btn-primary btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> Yuklash 
+                </button>
+                <button type="button" id="ok" onclick="addExamItemClose()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exam item edit modal-->
+        <div 
+          class="col-md-12 stretch-card container" id="editExamItemCard" class="container" 
+          style="position: absolute; top: 104%; width: 370px; height: 322px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form 
+                class="forms-sample editExamItemForm" method="POST" enctype="multipart/form-data"
+                style="padding: 0;"
+              >{% csrf_token %}
+              <input type="text" name="name" class="form-control text-light name" placeholder="Name" required>
+              <br>
+              <input name="uploaded_files" class="form-control uploaded_file" type="file" multiple>
+              <br>
+              <br>
+              <input type="url" name="url_address" class="form-control text-light url_address" placeholder="Url">
+              <br>
+              <input type="hidden" name="method" value="edit_exam_item">
+              <input type="hidden" name="group_id" value="{{ group_id }}">
+              <input type="hidden" name="exam_id" value="{{ exam.id }}">
+              <input type="hidden" class="item_id" name="item_id" value="">
+                <button type="submit" class="btn btn-primary btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> Yuklash 
+                </button>
+                <button type="button" id="ok" onclick="closeEditExamItem()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exam item delete modal-->
+        <div 
+          class="col-md-12 stretch-card container" id="deleteExamItemCard" class="container" 
+          style="position: absolute; top: 104%; width: 370px; height: 115px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form 
+                class="forms-sample deleteExamItemForm" method="POST" enctype="multipart/form-data"
+                style="padding: 0;"
+              >{% csrf_token %}
+                <input type="hidden" name="method" value="delete_exam_item">
+                <input type="hidden" class="item_id" name="item_id" value="">
+                <input type="hidden" name="exam_id" value="{{ exam.id }}">
+                <input type="hidden" name="group_id" value="{{ group_id }}">
+                <button type="submit" class="btn btn-danger btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> O'chirish 
+                </button>
+                <button type="button" id="ok" onclick="deleteExamItemClose()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+
+        
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+    <script src="js/jquery.fileDownload.js"></script>
+
+ 
+        
     <!-- container-scroller -->
     <!-- plugins:js -->
     <script src="{% static 'app/assets/vendors/js/vendor.bundle.base.js' %}"></script>
+  
+		
     <!-- endinject -->
     <!-- Plugin js for this page -->
     <script src="{% static 'app/assets/vendors/chart.js/Chart.min.js' %}"></script>
@@ -415,6 +893,145 @@
     <!-- endinject -->
     <!-- Custom js for this page -->
     <script src="{% static 'app/assets/js/dashboard.js' %}"></script>
+    <script src="{% static 'app/modal/learn.js' %}"></script>
+
+    <script>
+
+      $(".editFile").click(function() {
+          var id = $(this).attr('data-id')
+          var lesson_id = $(this).attr('data-lesson-id')
+          var lessonId = $('.modals .lesson_id').attr('value' , lesson_id)
+          var fileId = $('.modals .file_id').attr('value' , id)
+        }
+      )
+
+      $(".deleteItem").click(function() {
+          var delete_id = $(this).attr('delete-data-id')
+          var delete_lesson_id = $(this).attr('delete-data-lesson-id')
+          var delete_lessonId = $('.delteModals .lesson_id').attr('value' , delete_lesson_id)
+          var delete_fileId = $('.delteModals .item_id').attr('value' , delete_id)
+        }
+      )
+
+      // Mavzuga oid qo'llanmalar text, Uyga vazifalar text edit.
+      $(".editGuideOrTaskText").click(function(e) {
+        e.preventDefault()
+        var updated_guide_or_task_text_id = $(this).attr('updated-guide-or-task-id')
+        var updated_guide_or_task_text_fileId = $('.editGuideTaskText .item_id').attr('value' , updated_guide_or_task_text_id)
+        var inpVal = $(this).parent().parent().find('textarea').val();
+        var modalInp = $('.edit_guide_task_text').attr('value' , inpVal)
+        }
+      )
+
+
+      // Mavzuga oid qo'llanmalar text, Uyga vazifalar text delete.
+      $(".deleteGuideOrTaskText").click(function(e) {
+        e.preventDefault()
+        var delete_guide_or_task_text_id = $(this).attr('delete-guide-or-task-id')
+        var delete_guide_or_task_text_fileId = $('.deleteGuideTaskText .item_id').attr('value' , delete_guide_or_task_text_id)
+        }
+      )
+
+
+      // Mavzuga oid qo'llanmalar file, Uyga vazifalar file edit.
+      $(".editGuideOrTaskFile").click(function(e) {
+        e.preventDefault()  
+        var updated_guide_or_task_file_id = $(this).attr('updated-guide-or-task-id')
+        var updated_guide_or_task_file_fileId = $('.editGuideTaskFileForm .item_id').attr('value' , updated_guide_or_task_file_id)
+        }
+      )
+
+
+      // Mavzuga oid qo'llanmalar file, Uyga vazifalar file delete.
+      $(".deleteGuideOrTaskFile").click(function(e) {
+        e.preventDefault()
+        var delete_guide_or_task_file_id = $(this).attr('delete-guide-or-task-id')
+        var delete_guide_or_task_file_fileId = $('.deleteGuideTaskFileForm .item_id').attr('value' , delete_guide_or_task_file_id)
+        }
+      )
+
+
+      // Download File
+      $(document).ready(function () {
+        $(".downloadFile").click(function (e) {
+            e.preventDefault();
+            window.location.href = $(this).attr('href');
+        });
+      }); 
+
+      // add project
+      $(".add-project").click(function(e) {
+        e.preventDefault()
+        var group_id = $(this).attr('group-id')
+        var group_id_add_form = $('.addProjectForm .group_id').attr('value' , group_id)
+        }
+      )
+
+      // edit project
+      $(".edit-project").click(function(e) {
+          e.preventDefault()
+          var group_id = $(this).parent().parent().parent().parent().parent().parent().find('button').attr("group-id")
+          var file_id = $(this).attr('edit-file-id')
+          var project_name = $(this).parent().parent().find('p')[1].getAttribute('project-name')
+          var edit_project_github_link = $(this).parent().parent().find('p')[3].getAttribute('project-github')
+          var edit_project_netlify_link = $(this).parent().parent().find('p')[4].getAttribute('project-netlify_link')
+          var group_id_edit_form = $('.editProjectForm .group_id').attr('value' , group_id)
+          var file_id_edit_form = $('.editProjectForm .file_id').attr('value' , file_id)
+          var project_name_form = $('.editProjectForm .name').attr('value' , project_name)
+          var project_github_form = $('.editProjectForm .github_link').attr('value' , edit_project_github_link)
+          var project_github_form = $('.editProjectForm .netlify_link').attr('value' , edit_project_netlify_link)
+        }
+      )
+
+      // delete project
+      $(".delete-project").click(function(e) {
+          e.preventDefault()
+          var group_id = $(this).parent().parent().parent().parent().parent().parent().find('button').attr("group-id")
+          var group_id_edit_form = $('.deleteProjectForm .group_id').attr('value' , group_id)
+          var file_id = $(this).attr('edit-file-id')
+          var file_id_edit_form = $('.deleteProjectForm .file_id').attr('value' , file_id)
+        }
+      )
+
+      // add exam
+      $('.addExam').click(function(e){
+        e.preventDefault()
+        var group_id = $(this).attr('group-id')
+        var group_id_add_exam = $('.addExamForm .group_id').attr('value' , group_id)
+      })
+      
+      // delete exam
+      $('.deleteExam').click(function(e){
+        e.preventDefault()
+        var exam_id = $(this).attr('exam-id')
+        var group_id = $(this).attr('group-id')
+        var group_id_delete_exam = $('.deleteExamForm .group_id').attr('value' , group_id)
+        var exam_id_delete_exam = $('.deleteExamForm .exam_id').attr('value' , exam_id)
+      })
+
+      // edit exam item
+      $('.editExamItem').click(function(e){
+        e.preventDefault()
+        var exam_item_id = $(this).attr('item-id')
+        var exam_item_name = $(this).attr('item-name')
+        var exam_item_uploaded_file = $(this).attr('item-uploaded-file')
+        var exam_item_url_address = $(this).attr('item-url-address')
+        
+        var edit_exam_item_id = $('.editExamItemForm .item_id').attr('value' , exam_item_id)
+        var edit_exam_item_name = $('.editExamItemForm .name').attr('value' , exam_item_name)
+        var edit_exam_item_uploaded_file = $('.editExamItemForm .uploaded_file').attr('value' , exam_item_uploaded_file)
+        var edit_exam_item_url_address = $('.editExamItemForm .url_address').attr('value' , exam_item_url_address)
+      })
+
+      // delete exam item
+      $('.deleteExamItem').click(function(e){
+        e.preventDefault()
+        var exam_item_id = $(this).attr('item-id')
+        var edit_exam_item_id = $('.deleteExamItemForm .item_id').attr('value' , exam_item_id)
+      })
+
+  </script>
+
     <!-- End custom js for this page -->
   </body>
 </html>

@@ -1,8 +1,8 @@
 from django.contrib import admin
 from apps.v1.user.models import (
+    Administrator,
     User,
     SuperAdmin,
-    Admin,
     Teacher,
     Student,
 )
@@ -18,8 +18,8 @@ class SuperAdminAdmin(admin.ModelAdmin):
     list_display = ('id', 'first_name', 'last_name', 'phone_number', 'role')
 
 
-@admin.register(Admin)
-class AdminAdmin(admin.ModelAdmin):
+@admin.register(Administrator)
+class AdministratorAdmin(admin.ModelAdmin):
     list_display = ('id', 'first_name', 'last_name', 'phone_number', 'role')
 
 
@@ -30,5 +30,5 @@ class TeacherAdmin(admin.ModelAdmin):
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'first_name', 'last_name', 'phone_number', 'role')
+    list_display = ('id', 'first_name', 'last_name', 'phone_number', 'get_verified', 'role')
 
