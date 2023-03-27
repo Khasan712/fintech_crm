@@ -860,6 +860,95 @@
         </div>
 
 
+        // Student exam item upload
+        <div 
+          class="col-md-12 stretch-card container" id="addExamItemStudentCard" class="container" 
+          style="position: absolute; top: 60%; width: 370px; height: 360px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form 
+                class="forms-sample addExamItemStudentForm" method="POST" enctype="multipart/form-data"
+                style="padding: 0;"
+              >{% csrf_token %}
+                <input type="text" name="name" class="form-control text-light" placeholder="name">
+                <br>
+                <input type="file" name="uploaded_file" class="form-control text-light">
+                <br>
+                <input type="url" name="github_link" class="form-control text-light" placeholder="github link">
+                <br>
+                <input type="url" name="netlify_link" class="form-control text-light" placeholder="netlify link">
+                <br>
+                <input type="hidden" name="method" value="exam_upload">
+                <input type="hidden" name="exam_id" value="{{ exam.id }}">
+                <button type="submit" class="btn btn-primary btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> Qo'shish
+                </button>
+                <button type="button" id="ok" onclick="addExamItemStudentClose()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+        // Student exam item edit
+        <div 
+          class="col-md-12 stretch-card container" id="editExamItemStudentCard" class="container" 
+          style="position: absolute; top: 60%; width: 370px; height: 360px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form 
+                class="forms-sample editExamItemStudentForm" method="POST" enctype="multipart/form-data"
+                style="padding: 0;"
+              >{% csrf_token %}
+                <input type="text" name="name" class="form-control text-light name" placeholder="name">
+                <br>
+                <input type="file" name="uploaded_file" class="form-control text-light">
+                <br>
+                <input type="url" name="github_link" class="form-control text-light github_link" placeholder="github link">
+                <br>
+                <input type="url" name="netlify_link" class="form-control text-light netlify_link" placeholder="netlify link">
+                <br>
+                <input type="hidden" name="method" value="exam_edit_item">
+                <input type="hidden" name="exam_id" value="{{ exam.id }}">
+                <input type="hidden" name="item_id" class="item_id" value="">
+                <button type="submit" class="btn btn-success btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> Saqlash
+                </button>
+                <button type="button" id="ok" onclick="editExamItemStudentClose()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Student Exam item delete modal-->
+        <div 
+          class="col-md-12 stretch-card container" id="deleteExamItemStudentCard" class="container" 
+          style="position: absolute; top: 104%; width: 370px; height: 115px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form 
+                class="forms-sample deleteExamItemStudentForm" method="POST" enctype="multipart/form-data"
+                style="padding: 0;"
+              >{% csrf_token %}
+                <input type="hidden" name="method" value="exam_edit_delete">
+                <input type="hidden" class="item_id" name="item_id" value="">
+                <input type="hidden" name="exam_id" value="{{ exam.id }}">
+                <button type="submit" class="btn btn-danger btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> O'chirish 
+                </button>
+                <button type="button" id="ok" onclick="deleteExamItemStudentClose()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
 
         
 
@@ -1028,6 +1117,27 @@
         e.preventDefault()
         var exam_item_id = $(this).attr('item-id')
         var edit_exam_item_id = $('.deleteExamItemForm .item_id').attr('value' , exam_item_id)
+      })
+
+      // student edit exam item
+      $('.editExamItemStudent').click(function(e){
+        e.preventDefault()
+        var exam_item_id = $(this).attr('item-id')
+        var exam_item_name = $(this).attr('item-name')
+        var exam_item_github_link = $(this).attr('item-github-link')
+        var exam_item_netlify = $(this).attr('item-netlify-link')
+        
+        var edit_exam_item_id = $('.editExamItemStudentForm .item_id').attr('value' , exam_item_id)
+        var edit_exam_item_name = $('.editExamItemStudentForm .name').attr('value' , exam_item_name)
+        var edit_exam_item_uploaded_file = $('.editExamItemStudentForm .github_link').attr('value' , exam_item_github_link)
+        var edit_exam_item_url_address = $('.editExamItemStudentForm .netlify_link').attr('value' , exam_item_netlify)
+      })
+
+      // student delete exam item
+      $('.deleteExamItemStudent').click(function(e){
+        e.preventDefault()
+        var exam_item_id = $(this).attr('item-id')
+        var edit_exam_item_id = $('.deleteExamItemStudentForm .item_id').attr('value' , exam_item_id)
       })
 
   </script>
