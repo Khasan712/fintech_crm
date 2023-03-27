@@ -57,7 +57,7 @@
                   </div>
                 {% endfor %}
               </div>
-              <div class="row">
+              {% comment %} <div class="row">
                 <div class="col-sm-4 grid-margin">
                   <div class="card">
                     <div class="card-body">
@@ -115,7 +115,7 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> {% endcomment %}
             {% elif page == 'group' %}
               <div class="row ">
                 <div class="col-12 grid-margin">
@@ -788,7 +788,7 @@
                         <div style="display: flex; justify-content: space-between;">
                           <h3>Yuklamalarim<h3>
                           {% if can_upload == True %}
-                            <button class="btn btn-primary">Yuklash</button>
+                            <button class="btn btn-primary addExamItemStudent" onclick="addExamItemStudentOpen()" id="addExamItemStudentId">Yuklash</button>
                           {% else %}
                             <button class="btn btn-primary" disabled>Yuklash</button>
                           {% endif %}
@@ -844,10 +844,14 @@
                                     <p style="margin-bottom: 0;">{{ item.name }}</p>
                                   </td>
                                   <td>
-                                    <p style="margin-bottom: 0;"><a href="{{ item.uploaded_file.url }}" target="_blank">Ko'rish</a=></p>
+                                    {% if item.uploaded_file %}
+                                      <p style="margin-bottom: 0;"><a href="{{ item.uploaded_file.url }}" target="_blank">Ko'rish</a></p>
+                                    {% else %}
+                                      <p>-</p>
+                                    {% endif %}
                                   </td>
                                   <td>
-                                    <p style="margin-bottom: 0;"><a href="{{ item.github_link }}" target="_blank">GitHub</a=></p>
+                                    <p style="margin-bottom: 0;"><a href="{{ item.github_link }}" target="_blank">GitHub</a></p>
                                   </td>
                                   <td>
                                     {% if item.netlify_link %}
@@ -870,16 +874,18 @@
                                   </td>
                                   <td> 
                                     <label
-                                      class="badge badge-info editGuideOrTaskFile" onclick="editGuideOrTaskFileOpen()"
-                                      updated-guide-or-task-id="{{ subject_guide.id }}" id="editGuideOrTaskFileID"
+                                      class="badge badge-info editExamItemStudent" onclick="editExamItemStudentOpen()"
+                                      item-id="{{ item.id }}" item-name="{{ item.name }}" item-uploaded-file="{{ item.uploaded_file.name }}" 
+                                      item-github-link="{{ item.github_link }}" item-netlify-link="{{ item.netlify_link }}" 
+                                      id="editExamItemStudentID"
                                       >
                                       <i class="mdi mdi-lead-pencil"></i>
                                     </label>
                                   </td> 
                                   <td>
                                     <label
-                                      class="badge badge-danger deleteGuideOrTaskFile" onclick="deleteGuideOrTaskFileOpen()"
-                                      delete-guide-or-task-id="{{ subject_guide.id }}" id="deleteGuideOrTaskTextID" 
+                                      class="badge badge-danger deleteExamItemStudent" onclick="deleteExamItemStudentOpen()"
+                                      item-id="{{ item.id }}" id="deleteExamItemStudentID" 
                                       ><i class="mdi mdi-delete"></i>
                                     </label>
                                   </td>

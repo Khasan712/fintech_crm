@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.views.generic.base import View
 from django.http.response import Http404
 from django.http import HttpResponseRedirect
-from apps.v1.edu.forms.students import StudentProjectItemForm
+from apps.v1.edu.forms.students import StudentProjectItemForm, UploadExamItemStudent
 from apps.v1.edu.models.exams import Exam, ExamFile, ExamStudentCard, ExamStudentItem
 from apps.v1.edu.models.groups import Group, GroupStudent, StudentProject, StudentProjectsCard
 from apps.v1.edu.models.lessons import Attendance, HomeTask, HomeTaskItem, HomeWork, HomeWorkItem, Lesson
@@ -193,7 +193,7 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
                 context['exam_items'] = self.get_exam_file_queryset().filter(exam=exam_id)
                 context['my_items'] = self.get_student_exam_item_queryset().filter(exam_card__exam_id=exam_id, exam_card__student_id=student.id).values(
                     'id', 'uploaded_file', 'netlify_link', 'status', 'name', 'github_link', 'created_at'
-                )
+                ).order_by('-id')
                 context['exam_card'] = self.get_student_exam_card_queryset().filter(exam_id=exam_id, student_id=student.id).annotate(
                     uploaded_files_qty=Coalesce(Count(
                         'student_item_exam_card', distinct=True
@@ -218,14 +218,16 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
-        uploaded_files = self.request.FILES.getlist('uploaded_files')
-        uploaded_file = self.request.FILES.get('uploaded_file')
         data = self.request.POST
+        data_media = self.request.FILES
+        uploaded_files = data_media.getlist('uploaded_files')
+        uploaded_file = data_media.get('uploaded_file')
         method = data.get('method')
         lesson_id = data.get('lesson_id')
         file_id = data.get('file_id')
         group_id = data.get('group_id')
-
+        exam_id = data.get('exam_id')
+        item_id = data.get('item_id')
         
         match method:
             
@@ -308,6 +310,37 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
                     raise Http404
                 item_obj.delete()
                 return HttpResponseRedirect(f'?page=projects&group_id={group_id}')
+            
+            # Exam upload
+            case 'exam_upload':
+                exam_card = self.get_student_exam_card_queryset().filter(exam_id=exam_id, student_id=user.id).first()
+                if not exam_card:
+                    raise Http404
+                exam_upload_form = UploadExamItemStudent(data or None, data_media or None)
+                if exam_upload_form.is_valid():
+                    obj = exam_upload_form.save(commit=True)
+                    obj.exam_card = exam_card
+                    obj.save()
+                return HttpResponseRedirect(f'?page=exam&exam_id={exam_id}&group_id={exam_card.exam.group.id}')
+            
+            # Exam edit
+            case 'exam_edit_item':
+                exam_item = self.get_student_exam_item_queryset().filter(id=item_id, exam_card__exam_id=exam_id, exam_card__student_id=user.id).first()
+                if not exam_item:
+                    raise Http404
+                exam_item_edit_form = UploadExamItemStudent(data or None, data_media or None, instance=exam_item)
+                if exam_item_edit_form.is_valid():
+                    exam_item_edit_form.save()
+                return HttpResponseRedirect(f'?page=exam&exam_id={exam_id}&group_id={exam_item.exam_card.exam.group.id}')
+            
+            # Exam delete
+            case 'exam_edit_delete':
+                exam_item = self.get_student_exam_item_queryset().filter(id=item_id, exam_card__exam_id=exam_id, exam_card__student_id=user.id).first()
+                group_id = exam_item.exam_card.exam.group.id
+                if not exam_item:
+                    raise Http404
+                exam_item.delete()
+                return HttpResponseRedirect(f'?page=exam&exam_id={exam_id}&group_id={group_id}')
             
         return HttpResponseRedirect('/')
 
