@@ -411,9 +411,9 @@
 
                                         </div>
                                       </td> 
-                                      {% if student.student__student_type == 'online' %}
+                                      {% if student.student__student_in_group__student_type == 'online' %}
                                         <td> <label class="badge badge-danger">Online</label></td>
-                                      {% elif student.student__student_type == 'offline' %}
+                                      {% elif student.student__student_in_group__student_type == 'offline' %}
                                         <td> <label class="badge badge-info">Offline</label></td>
                                       {% endif %}
                                     </tr>

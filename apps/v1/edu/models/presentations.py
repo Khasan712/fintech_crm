@@ -39,3 +39,15 @@ class StudentBookPresentation(CustomBaseAbstract):
     def get_student(self):
         return f"{self.book_card.student.first_name}"
     
+
+class RentBook(CustomBaseAbstract):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    book = models.CharField(max_length=255)
+    deadline_at = models.DateField()
+    
+    class Meta:
+        verbose_name = 'Kitob buyurtma'
+        verbose_name_plural = 'Kitob buyurtmalar'
+        
+    def __str__(self):
+        return f'{self.user.first_name} {self.book}'

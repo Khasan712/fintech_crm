@@ -5,6 +5,7 @@ from apps.v1.user.models import (
     SuperAdmin,
     Teacher,
     Student,
+    StudentNotVerified
 )
 
 
@@ -32,3 +33,7 @@ class TeacherAdmin(admin.ModelAdmin):
 class StudentAdmin(admin.ModelAdmin):
     list_display = ('id', 'first_name', 'last_name', 'phone_number', 'get_verified', 'role')
 
+
+@admin.register(StudentNotVerified)
+class StudentNotVerifiedAdmin(admin.ModelAdmin):
+    list_display = ('id', 'first_name', 'last_name', 'phone_number', 'get_verified', 'role')

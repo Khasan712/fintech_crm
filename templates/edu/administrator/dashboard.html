@@ -10,16 +10,19 @@
         <div class="main-panel">
           <div class="content-wrapper">
 
+            <!-- ADMINISTRATORS PAGES -->
+
+            <!-- ========================================================== -->
             {% if page == 'dashboard' %}
-              
+              <!-- DASHBOARD PAGE -->
+
+
+              <!-- Students statistics -->
               <div class="row">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
                   <div>
                     <h2>O'quvchilar</h2>
                   </div>
-                  <!-- <form action="">
-                    <input type="text" class="form-control" placeholder="Search products" style="color: #fff; padding: 24px 20px; width: 500px;">
-                  </form> -->
                   <div>
                     <form action="" method="GET" style="display: flex;">
                       <i class="mdi mdi-filter-outline" style="position: relative; top: 12px; left: 20px; font-size: 20px;"></i>
@@ -33,81 +36,149 @@
                     </form>
                   </div>
                 </div>
-                <div class="col-sm-3 grid-margin">
+                <div class="col-sm-3 grid-margin" style="text-align: center;">
                   <div class="card">
                     <div class="card-body">
-                      <h5>Ro'yhatdan o'tganlar</h5>
-                      <div class="row">
-                        <div class="col-8 col-sm-12 col-xl-8 my-auto">
-                          <div class="d-flex d-sm-block d-md-flex align-items-center">
-                            <h2 class="mb-0">{{ total_students_qty }}</h2>
-                          </div>
-                          <h6 class="text-muted font-weight-normal">11.38% Since last month</h6>
-                        </div>
-                        <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
-                          <i class="icon-lg mdi mdi-codepen text-primary ms-auto"></i>
-                        </div>
-                      </div>
+                      <h3>Ro'yhatdan o'tganlar</h3>
+                      <hr style="background-color: green; border-top: 5px solid green;">
+                      <h2 class="mb-0">{{ students.total_qty }}</h2>
                     </div>
                   </div>
                 </div>
-                <div class="col-sm-3 grid-margin">
+                <div class="col-sm-3 grid-margin" style="text-align: center;">
                   <div class="card">
                     <div class="card-body">
-                      <h5>Tasdiqlanmaganlar</h5>
-                      <div class="row">
-                        <div class="col-8 col-sm-12 col-xl-8 my-auto">
-                          <div class="d-flex d-sm-block d-md-flex align-items-center">
-                            <h2 class="mb-0">{{ not_verified_students_qty }}</h2>
-                          </div>
-                          <h6 class="text-muted font-weight-normal"> 9.61% Since last month</h6>
-                        </div>
-                        <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
-                          <i class="icon-lg mdi mdi-wallet-travel text-danger ms-auto"></i>
-                        </div>
-                      </div>
+                      <h3>Tasdiqlanmaganlar</h3>
+                      <hr style="background-color: green; border-top: 5px solid green;">
+                      <h2 class="mb-0">{{ students.not_verefied_qty }}</h2>
                     </div>
                   </div>
                 </div>
-                <div class="col-sm-3 grid-margin">
+                <div class="col-sm-3 grid-margin" style="text-align: center;">
                   <div class="card">
                     <div class="card-body">
-                      <h5>O'qiyotganlar</h5>
-                      <div class="row">
-                        <div class="col-8 col-sm-12 col-xl-8 my-auto">
-                          <div class="d-flex d-sm-block d-md-flex align-items-center">
-                            <h2 class="mb-0">{{ students_in_groups_qty }}</h2>
-                          </div>
-                          <h6 class="text-muted font-weight-normal">2.27% Since last month</h6>
-                        </div>
-                        <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
-                          <i class="icon-lg mdi mdi-monitor text-success ms-auto"></i>
-                        </div>
-                      </div>
+                      <h3>O'qiyotganlar</h3>
+                      <hr style="background-color: green; border-top: 5px solid green;">
+                      <h2 class="mb-0">{{ students.studied_qty }}</h2>
                     </div>
                   </div>
                 </div>
-                <div class="col-sm-3 grid-margin">
+                <div class="col-sm-3 grid-margin" style="text-align: center;">
                   <div class="card">
                     <div class="card-body">
-                      <h5>Bitirganlar</h5>
-                      <div class="row">
-                        <div class="col-8 col-sm-12 col-xl-8 my-auto">
-                          <div class="d-flex d-sm-block d-md-flex align-items-center">
-                            <h2 class="mb-0">{{ finished_students_qty }}</h2>
-                          </div>
-                          <h6 class="text-muted font-weight-normal">2.27% Since last month</h6>
-                        </div>
-                        <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
-                          <i class="icon-lg mdi mdi-monitor text-success ms-auto"></i>
-                        </div>
-                      </div>
+                      <h3>Bitirganlar</h3>
+                      <hr style="background-color: green; border-top: 5px solid green;">
+                      <h2 class="mb-0">{{ students.graduated_qty }}</h2>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col-sm-3 grid-margin" style="text-align: center;">
+                  <div class="card">
+                    <div class="card-body">
+                      <h3>Ketganlar</h3>
+                      <hr style="background-color: green; border-top: 5px solid green;">
+                      <h2 class="mb-0">{{ students.gone_qty }}</h2>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-3 grid-margin" style="text-align: center;">
+                  <div class="card">
+                    <div class="card-body">
+                      <h3>Online</h3>
+                      <hr style="background-color: green; border-top: 5px solid green;">
+                      <h2 class="mb-0">{{ students.online_qty }}</h2>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-3 grid-margin" style="text-align: center;">
+                  <div class="card">
+                    <div class="card-body">
+                      <h3>Offline</h3>
+                      <hr style="background-color: green; border-top: 5px solid green;">
+                      <h2 class="mb-0">{{ students.offline_qty }}</h2>
                     </div>
                   </div>
                 </div>
               </div>
-
+              
+              <hr>
+              <!-- Course statistics -->
               <div class="row">
+                <h2>Kurslar</h2>
+
+                {% for course in courses %}
+                  <div class="col-sm-3 grid-margin" style="text-align: center;">
+                    <div class="card">
+                      <div class="card-body">
+                        <h3>{{ course.name }}</h3>
+                        <hr style="background-color: green; border-top: 5px solid green;">
+                        <h5 class=" font-weight-normal">Faol guruhlar soni: <span style="font-weight: bold; font-size: 20px; margin-left: 20px;">{{ course.groups_qty }}</span></h5>
+                        <h5 class=" font-weight-normal">Faol o'quvchilar soni: <span style="font-weight: bold; font-size: 20px; margin-left: 20px;">{{ course.students_qty }}</span></h5>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+                
+
+              <!-- Groups statistics -->
+              <!-- <div class="row">
+                <h2>Guruhlar - {{ groups_qty }}</h2>
+                
+                {% for group in groups %}
+                  <div class="col-sm-3 grid-margin">
+                    <div class="card">
+                      <div class="card-body">
+                        <h4>{{ group.name }}</h4>
+                        <h5 class="text-muted font-weight-normal">Kurs: <span class="text-light">{{ group.course.name }} </span></h5>
+                        <h5 class="text-muted font-weight-normal">O'qituvchi: <span class="text-light">{{ group.teacher.first_name }} {{ group.teacher.last_name }}</span></h5>
+                        <h5 class="text-muted font-weight-normal">O'quvchilar: <span class="text-light">{{ group.students_qty }}</span></h5>
+                        <h5 class="text-muted font-weight-normal">Vaqtlari: <span class="text-light">{{ group.start_time }} - {{ group.end_time }}</span></h5>
+                        <h5 class="text-muted font-weight-normal">Kunlari: 
+                          <span class="text-light">
+                            {% if group.monday %}
+                              Dushanba
+                            {% endif %}
+                            {% if group.tuesday %}
+                              Seshanba
+                            {% endif %}
+                            {% if group.wednesday %}
+                              Chorshanba
+                            {% endif %}
+                            {% if group.thursday %}
+                              Payshanba
+                            {% endif %}
+                            {% if group.friday %}
+                              Juma
+                            {% endif %}
+                            {% if group.saturday %}
+                              Shanba
+                            {% endif %}
+                            {% if group.sunday %}
+                              Yakshanba
+                            {% endif %}
+                          </span>
+                        </h5>
+                        <div class="row">
+                          <div class="col-8 col-sm-12 col-xl-8 my-auto">
+                            <div class="d-flex d-sm-block d-md-flex align-items-center">
+                              <h2 class="mb-0">{{ total_students_qty }}</h2>
+                            </div>
+                          </div>
+                          <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
+                            <i class="icon-lg mdi mdi-codepen text-primary ms-auto"></i>
+                          </div>
+                        </div> 
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>-->
+
+
+              <!-- <div class="row">
                 <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                   <div class="card">
                     <div class="card-body">
@@ -185,6 +256,336 @@
                         </div>
                       </div>
                       <h6 class="text-muted font-weight-normal">Expense current</h6>
+                    </div>
+                  </div>
+                </div>
+              </div>  -->
+            <!-- =========================================================== -->
+
+
+            <!-- =========================================================== -->
+            {% elif page == 'groups' %}
+              <!-- Groups page -->
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h3 class="card-title">Guruhlar </h3>
+                    <div style="display: flex; justify-content: space-between;" class="mb-4">
+                      <div>
+                        <button class="btn btn-primary">Yangi guruh</button>
+                      </div>
+                      <div>
+                        <form action="" method="GET">
+                          <select name="teacher_id" class="btn btn-light p-3" >
+                            <option value="all" selected>O'qituvchilar</option>
+                            {% for teacher in teachers %}
+                              <option value="{{ teacher.id }}">{{ teacher.first_name }}</option>
+                            {% endfor %}
+                          </select>
+                          <select name="course" class="btn btn-light p-3" >
+                            <option value="all" selected>Kurslar</option>
+                            <option value="online">Online</option>
+                            <option value="offline">Offline</option>
+                            <option value="hibrid">Aralash</option>
+                          </select>
+                          <button class="btn btn-warning">Qidirish</button>
+                          <input type="hidden" name="page" value="groups">
+                        </form>
+                      </div>
+                    </div>
+                    <!-- <p class="card-description"> Add class <code>.table-bordered</code></p> -->
+                    <div class="table-responsive">
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th class="text-light"> # </th>
+                            <th class="text-light"> O'qituvchi </th>
+                            <th class="text-light"> Guruh nomi </th>
+                            <th class="text-light"> Kurs </th>
+                            <th class="text-light"> Guruh turi </th>
+                            <th class="text-light"> Guruh vaqti </th>
+                            <th class="text-light"> Kunlari </th>
+                            <th class="text-light"> O'quvchilar soni </th>
+                            <th class="text-light"> Action </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for group in groups %}
+                            <tr>
+                              <td> 1 </td>
+                              <td> <a href="{% url 'administrator_dashboard' %}?page=group_attendancy&group_id={{ group.id }}">{{ group.teacher.first_name }} {{ group.teacher.last_name }}</a> </td>
+                              <td>
+                                {{ group.name }}
+                              </td>
+                              <td> {{ group.course.name }} </td>
+                              <td> 
+                              {% if group.group_type == 'hibrid' %}
+                                aralash
+                              {% else %}
+                                {{ group.group_type }}
+                              {% endif %}
+                              </td>
+                              <td> {{ group.start_time }} - {{ group.end_time }} </td>
+                              <td> <span>
+                                {% if group.monday %}
+                                  Dushanba /
+                                {% endif %}
+                                {% if group.tuesday %}
+                                  Seshanba /
+                                {% endif %}
+                                {% if group.wednesday %}
+                                  Chorshanba /
+                                {% endif %}
+                                {% if group.thursday %}
+                                  Payshanba /
+                                {% endif %}
+                                {% if group.friday %}
+                                  Juma
+                                {% endif %}
+                                {% if group.saturday %}
+                                  Shanba
+                                {% endif %}
+                                {% if group.sunday %}
+                                  Yakshanba /
+                                {% endif %}
+                              </span></td>
+                              <td> {{ group.students_qty }} </td>
+                              <td>
+                                <i style="padding: 7px; color: #fff; background-color: yellow; " class="mdi mdi-border-color"></i>
+                                <i style="padding: 7px; color: #fff; background-color: red;" class="mdi mdi-delete"></i>
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <!-- ============================================================ -->
+
+
+            <!-- =========================================================== -->
+            {% elif page == 'lessons' %}
+              <!-- Groups page -->
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div style="display: flex; justify-content: space-between;" class="mb-4">
+                      <div>
+                        <h4 class="card-title">Darslar </h4>
+                      </div>
+                      <div>
+                        <!-- <form action="" method="GET">
+                          <select name="teacher_id" class="btn btn-light p-3" >
+                            <option value="all" selected>O'qituvchilar</option>
+                            {% for teacher in teachers %}
+                              <option value="{{ teacher.id }}">{{ teacher.first_name }}</option>
+                            {% endfor %}
+                          </select>
+                          <button class="btn btn-warning">Qidirish</button>
+                          <input type="hidden" name="page" value="groups">
+                        </form> -->
+                        <a href="{% url 'administrator_dashboard' %}?page=group_attendancy&group_id={{ group_id }}">
+                          <button class="btn btn-warning">Davomat</button>
+                        </a>
+                      </div>
+                    </div>
+                    <!-- <p class="card-description"> Add class <code>.table-bordered</code></p> -->
+                    <div class="table-responsive">
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th class="text-light"> Dars No </th>
+                            <th class="text-light"> Yaratildi </th>
+                            <th class="text-light"> Boshlangan vaqt </th>
+                            <th class="text-light"> Tugatilgan vaqt </th>
+                            <th class="text-light"> Kelganlar soni </th>
+                            <th class="text-light"> Kelmaganlar soni </th>
+                            <th class="text-light"> Holati </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for lesson in lessons %}
+                            <tr>
+                              <td> {{ lesson.lesson_number }} </td>
+                              <td> {{ lesson.created_at }} </td>
+                              <td> {{ lesson.start_time }} </td>
+                              <td> {{ lesson.end_time }} </td>
+                              <td> {{ lesson.came_qty }} </td>
+                              <td> {{ lesson.not_came_qty }} </td>
+                              <td> 
+                              {% if lesson.status == 'started' %}
+                                Boshlandi
+                              {% else %}
+                                Tugatildi
+                              {% endif %}
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <!-- ============================================================ -->
+
+
+            <!-- ============================================================ -->
+            {% elif page == 'group_attendancy' %}
+              <!-- Groups page -->
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h3 class="card-title">Pereklichka </h3>
+                    <br>
+                    <div class="table-responsive">
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th class="text-light"> # </th>
+                            <th class="text-light"> O'quvchilar </th>
+                            {% for day in days %}
+                              <th class="text-light"> {{ day }} </th>
+                            {% endfor %}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for student in students %}
+                            <tr style="text-align: center;">
+                              <td style="background-color: #fff; color: black;">{{ student.order }}</td>
+                              <td style="background-color: blue; color: #fff;">{{ student.student.first_name }}</td>
+                              {% for att in student.atts %}
+                                {% if att == 1 %}
+                                  <td style="background-color: rgb(2, 190, 2); color: white;">
+                                    Y
+                                  </td>
+                                {% elif att == 2 %}
+                                  <td style="background-color: crimson; color: white;">
+                                    N
+                                  </td>
+                                {% else %}
+                                  <td>
+
+                                  </td>                                    
+                                {% endif %}
+                              {% endfor %}
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <!-- ============================================================ -->
+
+
+            <!-- ============================================================ -->
+            {% elif page == 'teachers' %}
+              <!-- stidents page -->
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div style="display: flex; justify-content: space-between;" class="mb-4">
+                      <div>
+                        <h4 class="card-title">O'qituvchilar </h4>
+                      </div>
+                      <div>
+                        <form action="" method="GET">
+                          <select name="teacher_id" class="btn btn-light p-3" >
+                            <option value="all" selected>O'qituvchilar</option>
+                            {% for teacher in teachers %}
+                              <option value="{{ teacher.id }}">{{ teacher.first_name }}</option>
+                            {% endfor %}
+                          </select>
+                          <button class="btn btn-warning">Qidirish</button>
+                          <input type="hidden" name="page" value="groups">
+                        </form>
+                      </div>
+                    </div>
+                    <!-- <p class="card-description"> Add class <code>.table-bordered</code></p> -->
+                    <div class="table-responsive">
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th class="text-light"> # </th>
+                            <th class="text-light"> Ismi </th>
+                            <th class="text-light"> Familiyasi </th>
+                            <th class="text-light"> Raqami </th>
+                            <th class="text-light"> Guruhlar soni</th>
+                            <th class="text-light"> O'quvchilar soni </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for teacher in teachers %}
+                            <tr>
+                              <td>1</td>
+                              <td>{{ teacher.first_name }}</td>
+                              <td>{{ teacher.last_name }}</td>
+                              <td>{{ teacher.phone_number }}</td>
+                              <td>{{ teacher.groups_qty }}</td>
+                              <td>{{ teacher.students_qty }}</td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+            <!-- ============================================================ -->
+            {% elif page == 'students' %}
+              <!-- stidents page -->
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div style="display: flex; justify-content: space-between;" class="mb-4">
+                      <div>
+                        <h4 class="card-title">O'quvchilar </h4>
+                      </div>
+                      <div>
+                        <form action="" method="GET">
+                          <select name="teacher_id" class="btn btn-light p-3" >
+                            <option value="all" selected>O'qituvchilar</option>
+                            {% for teacher in teachers %}
+                              <option value="{{ teacher.id }}">{{ teacher.first_name }}</option>
+                            {% endfor %}
+                          </select>
+                          <button class="btn btn-warning">Qidirish</button>
+                          <input type="hidden" name="page" value="groups">
+                        </form>
+                      </div>
+                    </div>
+                    <!-- <p class="card-description"> Add class <code>.table-bordered</code></p> -->
+                    <div class="table-responsive">
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th class="text-light"> # </th>
+                            <th class="text-light"> Ismi </th>
+                            <th class="text-light"> Familiyasi </th>
+                            <th class="text-light"> Raqami </th>
+                            <th class="text-light"> Guruhlar </th>
+                            <th class="text-light"> Tasdiqlandi </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for student in students %}
+                            <tr>
+                              <td>1</td>
+                              <td>{{ student.first_name }}</td>
+                              <td>{{ student.last_name }}</td>
+                              <td>{{ student.phone_number }}</td>
+                              <td>{{ student.first_name }}</td>
+                              <td>{{ student.first_name }}</td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>

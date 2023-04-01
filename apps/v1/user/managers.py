@@ -61,4 +61,8 @@ class TeacherManager(manager.Manager):
 
 class StudentManager(manager.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(role="student")
+        return super().get_queryset().filter(role="student", is_verified=True)
+    
+class StudentNotVerifiedManager(manager.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(role="student", is_verified=False)

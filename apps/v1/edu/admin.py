@@ -4,7 +4,7 @@ from apps.v1.edu.models.exams import Exam, ExamFile, ExamStudentCard, ExamStuden
 from apps.v1.edu.models.groups import Group, GroupStudent, StudentProject, StudentProjectsCard
 from apps.v1.edu.models.courses import Course
 from apps.v1.edu.models.lessons import HomeTaskItem, Lesson, Attendance, OnlyHomeTask, SubjectGuide
-from apps.v1.edu.models.presentations import BookPresentationQty, StudentBookPresentation, StudentBookPresentationCard
+from apps.v1.edu.models.presentations import BookPresentationQty, RentBook, StudentBookPresentation, StudentBookPresentationCard
 
 
 @admin.register(Course)
@@ -29,7 +29,7 @@ class AttendanceAdmin(admin.ModelAdmin):
 
 @admin.register(GroupStudent)
 class GroupStudentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'student', 'group', 'created_at')
+    list_display = ('id', 'student', 'group', 'student_type', 'created_at')
 
 
 @admin.register(SubjectGuide)
@@ -89,3 +89,8 @@ class ExamStudentCardAdmin(admin.ModelAdmin):
 @admin.register(ExamStudentItem)
 class ExamStudentItemAdmin(admin.ModelAdmin):
     list_display = ('id', 'exam_card', 'name', 'github_link', 'created_at')
+    
+    
+@admin.register(RentBook)
+class RentBookAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'book', 'created_at', 'deadline_at')

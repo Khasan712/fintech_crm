@@ -1,16 +1,21 @@
 from django.db import models
 
 from apps.commons.models import CustomBaseAbstract, CustomWeekAbstract
-from apps.v1.edu.enums import StudentInGroupStatus, StudentProjectStatus
+from apps.v1.edu.enums import GroupStatus, GroupType, StudentInGroupStatus, StudentProjectStatus
 from apps.v1.edu.models.courses import Course
+from apps.v1.user.enums import StudentType
 from apps.v1.user.models import Student, User, Teacher
 
 
 class Group(CustomBaseAbstract, CustomWeekAbstract):
+    """ Group """
     name = models.CharField(max_length=70)
     title = models.CharField(max_length=255, blank=True, null=True)
-    course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True)
-    teacher = models.ForeignKey(Teacher, on_delete=models.SET_NULL, null=True)
+    course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, related_name='group_course')
+    teacher = models.ForeignKey(Teacher, on_delete=models.SET_NULL, null=True, related_name='group_teacher')
+    group_status = models.CharField(max_length=8, choices=GroupStatus.choices(), default='active')
+    group_type = models.CharField(max_length=8, choices=GroupType.choices(), default='hibrid')
+    
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_creator')
     updater = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_updater', blank=True)
     deleter = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_deleter', blank=True)
@@ -29,13 +34,16 @@ class Group(CustomBaseAbstract, CustomWeekAbstract):
 
 
 class GroupStudent(CustomBaseAbstract):
+    """ Group students """
     student = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True, related_name='student_in_group')
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='group_of_student')
+    student_status = models.CharField(max_length=8, choices=StudentInGroupStatus.choices(), default='studying')
+    student_type = models.CharField(max_length=7, choices=StudentType.choices(), blank=True, null=True)
+    student_first_lesson = models.ForeignKey('Lesson', on_delete=models.SET_NULL, null=True, blank=True)
+    
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_creator_student')
     updater = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_updater_student', blank=True)
     deleter = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='group_deleter_student', blank=True)
-    student_status = models.CharField(max_length=8, choices=StudentInGroupStatus.choices(), default='studying')
-    student_first_lesson = models.ForeignKey('Lesson', on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Guruhdagi o\'quvchi'

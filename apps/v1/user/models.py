@@ -5,6 +5,7 @@ from apps.commons.models import CustomBaseAbstract
 from apps.v1.user.enums import StudentType, UserRole
 from apps.v1.user.managers import (
     AdministratorManager,
+    StudentNotVerifiedManager,
     UserManager,
     SuperAdminManager,
     TeacherManager,
@@ -17,13 +18,14 @@ class User(AbstractBaseUser, PermissionsMixin, CustomBaseAbstract):
     last_name = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=50, unique=True)
     role = models.CharField(max_length=13, choices=UserRole.choices())
-    student_type = models.CharField(max_length=7, choices=StudentType.choices(), blank=True, null=True)
+    # student_type = models.CharField(max_length=7, choices=StudentType.choices(), blank=True, null=True)
 
     mother_full_name = models.CharField(max_length=50, blank=True, null=True)
     mother_phone = models.CharField(max_length=50, blank=True, null=True)
     father_full_name = models.CharField(max_length=50, blank=True, null=True)
     father_phone = models.CharField(max_length=50, blank=True, null=True)
-
+    
+    is_gone = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -75,6 +77,18 @@ class Student(User):
         proxy = True
         verbose_name = "O'quvchi"
         verbose_name_plural = "O'quvchilar"
+    
+    @property
+    def get_verified(self):
+        return self.is_verified
+    
+class StudentNotVerified(User):
+    objects = StudentNotVerifiedManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = "Tasdiqlanmagan o'quvchi"
+        verbose_name_plural = "Tasdiqlanmagan o'quvchilar"
     
     @property
     def get_verified(self):

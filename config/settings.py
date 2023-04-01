@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 INSTALLED_APPS += [
     'corsheaders',
     'django_crontab',
+    'debug_toolbar',
 ]
 
 # Project apps
@@ -67,6 +68,7 @@ MIDDLEWARE = [
 MIDDLEWARE += [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -195,4 +197,8 @@ CORS_ALLOW_HEADERS = [
 # Login
 LOGIN_URL = 'user_login'
 
-
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]

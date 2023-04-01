@@ -26,6 +26,7 @@ urlpatterns = [
     # Apps
     path('user/', include('apps.v1.user.urls')),
     path('', include('apps.v1.edu.urls')),
+    path('__debug__/', include('debug_toolbar.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler404 = 'apps.commons.handlers.error_404'

@@ -32,13 +32,13 @@ class Lesson(CustomBaseAbstract):
         verbose_name = 'Dars'
         verbose_name_plural = 'Darslar'
 
-    def __str__(self):
-        return f'{self.id} - {self.group.name}'
+    # def __str__(self):
+    #     return f'{self.id} - {self.group.name}'
 
 
 class Attendance(CustomBaseAbstract):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='student_attendance')
-    lesson = models.ForeignKey(Lesson, on_delete=models.SET_NULL, null=True)
+    lesson = models.ForeignKey(Lesson, on_delete=models.SET_NULL, null=True, related_name='lesson_attendancy')
     is_come = models.BooleanField(default=False)
     h_m_percentage = models.IntegerField(default=0)
 
@@ -56,6 +56,9 @@ class Attendance(CustomBaseAbstract):
 
     def __str__(self):
         return f'{self.id} - {self.student.first_name}'
+    
+    def get_date(self):
+        return int(self.created_at.strftime('%d'))
 
 
 

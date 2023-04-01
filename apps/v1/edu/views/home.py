@@ -11,10 +11,12 @@ def home(request):
     user = request.user
     if not request.user.is_authenticated:
         return redirect('user_login')
-    if user.role == 'teacher':
+    elif user.role == 'teacher':
         return redirect('teacher_dashboard')
-    if user.role == 'student':
+    elif user.role == 'student':
         if not user.is_verified:
             return redirect('kutish_zali')
         return redirect('student_dashboard')
+    elif user.role == 'administrator':
+        return redirect('administrator_dashboard')
     raise Http404()
