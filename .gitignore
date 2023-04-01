@@ -132,7 +132,6 @@ dmypy.json
 migrations/
 
 # Static and media
-static/
 staticfiles/
 media/
 
