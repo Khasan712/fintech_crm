@@ -22,8 +22,8 @@ class Group(CustomBaseAbstract, CustomWeekAbstract):
 
     start_time = models.TimeField()
     end_time = models.TimeField()
-    from_term = models.DateField()
-    to_term = models.DateField()
+    from_term = models.DateField(blank=True, null=True)
+    to_term = models.DateField(blank=True, null=True)
 
     class Meta:
         verbose_name = 'Guruh'

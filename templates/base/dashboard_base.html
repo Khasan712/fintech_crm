@@ -991,6 +991,93 @@
         </div>
 
 
+        <!-- Add Group -->
+        <div 
+          class="col-md-12 stretch-card container" id="addGroupCard" class="container" 
+          style="width: 470px; height: 555px; padding: 0; background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form 
+                class="forms-sample addGroupForm" method="POST" enctype="multipart/form-data" 
+                style="padding: 0;"
+              >{% csrf_token %}
+                <input type="text" name="name" class="form-control text-light" placeholder="* Guruh nomi" required>
+                <br>
+                <input type="text" name="title" class="form-control text-light" placeholder="Qisqacha ma'lumot (optional)" required>
+                <br>
+                <select name="course" id="" required class="form-control text-light">
+                  <option value="None">Kusrni tanlang</option>
+                  {% for course in courses %}
+                    <option value="{{ course.id }}">{{ course.name }}</option>
+                  {% endfor %}
+                </select>
+                <br>
+                <select name="teacher" id="" required class="form-control text-light">
+                  <option value="None">O'qituvchi tanlang</option>
+                  {% for teacher in teachers %}
+                    <option value="{{ teacher.id }}">{{ teacher.first_name }}</option>
+                  {% endfor %}
+                </select>
+                <br>
+                <select name="group_type" id="" required class="form-control text-light">
+                  <option value="None">Guruh turi</option>
+                  <option value="online">Online</option>
+                  <option value="offline">Offline</option>
+                  <option value="hibrid">Aralash</option>
+                </select>
+                <br>
+
+                <div style="display: flex; justify-content: space-between;">
+                  <div>Dan</div>
+                  <div>
+                    <input name="start_time" type="time" class="form-control text-light">
+                  </div>
+                  <div>Gacha</div>
+                  <div style="display: flex;">
+                    <input name="end_time" type="time" class="form-control text-light">
+                  </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between;">
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" name="monday" class="form-check-input"> Dushanba </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" name="tuesday" class="form-check-input"> Seshanba </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" name="wednesday" class="form-check-input"> Chorshanba </label>
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" name="thursday" class="form-check-input"> Payshanba </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" name="friday" class="form-check-input"> Juma </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" name="saturday" class="form-check-input"> Shanba </label>
+                  </div>
+                </div>
+                <input type="hidden" name="method" value="add.group">
+
+                <button type="submit" class="btn btn-primary btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> Yuklash 
+                </button>
+                <button type="button" id="ok" onclick="addGroupClose()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
         
 
 

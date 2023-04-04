@@ -61,6 +61,10 @@ const deleteExamItemStudentBTN = document.getElementById("deleteExamItemStudentI
 const deleteExamItemStudentCard = document.getElementById("deleteExamItemStudentCard");
 
 
+const addGroupBTN = document.getElementById("addGroupID");
+const addGroupCard = document.getElementById("addGroupCard");
+
+
 function openBtn() {
   card.classList.add("active");
 }
@@ -214,4 +218,12 @@ function deleteExamItemStudentOpen() {
 }
 function deleteExamItemStudentClose() {
   deleteExamItemStudentCard.classList.remove("active");
+}
+
+
+function addGroupOpen() {
+  addGroupCard.classList.add("active");
+}
+function addGroupClose() {
+  addGroupCard.classList.remove("active");
 }

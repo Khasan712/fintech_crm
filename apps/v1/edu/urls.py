@@ -9,5 +9,6 @@ urlpatterns = [
     path('teacher/dashboard/', teachers.TeacherDashboardView.as_view(), name='teacher_dashboard'),
     path('administrator/dashboard/', administrators.AdministratorDashboardView.as_view(), name='administrator_dashboard'),
 ]
+print(urlpatterns)
 
 

@@ -45,9 +45,9 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
             # dashboard
             case None | 'dashboard':
                 context['dashboard_statistics'] = {
-                    "book_presentation": get_book_presentation_queryset().filter(student_id=student.id).first(),
-                    "book_presentation_qty": len(get_book_presentation_item_queryset().filter(book_card__student_id=student.id, is_aproved=True)),
-                    "projects": get_student_projects_card_queryset().filter(student_id=student.id).annotate(
+                    "book_presentation": get_book_presentation_queryset(self).filter(student_id=student.id).first(),
+                    "book_presentation_qty": len(get_book_presentation_item_queryset(self).filter(book_card__student_id=student.id, is_aproved=True)),
+                    "projects": get_student_projects_card_queryset(self).filter(student_id=student.id).annotate(
                         accepted_proj_qty=Coalesce(Count(Case(When(
                             student_project_item__status='accepted',
                             then='student_project_item'
@@ -57,7 +57,7 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
 
             # book presentation
             case 'book_presentation':
-                book_presentations = get_book_presentation_item_queryset().filter(book_card__student_id=student.id).annotate(
+                book_presentations = get_book_presentation_item_queryset(self).filter(book_card__student_id=student.id).annotate(
                     order_num=Count('id')
                 ).order_by('-id')
                 context['page'] = 'book_presentation'
@@ -78,19 +78,19 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
                 lesson = student_lessons.filter(id=lesson_id).first()
                 if not lesson:
                     raise Http404
-                homework = get_homework_queryset().filter(student_id=student.id, lesson_id=lesson_id).first()
+                homework = get_homework_queryset(self).filter(student_id=student.id, lesson_id=lesson_id).first()
                 if homework:
-                    context['homework_items'] = get_homework_items_queryset().filter(home_work_id=homework.id).order_by('-id').values('id', 'uploaded_file')
+                    context['homework_items'] = get_homework_items_queryset(self).filter(home_work_id=homework.id).order_by('-id').values('id', 'uploaded_file')
                 context['lesson'] = lesson
                 context['page'] = 'lesson'
-                subject_guide = get_hometask_queryset().filter(
+                subject_guide = get_hometask_queryset(self).filter(
                     lesson_id=lesson_id, is_subject_guides=True
                 ).first()
-                subject_hometask = get_hometask_queryset().filter(
+                subject_hometask = get_hometask_queryset(self).filter(
                     lesson_id=lesson_id, is_subject_guides=False
                 ).first()
                 if subject_guide:
-                    subject_guide_items = get_hometask_items_queryset().filter(home_task_id=subject_guide.id).order_by('-id')
+                    subject_guide_items = get_hometask_items_queryset(self).filter(home_task_id=subject_guide.id).order_by('-id')
                     context['subject_guides'] = subject_guide_items
                 context['can_upload'] = True
                 if subject_hometask:
@@ -98,21 +98,21 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
                         context['deadline'] = subject_hometask.deadline.strftime('%Y/%m/%d, %H:%M')
                         if subject_hometask.deadline < utc.localize(datetime.datetime.today()):
                             context['can_upload'] = False
-                    subject_hometask_items = get_hometask_items_queryset().filter(home_task_id=subject_hometask.id).order_by('-id')
+                    subject_hometask_items = get_hometask_items_queryset(self).filter(home_task_id=subject_hometask.id).order_by('-id')
                     context['subject_hometasks'] = subject_hometask_items
             
             # projects
             case 'projects':
                 if not group_id:
                     raise Http404
-                group = get_student_in_group_queryset().filter(student_id=student.id, group_id=group_id).first()
+                group = get_student_in_group_queryset(self).filter(student_id=student.id, group_id=group_id).first()
                 if not group:
                     raise Http404
                 projects = get_student_projects().filter(project_card__student_id=student.id, project_card__group_id=group_id).order_by('-id')
                 context['page'] = 'projects'
                 context['projects'] = {
                     'projects': projects,
-                    'project_card': get_student_projects_card_queryset().filter(student_id=student.id).filter(group_id=group_id).first(),
+                    'project_card': get_student_projects_card_queryset(self).filter(student_id=student.id).filter(group_id=group_id).first(),
                     'uploaded_qty': projects.aggregate(qty=Coalesce(Count('id'), 0))['qty'],
                     'accepted_qty': projects.filter(status='accepted').aggregate(qty=Coalesce(Count('id'), 0))['qty'],
                     'rejected_qty': projects.filter(status='rejected').aggregate(qty=Coalesce(Count('id'), 0))['qty'],
@@ -121,11 +121,11 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
         
             # exams
             case 'exams':
-                group = get_group_queryset().filter(id=group_id, group_of_student__student_id=student.id).values('id', 'name').first()
+                group = get_group_queryset(self).filter(id=group_id, group_of_student__student_id=student.id).values('id', 'name').first()
                 if not group:
                     raise Http404
                 context['page'] = 'exams'
-                context['exams'] = get_exam_queryset().filter(group_id=group_id, exam_item__student_id=student.id,).annotate(
+                context['exams'] = get_exam_queryset(self).filter(group_id=group_id, exam_item__student_id=student.id,).annotate(
                     uploaded_qty=Coalesce(Count('exam_item__student_item_exam_card'), 0, output_field=IntegerField()),
                     in_progress_qty=Coalesce(Count(Case(When(
                         exam_item__student_item_exam_card__status='in_progress',
@@ -140,7 +140,7 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
 
             # exam
             case 'exam':
-                exam = get_exam_queryset().filter(
+                exam = get_exam_queryset(self).filter(
                     id=exam_id, group_id=group_id, group__group_of_student__student_id=student.id,
                     exam_item__student_id=student.id
                 ).first()
@@ -148,12 +148,12 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
                     raise Http404
                 context['page'] = 'exam'
                 context['exam'] = exam
-                context['group'] = get_group_queryset().filter(id=group_id).values('id', 'name', 'teacher').first()
-                context['exam_items'] = get_exam_file_queryset().filter(exam=exam_id)
-                context['my_items'] = get_student_exam_item_queryset().filter(exam_card__exam_id=exam_id, exam_card__student_id=student.id).values(
+                context['group'] = get_group_queryset(self).filter(id=group_id).values('id', 'name', 'teacher').first()
+                context['exam_items'] = get_exam_file_queryset(self).filter(exam=exam_id)
+                context['my_items'] = get_student_exam_item_queryset(self).filter(exam_card__exam_id=exam_id, exam_card__student_id=student.id).values(
                     'id', 'uploaded_file', 'netlify_link', 'status', 'name', 'github_link', 'created_at'
                 ).order_by('-id')
-                context['exam_card'] = get_student_exam_card_queryset().filter(exam_id=exam_id, student_id=student.id).annotate(
+                context['exam_card'] = get_student_exam_card_queryset(self).filter(exam_id=exam_id, student_id=student.id).annotate(
                     uploaded_files_qty=Coalesce(Count(
                         'student_item_exam_card', distinct=True
                     ), 0, output_field=IntegerField()),
@@ -191,7 +191,7 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
             
             # Upload file "HomeWork"
             case 'homework':
-                subject_hometask = get_hometask_queryset().filter(lesson_id=lesson_id).first()
+                subject_hometask = get_hometask_queryset(self).filter(lesson_id=lesson_id).first()
                 if subject_hometask:
                     if subject_hometask.deadline:
                         if subject_hometask.deadline < utc.localize(datetime.datetime.today()):
@@ -207,12 +207,12 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
         
             # Edit File
             case 'edit_homework':
-                subject_hometask = get_hometask_queryset().filter(lesson_id=lesson_id).first()
+                subject_hometask = get_hometask_queryset(self).filter(lesson_id=lesson_id).first()
                 if subject_hometask:
                     if subject_hometask.deadline:
                         if subject_hometask.deadline < utc.localize(datetime.datetime.today()):
                             return HttpResponseRedirect(f'?page=lesson&lesson_id={lesson_id}')
-                user_file = get_homework_items_queryset().filter(id=file_id, home_work__student_id=user.id).first()
+                user_file = get_homework_items_queryset(self).filter(id=file_id, home_work__student_id=user.id).first()
                 if user_file:
                     user_file.uploaded_file = uploaded_file
                     user_file.save()
@@ -220,7 +220,7 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
             
             #  Delete File
             case 'delete_homework':
-                student_homework = get_homework_items_queryset().filter(id=file_id, home_work__student_id=user.id).first()
+                student_homework = get_homework_items_queryset(self).filter(id=file_id, home_work__student_id=user.id).first()
                 if student_homework:
                     student_homework.delete()
                     return HttpResponseRedirect(f'?page=lesson&lesson_id={lesson_id}')
@@ -238,11 +238,11 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
             
             # add Project
             case 'add_project':
-                group = get_group_queryset().filter(id=group_id, group_of_student__student_id=user.id).first()
+                group = get_group_queryset(self).filter(id=group_id, group_of_student__student_id=user.id).first()
                 if not group:
                     raise Http404
                 if uploaded_file:
-                    project_card, _ = get_student_projects_card_queryset().get_or_create(student_id=user.id, group_id=group_id)
+                    project_card, _ = get_student_projects_card_queryset(self).get_or_create(student_id=user.id, group_id=group_id)
                     get_student_projects().create(
                         uploaded_file=uploaded_file, project_card_id=project_card.id, name=request.POST['name'],
                         github_link=request.POST['github_link'], netlify_link=request.POST.get('netlify_link')
@@ -251,7 +251,7 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
             
             # edit Project
             case 'edit_project':
-                group = get_group_queryset().filter(id=group_id, group_of_student__student_id=user.id).first()
+                group = get_group_queryset(self).filter(id=group_id, group_of_student__student_id=user.id).first()
                 item_obj = get_student_projects().filter(id=file_id, project_card__student_id=user.id).first()
                 if not group or not item_obj:
                     raise Http404
@@ -262,7 +262,7 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
             
             # edit Project
             case 'delete_project':
-                group = get_group_queryset().filter(id=group_id, group_of_student__student_id=user.id).first()
+                group = get_group_queryset(self).filter(id=group_id, group_of_student__student_id=user.id).first()
                 item_obj = get_student_projects().filter(id=file_id, project_card__student_id=user.id).first()
                 if not group or not item_obj:
                     raise Http404
@@ -271,7 +271,7 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
             
             # Exam upload
             case 'exam_upload':
-                exam_card = get_student_exam_card_queryset().filter(exam_id=exam_id, student_id=user.id).first()
+                exam_card = get_student_exam_card_queryset(self).filter(exam_id=exam_id, student_id=user.id).first()
                 if not exam_card:
                     raise Http404
                 exam_upload_form = UploadExamItemStudent(data or None, data_media or None)
@@ -283,7 +283,7 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
             
             # Exam edit
             case 'exam_edit_item':
-                exam_item = get_student_exam_item_queryset().filter(id=item_id, exam_card__exam_id=exam_id, exam_card__student_id=user.id).first()
+                exam_item = get_student_exam_item_queryset(self).filter(id=item_id, exam_card__exam_id=exam_id, exam_card__student_id=user.id).first()
                 if not exam_item:
                     raise Http404
                 exam_item_edit_form = UploadExamItemStudent(data or None, data_media or None, instance=exam_item)
@@ -293,7 +293,7 @@ class StudentDashboardView(UserAuthenticateRequiredMixin, View):
             
             # Exam delete
             case 'exam_edit_delete':
-                exam_item = get_student_exam_item_queryset().filter(id=item_id, exam_card__exam_id=exam_id, exam_card__student_id=user.id).first()
+                exam_item = get_student_exam_item_queryset(self).filter(id=item_id, exam_card__exam_id=exam_id, exam_card__student_id=user.id).first()
                 group_id = exam_item.exam_card.exam.group.id
                 if not exam_item:
                     raise Http404

@@ -8,7 +8,7 @@ class GroupAddForm(forms.ModelForm):
     class Meta:
         model = Group
         fields = (
-            'id', 'name', 'title', 'course', 'teacher', 'group_type', 'monday', 'tuesday',
-            'wednesday', 'thursday', 'friday', 'saturday', 'sunday'
+            'id', 'name', 'title', 'course', 'teacher', 'group_type', 'start_time', 'end_time',
+            'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'
         )
 
