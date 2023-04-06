@@ -1,10 +1,37 @@
 from django.contrib import admin
 
-from apps.v1.edu.models.exams import Exam, ExamFile, ExamStudentCard, ExamStudentItem
-from apps.v1.edu.models.groups import Group, GroupStudent, StudentProject, StudentProjectsCard
+from apps.v1.edu.models.exams import (
+    Exam,
+    ExamFile,
+    ExamStudentCard,
+    ExamStudentItem
+)
+from apps.v1.edu.models.groups import (
+    Group,
+    GroupStudent,
+    StudentProject,
+    StudentProjectsCard
+)
+from apps.v1.edu.models.lessons import (
+    HomeTaskItem,
+    Lesson,
+    Attendance,
+    OnlyHomeTask,
+    SubjectGuide
+)
+from apps.v1.edu.models.presentations import (
+    BookPresentationQty,
+    RentBook,
+    StudentBookPresentation,
+    StudentBookPresentationCard
+)
 from apps.v1.edu.models.courses import Course
-from apps.v1.edu.models.lessons import HomeTaskItem, Lesson, Attendance, OnlyHomeTask, SubjectGuide
-from apps.v1.edu.models.presentations import BookPresentationQty, RentBook, StudentBookPresentation, StudentBookPresentationCard
+from apps.v1.edu.models.notifications import Notification
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'content_type', 'object_id', 'content_object', 'is_read')
 
 
 @admin.register(Course)

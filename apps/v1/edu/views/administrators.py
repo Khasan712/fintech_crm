@@ -4,18 +4,36 @@ from datetime import datetime
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.db.models import Count, Sum, IntegerField, Case, When, Q, Value, Prefetch, Subquery, OuterRef
+from django.db.models import (
+    Count,
+    Sum,
+    IntegerField,
+    Case,
+    When,
+    Q,
+    Value,
+    Prefetch,
+    Subquery,
+    OuterRef
+)
 from django.http.response import Http404
 from django.views.generic.base import View
 from django.db.models.functions import Coalesce, Concat
 
+
+from apps.commons.get_pages import get_administrator_render
 from apps.v1.user.permissions import UserAuthenticateRequiredMixin
 from apps.v1.edu.models.groups import GroupStudent
-from apps.commons.get_querysets import get_students_queryset, get_group_queryset, get_course_queryset, \
-    get_teacher_queryset, get_attendance_queryset, get_rent_books_queryset, get_lessons_queryset
-from apps.commons.get_pages import get_administrator_render
 from apps.v1.edu.forms.administrators_forms import GroupAddForm
-
+from apps.commons.get_querysets import (
+    get_students_queryset,
+    get_group_queryset,
+    get_course_queryset,
+    get_teacher_queryset,
+    get_attendance_queryset,
+    get_rent_books_queryset,
+    get_lessons_queryset
+)
 
 
 
@@ -105,7 +123,8 @@ class AdministratorDashboardView(UserAuthenticateRequiredMixin, View):
                 group = get_group_queryset(self).filter(id=group_id).first()
                 if not group:
                     raise Http404
-                group_students = get_students_queryset(self).filter(
+                all_students = get_students_queryset(self)
+                group_students = all_students.filter(
                     student_in_group__group_id=group_id,
                 )
                 group_attendance = get_attendance_queryset(self).filter(
@@ -126,7 +145,9 @@ class AdministratorDashboardView(UserAuthenticateRequiredMixin, View):
                 context.update({
                     'page': 'group_attendancy',
                     'days': range(1, days_in_month+1),
-                    'students': students
+                    'students': students[::-1],
+                    'all_students': all_students.filter(~Q(student_in_group__group_id=group_id)).values('id', 'first_name', 'phone_number'),
+                    'group_id': group_id,
                 })
                 return get_administrator_render(request, context)
         
@@ -226,4 +247,4 @@ class AdministratorDashboardView(UserAuthenticateRequiredMixin, View):
                 if group_students:
                     GroupStudent.objects.bulk_create(group_students)
                     
-                return HttpResponseRedirect(f'?page=group&group_id={group_id}')
+                return HttpResponseRedirect(f'?page=group_attendancy&group_id={group_id}')

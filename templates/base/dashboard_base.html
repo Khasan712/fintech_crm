@@ -715,7 +715,7 @@
 
         <!-- edit project -->
         <div class="col-md-12 stretch-card container" id="editProjectCard" class="container" 
-          style="width: 368px; height: 360px; padding: 0;
+          style="width: 368px; height: 350px; padding: 0;
           background-color: white;"
         >
           <div class="card">
@@ -901,7 +901,7 @@
         </div>
 
 
-        // Student exam item upload
+        <!-- Student exam item upload -->
         <div 
           class="col-md-12 stretch-card container" id="addExamItemStudentCard" class="container" 
           style="position: absolute; top: 60%; width: 370px; height: 360px; padding: 0;
@@ -933,7 +933,7 @@
         </div>
 
 
-        // Student exam item edit
+        <!-- Student exam item edit -->
         <div 
           class="col-md-12 stretch-card container" id="editExamItemStudentCard" class="container" 
           style="position: absolute; top: 60%; width: 370px; height: 360px; padding: 0;
@@ -1073,6 +1073,57 @@
                   <i class="mdi mdi-file-check btn-icon-prepend"></i> Yuklash 
                 </button>
                 <button type="button" id="ok" onclick="addGroupClose()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Seletc student -->
+        <div 
+          class="col-md-12 stretch-card container" id="selectStudentCard" class="container" 
+          style="padding: 0; background-color: white; height: 615px;"
+        >
+          <div class="card">
+            <div class="card-body ">
+              <form 
+                class="forms-sample selectStudentForm" method="POST" enctype="multipart/form-data"
+                style="padding: 0;"
+              >{% csrf_token %}
+                <div style="height: 500px; overflow: scroll;">
+                  <table style="margin-bottom: 15px;" class="table table-bordered">
+                    <thead>
+                   <tr>
+                    <th>Ismi</th>
+                    <th>Tel</th>
+                    <th>Online</th>
+                    <th>Offline</th>
+                  
+                   </tr>
+                  </thead>
+                   <tbody>
+                    {% for all_student in all_students %}
+                      <tr>
+                        <td>{{ all_student.first_name }}</td>
+                        <td>{{ all_student.phone_number }}</td>
+                        <td>
+                          <input type="checkbox" name="online_students_ids" value="{{ all_student.id }}">
+                        </td>
+                        <td>
+                          <input type="checkbox" name="offline_students_ids" value="{{ all_student.id }}">
+                        </td>
+                      </tr>
+                    {% endfor %}
+                   </tbody>
+                      
+                  </table>
+                </div>
+                <input type="hidden" name="method" value="add.student.on.group">
+                <input type="hidden" name="group_id" value="{{ group_id }}">
+                <button type="submit" class="btn btn-success btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> Saqlash
+                </button>
+                <button type="button" id="ok" onclick="selectStudentClose()" class="btn btn-warning me-2">Bekor qilish</button>
               </form>
             </div>
           </div>
