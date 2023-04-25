@@ -248,3 +248,8 @@ class AdministratorDashboardView(UserAuthenticateRequiredMixin, View):
                     GroupStudent.objects.bulk_create(group_students)
                     
                 return HttpResponseRedirect(f'?page=group_attendancy&group_id={group_id}')
+            
+            # Edit or Delete student from group
+            case 'edit.delete.student.from.group':
+                # student
+                pass

@@ -458,7 +458,7 @@
                           {% for student in students %}
                             <tr style="text-align: center;">
                               <td style="background-color: #fff; color: black;">{{ student.order }}</td>
-                              <td style="background-color: blue; color: #fff;">{{ student.student.first_name }}</td>
+                              <td style="background-color: blue; color: #fff; cursor: pointer;" get-student-id="{{ student.student.id }}" class="editDeleteStudentFromGroup" id="editDeleteStudentFromGroup" onclick="editDeleteStudentFromGroupOpen()">{{ student.student.first_name }}</td>
                               {% for att in student.atts %}
                                 {% if att == 1 %}
                                   <td style="background-color: rgb(2, 190, 2); color: white;">

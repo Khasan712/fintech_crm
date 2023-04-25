@@ -1129,6 +1129,38 @@
           </div>
         </div>
 
+
+        <!-- Edit or Delete Student from group -->
+        <div 
+          class="col-md-12 stretch-card container" id="editDeleteStudentFromGroupCard" class="container" 
+          style="position: absolute; top: 60%; width: 370px; height: 360px; padding: 0;
+          background-color: white;"
+        >
+          <div class="card">
+            <div class="card-body">
+              <form 
+                class="forms-sample editDeleteStudentFromGroupForm" method="POST" enctype="multipart/form-data"
+                style="padding: 0;"
+              >{% csrf_token %}
+                <input type="text" name="name" class="form-control text-light name" placeholder="name">
+                <br>
+                <input type="file" name="uploaded_file" class="form-control text-light">
+                <br>
+                <input type="url" name="github_link" class="form-control text-light github_link" placeholder="github link">
+                <br>
+                <input type="url" name="netlify_link" class="form-control text-light netlify_link" placeholder="netlify link">
+                <br>
+                <input type="hidden" name="method" value="edit.delete.student.from.group">
+                <input type="hidden" name="student_id" value="">
+                <input type="hidden" name="group_id" value="{{ group_id }}">
+                <button type="submit" class="btn btn-success btn-icon-text">
+                  <i class="mdi mdi-file-check btn-icon-prepend"></i> Saqlash
+                </button>
+                <button type="button" id="ok" onclick="editDeleteStudentFromGroupClose()" class="btn btn-warning me-2">Bekor qilish</button>
+              </form>
+            </div>
+          </div>
+        </div>
         
 
 
@@ -1317,6 +1349,13 @@
         e.preventDefault()
         var exam_item_id = $(this).attr('item-id')
         var edit_exam_item_id = $('.deleteExamItemStudentForm .item_id').attr('value' , exam_item_id)
+      })
+
+      // Edit or Delete Student from group
+      $('.editDeleteStudentFromGroup').click(function(e){
+        e.preventDefault()
+        var student_id = $(this).attr('get-student-id')
+        var edit_exam_item_id = $('.editDeleteStudentFromGroupForm .student_id').attr('value' , student_id)
       })
 
   </script>

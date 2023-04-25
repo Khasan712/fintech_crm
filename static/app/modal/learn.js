@@ -68,6 +68,9 @@ const addGroupCard = document.getElementById("addGroupCard");
 const selectStudentBTN = document.getElementById("selectStudentID");
 const selectStudentCard = document.getElementById("selectStudentCard");
 
+const editDeleteStudentFromGroupBTN = document.getElementById("editDeleteStudentFromGroupID");
+const editDeleteStudentFromGroupCard = document.getElementById("editDeleteStudentFromGroupCard");
+
 
 function openBtn() {
   card.classList.add("active");
@@ -238,4 +241,12 @@ function selectStudentOpen() {
 }
 function selectStudentClose() {
   selectStudentCard.classList.remove("active");
+}
+
+
+function editDeleteStudentFromGroupOpen() {
+  editDeleteStudentFromGroupCard.classList.add("active");
+}
+function editDeleteStudentFromGroupClose() {
+  editDeleteStudentFromGroupCard.classList.remove("active");
 }
